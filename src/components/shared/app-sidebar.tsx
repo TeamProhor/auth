@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import type * as React from "react";
+import { ProhorLogo } from "@/components/shared/prohor-logo";
 import {
   Sidebar,
   SidebarContent,
@@ -33,14 +34,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <SidebarMenuItem>
             <div className="flex items-center justify-between w-full px-2 py-1 mb-2 group-data-[collapsible=icon]:px-0">
               <div className="flex items-center hover:bg-accent rounded-lg transition-colors overflow-hidden shrink-0 w-full cursor-pointer group-data-[collapsible=icon]:justify-center">
-                <Icon
-                  icon="solar:shield-bold"
-                  width="24"
-                  height="24"
-                  className="shrink-0 text-foreground group-data-[collapsible=icon]:mr-0 mr-3"
-                />
+                <ProhorLogo className="size-6 shrink-0 group-data-[collapsible=icon]:mr-0 mr-3 rounded" />
                 <h3 className="font-[800] text-[16px] whitespace-nowrap mt-1 group-data-[collapsible=icon]:hidden">
-                  প্রহর হাব
+                  প্রহর অ্যাকাউন্ট
                 </h3>
               </div>
             </div>
