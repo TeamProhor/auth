@@ -10,7 +10,7 @@ export function LoginForm() {
     <div className="flex flex-col items-center gap-8">
       <div className="bg-background border border-border rounded-2xl p-3 shadow-sm">
         <Icon
-          icon="solar:shield-bold-duotone"
+          icon="solar:shield-bold"
           width="40"
           height="40"
           className="text-foreground"

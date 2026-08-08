@@ -9,11 +9,7 @@ export default function DeveloperPage() {
       <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative overflow-hidden">
         <div className="space-y-2 max-w-xl z-10">
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold">
-            <Icon
-              icon="solar:code-square-bold-duotone"
-              width="16"
-              height="16"
-            />
+            <Icon icon="solar:code-square-bold" width="16" height="16" />
             ডেভেলপার পোর্টাল
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-foreground">
@@ -31,7 +27,7 @@ export default function DeveloperPage() {
             className="rounded-xl px-5 py-6 text-sm font-semibold"
           >
             <Icon
-              icon="solar:add-circle-bold-duotone"
+              icon="solar:add-circle-bold"
               width="18"
               height="18"
               className="mr-2"
@@ -55,7 +51,7 @@ export default function DeveloperPage() {
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-xs font-semibold">সক্রিয় অ্যাপস</span>
             <Icon
-              icon="solar:box-minimalistic-bold-duotone"
+              icon="solar:box-minimalistic-bold"
               width="20"
               height="20"
               className="text-primary"
@@ -71,7 +67,7 @@ export default function DeveloperPage() {
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-xs font-semibold">মোট এপিআই কল (এই মাসে)</span>
             <Icon
-              icon="solar:chart-square-bold-duotone"
+              icon="solar:chart-square-bold"
               width="20"
               height="20"
               className="text-chart-1"
@@ -85,7 +81,7 @@ export default function DeveloperPage() {
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-xs font-semibold">রেজিস্টার্ড ইউজার</span>
             <Icon
-              icon="solar:users-group-rounded-bold-duotone"
+              icon="solar:users-group-rounded-bold"
               width="20"
               height="20"
               className="text-chart-2"
@@ -99,7 +95,7 @@ export default function DeveloperPage() {
           <div className="flex items-center justify-between text-muted-foreground">
             <span className="text-xs font-semibold">গড় রেসপন্স টাইম</span>
             <Icon
-              icon="solar:stopwatch-bold-duotone"
+              icon="solar:stopwatch-bold"
               width="20"
               height="20"
               className="text-chart-3"
@@ -119,37 +115,37 @@ export default function DeveloperPage() {
               title: "অ্যাপস ও ওয়েবহুক",
               desc: "ক্লায়েন্ট আইডি, সিক্রেট ম্যানেজমেন্ট এবং ওয়েবহুক অ্যান্ডপয়েন্ট টেস্ট করুন।",
               url: "/developer/apps",
-              icon: "solar:box-minimalistic-bold-duotone",
+              icon: "solar:box-minimalistic-bold",
             },
             {
               title: "ইউজার ডিরেক্টরি",
               desc: "আপনার কানেক্টেড অ্যাপ্লিকেশনগুলোর ইউজারদের ডেটা ও সেশন তদারকি করুন।",
               url: "/developer/users",
-              icon: "solar:users-group-rounded-bold-duotone",
+              icon: "solar:users-group-rounded-bold",
             },
             {
               title: "রোল ও পারমিশন (RBAC)",
               desc: "কাস্টম স্কোপ, রোল এবং পারমিশন রুলস সেটআপ করুন।",
               url: "/developer/rbac",
-              icon: "solar:shield-keyhole-bold-duotone",
+              icon: "solar:shield-keyhole-bold",
             },
             {
               title: "লগইন অ্যাকশনস (Hooks)",
               desc: "সার্ভারলেস ইভেন্ট হুক এবং লগইনফ্লো কাস্টমাইজেশন।",
               url: "/developer/hooks",
-              icon: "solar:code-file-bold-duotone",
+              icon: "solar:code-file-bold",
             },
             {
               title: "বট প্রোটেকশন & সিকিউরিটি",
               desc: "রেট লিমিটিং, ক্যাপচা এবং আইপি রেস্ট্রিকশন কনফিগার করুন।",
               url: "/developer/protection",
-              icon: "solar:shield-warning-bold-duotone",
+              icon: "solar:shield-warning-bold",
             },
             {
               title: "কুইকস্টার্ট ও SDK",
               desc: "Next.js, Node.js, Python ও React SDK গাইড ও টেমপ্লেট।",
               url: "/developer/quickstart",
-              icon: "solar:rocket-bold-duotone",
+              icon: "solar:rocket-bold",
             },
           ].map((item) => (
             <Link

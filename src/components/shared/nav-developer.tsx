@@ -13,42 +13,42 @@ const items = [
   {
     title: "অ্যাপস ও ওয়েবহুক",
     url: "/developer/apps",
-    icon: "solar:box-minimalistic-bold-duotone",
+    icon: "solar:box-minimalistic-bold",
   },
   {
     title: "ইউজার ডিরেক্টরি",
     url: "/developer/users",
-    icon: "solar:users-group-rounded-bold-duotone",
+    icon: "solar:users-group-rounded-bold",
   },
   {
     title: "রোল ও পারমিশন",
     url: "/developer/rbac",
-    icon: "solar:shield-keyhole-bold-duotone",
+    icon: "solar:shield-keyhole-bold",
   },
   {
     title: "লগইন অ্যাকশনস",
     url: "/developer/hooks",
-    icon: "solar:code-file-bold-duotone",
+    icon: "solar:code-file-bold",
   },
   {
     title: "বট প্রোটেকশন",
     url: "/developer/protection",
-    icon: "solar:shield-warning-bold-duotone",
+    icon: "solar:shield-warning-bold",
   },
   {
     title: "অ্যানালিটিক্স ও কোটা",
     url: "/developer/analytics",
-    icon: "solar:chart-square-bold-duotone",
+    icon: "solar:chart-square-bold",
   },
   {
     title: "কুইকস্টার্ট ও SDK",
     url: "/developer/quickstart",
-    icon: "solar:rocket-bold-duotone",
+    icon: "solar:rocket-bold",
   },
   {
     title: "এপিআই ডকস",
     url: "/developer/docs",
-    icon: "solar:document-text-bold-duotone",
+    icon: "solar:document-text-bold",
   },
 ];
 

@@ -11,6 +11,14 @@ import {
 } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 
 export default function ProfilePage() {
@@ -30,12 +38,12 @@ export default function ProfilePage() {
           <div className="relative group cursor-pointer shrink-0">
             <Avatar className="size-24 border border-border">
               <AvatarFallback className="bg-muted text-muted-foreground">
-                <Icon icon="solar:user-bold-duotone" width="48" height="48" />
+                <Icon icon="solar:user-bold" width="48" height="48" />
               </AvatarFallback>
             </Avatar>
             <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <Icon
-                icon="solar:camera-bold-duotone"
+                icon="solar:camera-bold"
                 width="28"
                 height="28"
                 className="text-white"
@@ -78,16 +86,19 @@ export default function ProfilePage() {
 
             <Field>
               <FieldLabel htmlFor="gender">লিঙ্গ (Gender)</FieldLabel>
-              <select
-                id="gender"
-                aria-label="লিঙ্গ (Gender)"
-                className="w-full rounded-md bg-background border border-input px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-              >
-                <option>নির্বাচন করুন</option>
-                <option>পুরুষ</option>
-                <option>মহিলা</option>
-                <option>অন্যান্য</option>
-              </select>
+              <Select defaultValue="unspecified">
+                <SelectTrigger id="gender" className="w-full">
+                  <SelectValue placeholder="নির্বাচন করুন" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="unspecified">নির্বাচন করুন</SelectItem>
+                    <SelectItem value="male">পুরুষ</SelectItem>
+                    <SelectItem value="female">মহিলা</SelectItem>
+                    <SelectItem value="other">অন্যান্য</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
             </Field>
 
             <Field>

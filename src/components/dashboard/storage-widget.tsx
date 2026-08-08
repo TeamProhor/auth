@@ -47,8 +47,8 @@ export function StorageWidget() {
         href="/dashboard/billing"
         className="w-full mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-primary hover:underline"
       >
-        <Icon icon="solar:cloud-plus-bold-duotone" width="20" height="20" />{" "}
-        স্টোরেজ আপগ্রেড করুন
+        <Icon icon="solar:cloud-plus-bold" width="20" height="20" /> স্টোরেজ
+        আপগ্রেড করুন
       </Link>
     </Card>
   );

@@ -2,6 +2,17 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function BillingPage() {
   return (
@@ -19,12 +30,8 @@ export default function BillingPage() {
         <Card className="border-primary/30 bg-primary/5 p-6 flex flex-col justify-between space-y-6 relative overflow-hidden">
           <div>
             <h3 className="text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-2">
-              <Icon
-                icon="solar:crown-star-bold-duotone"
-                width="16"
-                height="16"
-              />{" "}
-              বর্তমান প্ল্যান
+              <Icon icon="solar:crown-star-bold" width="16" height="16" /> বর্তমান
+              প্ল্যান
             </h3>
             <div className="mt-3 flex items-end gap-2">
               <span className="text-4xl font-bold text-foreground">প্রো</span>
@@ -34,12 +41,87 @@ export default function BillingPage() {
               ২ টিবি স্টোরেজ এবং ফ্যামিলি শেয়ারিং অন্তর্ভুক্ত।
             </p>
           </div>
-          <Button
-            variant="outline"
-            className="w-full rounded-xl border-primary text-primary hover:bg-primary hover:text-primary-foreground py-6 text-sm font-semibold cursor-pointer"
-          >
-            প্ল্যান ম্যানেজ করুন
-          </Button>
+          <Dialog>
+            <DialogTrigger
+              render={
+                <Button
+                  variant="outline"
+                  className="w-full rounded-xl border-primary text-primary hover:bg-primary hover:text-primary-foreground py-6 text-sm font-semibold cursor-pointer"
+                >
+                  প্ল্যান ম্যানেজ করুন
+                </Button>
+              }
+            />
+            <DialogContent className="sm:max-w-md">
+              <DialogHeader>
+                <DialogTitle>সাবস্ক্রিপশন প্ল্যান পরিবর্তন</DialogTitle>
+                <DialogDescription>
+                  আপনার প্রয়োজন অনুযায়ী প্রহর অথের উপযুক্ত প্ল্যান নির্বাচন করুন।
+                </DialogDescription>
+              </DialogHeader>
+              <RadioGroup defaultValue="pro" className="grid gap-3 py-2">
+                <label
+                  htmlFor="plan-free"
+                  className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-background hover:bg-accent/50 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="free" id="plan-free" />
+                    <div>
+                      <p className="font-bold text-foreground text-sm">
+                        ফ্রি প্ল্যান
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ১৫ জিবি স্টোরেজ
+                      </p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-sm">৳০ / মাস</span>
+                </label>
+                <label
+                  htmlFor="plan-pro"
+                  className="flex items-center justify-between p-3.5 rounded-xl border border-primary bg-primary/5 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="pro" id="plan-pro" />
+                    <div>
+                      <p className="font-bold text-primary text-sm">
+                        প্রো (Pro)
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        ২ টিবি স্টোরেজ + ফ্যামিলি
+                      </p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-sm text-primary">
+                    ৳২৯৯ / মাস
+                  </span>
+                </label>
+                <label
+                  htmlFor="plan-business"
+                  className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-background hover:bg-accent/50 cursor-pointer"
+                >
+                  <div className="flex items-center gap-3">
+                    <RadioGroupItem value="business" id="plan-business" />
+                    <div>
+                      <p className="font-bold text-foreground text-sm">
+                        বিজনেস (Business)
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        আনলিমিটেড + কাস্টম ডোমেইন
+                      </p>
+                    </div>
+                  </div>
+                  <span className="font-bold text-sm">৳৯৯৯ / মাস</span>
+                </label>
+              </RadioGroup>
+              <DialogFooter>
+                <DialogClose render={<Button variant="outline" />}>
+                  বাতিল
+                </DialogClose>
+                <Button>প্ল্যান আপডেট করুন</Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
         </Card>
 
         <Card className="p-6 space-y-6">

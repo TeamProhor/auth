@@ -21,7 +21,7 @@ export default function AnalyticsPage() {
               মাসিক সক্রিয় ব্যবহারকারী
             </h3>
             <Icon
-              icon="solar:users-group-rounded-bold-duotone"
+              icon="solar:users-group-rounded-bold"
               width="20"
               height="20"
               className="text-muted-foreground"
@@ -33,7 +33,7 @@ export default function AnalyticsPage() {
             className="mt-2 text-emerald-500 bg-emerald-500/10"
           >
             <Icon
-              icon="solar:trend-up-bold-duotone"
+              icon="solar:trend-up-bold"
               width="14"
               height="14"
               className="mr-1"
@@ -48,7 +48,7 @@ export default function AnalyticsPage() {
               সফল লগইন
             </h3>
             <Icon
-              icon="solar:check-circle-bold-duotone"
+              icon="solar:check-circle-bold"
               width="20"
               height="20"
               className="text-emerald-500"
@@ -64,7 +64,7 @@ export default function AnalyticsPage() {
               ব্যর্থ প্রচেষ্টা
             </h3>
             <Icon
-              icon="solar:danger-triangle-bold-duotone"
+              icon="solar:danger-triangle-bold"
               width="20"
               height="20"
               className="text-destructive"

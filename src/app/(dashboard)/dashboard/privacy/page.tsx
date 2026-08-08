@@ -2,6 +2,14 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function PrivacyPage() {
   return (
@@ -19,7 +27,7 @@ export default function PrivacyPage() {
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 border-b border-border pb-6">
           <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
             <Icon
-              icon="solar:cloud-download-bold-duotone"
+              icon="solar:cloud-download-bold"
               width="24"
               height="24"
               className="text-primary"
@@ -43,31 +51,41 @@ export default function PrivacyPage() {
           <h3 className="text-lg font-bold text-foreground mb-4">
             থার্ড-পার্টি অ্যাপ অ্যাক্সেস
           </h3>
-          <div className="space-y-3">
-            <div className="flex items-center justify-between p-4 rounded-xl border border-border bg-background">
-              <div className="flex items-center gap-4">
-                <Avatar className="size-10">
-                  <AvatarFallback className="bg-accent font-bold text-foreground">
-                    V
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="text-sm font-semibold text-foreground">
-                    Vawzine App
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    অ্যাক্সেস: বেসিক প্রোফাইল, ইমেইল
-                  </p>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                className="text-destructive hover:bg-destructive/10 cursor-pointer"
-              >
-                অ্যাক্সেস বাতিল
-              </Button>
-            </div>
-          </div>
+          <Card className="overflow-hidden p-0">
+            <Table>
+              <TableHeader className="bg-muted/50">
+                <TableRow>
+                  <TableHead>অ্যাপ্লিকেশনের নাম</TableHead>
+                  <TableHead>অনুমতি ও অ্যাক্সেস</TableHead>
+                  <TableHead className="text-right">অ্যাকশন</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                <TableRow>
+                  <TableCell className="font-bold flex items-center gap-3">
+                    <Avatar className="size-8">
+                      <AvatarFallback className="bg-accent font-bold text-foreground text-xs">
+                        V
+                      </AvatarFallback>
+                    </Avatar>
+                    <span>Vawzine App</span>
+                  </TableCell>
+                  <TableCell className="text-muted-foreground text-xs">
+                    বেসিক প্রোফাইল, ইমেইল
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                    >
+                      অ্যাক্সেস বাতিল
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              </TableBody>
+            </Table>
+          </Card>
         </div>
       </Card>
 

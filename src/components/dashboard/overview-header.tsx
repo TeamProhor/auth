@@ -13,7 +13,7 @@ export function OverviewHeader() {
       </div>
       <div className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
         <Icon
-          icon="solar:star-fall-minimalistic-2-bold-duotone"
+          icon="solar:star-fall-minimalistic-2-bold"
           width="18"
           height="18"
         />{" "}

@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 export function ProfileCompletion() {
   return (
     <div className="rounded-[20px] border border-border bg-card p-1 relative overflow-hidden flex flex-col md:flex-row items-center gap-4 shadow-sm">
-      <div className="absolute top-0 left-0 bottom-0 w-1 bg-chart-3"></div>
       <div className="p-5 flex-1 flex flex-col md:flex-row items-start md:items-center gap-6 w-full">
         <div className="relative shrink-0 flex items-center justify-center">
           <svg className="w-16 h-16 transform -rotate-90" viewBox="0 0 100 100">

@@ -10,14 +10,14 @@ export function ConsentCard() {
       <div className="flex items-center gap-4">
         <div className="bg-background border border-border rounded-2xl p-3 shadow-sm">
           <Icon
-            icon="solar:shield-bold-duotone"
+            icon="solar:shield-bold"
             width="32"
             height="32"
             className="text-foreground"
           />
         </div>
         <Icon
-          icon="solar:arrow-right-line-duotone"
+          icon="solar:arrow-right-bold"
           width="24"
           height="24"
           className="text-muted-foreground"
@@ -39,7 +39,7 @@ export function ConsentCard() {
       <div className="w-full rounded-2xl border border-border bg-background overflow-hidden">
         <div className="flex items-start gap-4 p-4 border-b border-border">
           <Icon
-            icon="solar:user-id-bold-duotone"
+            icon="solar:user-id-bold"
             width="24"
             height="24"
             className="text-foreground mt-0.5"
@@ -55,7 +55,7 @@ export function ConsentCard() {
         </div>
         <div className="flex items-start gap-4 p-4 border-b border-border">
           <Icon
-            icon="solar:letter-bold-duotone"
+            icon="solar:letter-bold"
             width="24"
             height="24"
             className="text-foreground mt-0.5"
@@ -69,7 +69,7 @@ export function ConsentCard() {
         </div>
         <div className="flex items-start gap-4 p-4 bg-muted/50">
           <Icon
-            icon="solar:danger-circle-bold-duotone"
+            icon="solar:danger-circle-bold"
             width="24"
             height="24"
             className="text-destructive mt-0.5"

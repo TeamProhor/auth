@@ -2,6 +2,14 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 export default function SecurityPage() {
   return (
@@ -18,11 +26,7 @@ export default function SecurityPage() {
       <Card className="border-warning/30 bg-warning/5 p-6 flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden">
         <div className="relative z-10 flex items-center gap-4">
           <div className="size-14 rounded-full bg-warning/20 text-warning flex items-center justify-center shrink-0 border border-warning/30">
-            <Icon
-              icon="solar:shield-warning-bold-duotone"
-              width="32"
-              height="32"
-            />
+            <Icon icon="solar:shield-warning-bold" width="32" height="32" />
           </div>
           <div>
             <h3 className="text-lg font-bold text-foreground">
@@ -78,28 +82,64 @@ export default function SecurityPage() {
             সব থেকে লগআউট
           </Button>
         </div>
-        <div className="space-y-3">
-          <Card className="flex flex-row items-center justify-between p-4 border-primary/40 bg-primary/5 shadow-sm">
-            <div className="flex items-center gap-4">
-              <div className="size-12 rounded-xl bg-background border border-border flex items-center justify-center shrink-0">
-                <Icon
-                  icon="solar:laptop-bold-duotone"
-                  width="28"
-                  height="28"
-                  className="text-primary"
-                />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-foreground flex items-center gap-2">
-                  Mac OS - Chrome <Badge variant="secondary">বর্তমান</Badge>
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  ঢাকা, বাংলাদেশ • 192.168.1.1
-                </p>
-              </div>
-            </div>
-          </Card>
-        </div>
+        <Card className="overflow-hidden p-0">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead>ডিভাইস ও ওএস</TableHead>
+                <TableHead>আইপি ঠিকানা</TableHead>
+                <TableHead>অবস্থান</TableHead>
+                <TableHead className="text-right">স্ট্যাটাস</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              <TableRow>
+                <TableCell className="font-bold flex items-center gap-3">
+                  <div className="size-9 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
+                    <Icon
+                      icon="solar:laptop-bold"
+                      width="20"
+                      height="20"
+                      className="text-primary"
+                    />
+                  </div>
+                  <span>Mac OS - Chrome</span>
+                </TableCell>
+                <TableCell className="text-muted-foreground font-mono text-xs">
+                  192.168.1.1
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  ঢাকা, বাংলাদেশ
+                </TableCell>
+                <TableCell className="text-right">
+                  <Badge variant="secondary">বর্তমান</Badge>
+                </TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell className="font-bold flex items-center gap-3">
+                  <div className="size-9 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
+                    <Icon
+                      icon="solar:smartphone-bold"
+                      width="20"
+                      height="20"
+                      className="text-muted-foreground"
+                    />
+                  </div>
+                  <span>iPhone 15 - Safari</span>
+                </TableCell>
+                <TableCell className="text-muted-foreground font-mono text-xs">
+                  103.220.5.12
+                </TableCell>
+                <TableCell className="text-muted-foreground">
+                  চট্টগ্রাম, বাংলাদেশ
+                </TableCell>
+                <TableCell className="text-right">
+                  <Badge variant="outline">সক্রিয়</Badge>
+                </TableCell>
+              </TableRow>
+            </TableBody>
+          </Table>
+        </Card>
       </div>
     </div>
   );

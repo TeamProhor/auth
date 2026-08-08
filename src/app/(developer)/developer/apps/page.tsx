@@ -9,10 +9,30 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import { Input } from "@/components/ui/input";
+import {
   InputGroup,
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function AppsPage() {
   return (
@@ -26,15 +46,69 @@ export default function AppsPage() {
             OAuth 2.1 অ্যাপ্লিকেশন নিবন্ধন এবং কনফিগার করুন।
           </p>
         </div>
-        <Button className="rounded-xl px-5 py-6 text-sm font-semibold cursor-pointer shrink-0">
-          <Icon
-            icon="solar:add-square-bold-duotone"
-            width="20"
-            height="20"
-            className="mr-2"
+        <Dialog>
+          <DialogTrigger
+            render={
+              <Button className="rounded-xl px-5 py-6 text-sm font-semibold cursor-pointer shrink-0">
+                <Icon
+                  icon="solar:add-square-bold"
+                  width="20"
+                  height="20"
+                  className="mr-2"
+                />
+                নতুন অ্যাপ
+              </Button>
+            }
           />
-          নতুন অ্যাপ
-        </Button>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>নতুন অ্যাপ্লিকেশন নিবন্ধন</DialogTitle>
+              <DialogDescription>
+                OAuth 2.1 ক্লায়েন্ট ক্রেডেনশিয়াল তৈরি করতে তথ্য প্রদান করুন।
+              </DialogDescription>
+            </DialogHeader>
+            <FieldGroup className="py-2">
+              <Field>
+                <FieldLabel htmlFor="app-name">অ্যাপের নাম</FieldLabel>
+                <Input id="app-name" placeholder="যেমন: My Custom App" />
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="app-type">অ্যাপ্লিকেশনের ধরন</FieldLabel>
+                <Select defaultValue="web">
+                  <SelectTrigger id="app-type" className="w-full">
+                    <SelectValue placeholder="ধরন নির্বাচন করুন" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="web">
+                        Web Application (PKCE)
+                      </SelectItem>
+                      <SelectItem value="native">
+                        Mobile / Native App
+                      </SelectItem>
+                      <SelectItem value="service">
+                        Machine to Machine (M2M)
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              </Field>
+              <Field>
+                <FieldLabel htmlFor="redirect-uri">রিডাইরেক্ট URI</FieldLabel>
+                <Input
+                  id="redirect-uri"
+                  placeholder="https://example.com/callback"
+                />
+              </Field>
+            </FieldGroup>
+            <DialogFooter>
+              <DialogClose render={<Button variant="outline" />}>
+                বাতিল
+              </DialogClose>
+              <Button>তৈরি করুন</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <div className="grid gap-6">
@@ -79,11 +153,7 @@ export default function AppsPage() {
                   />
                   <InputGroupAddon align="inline-end">
                     <Button variant="ghost" size="icon" className="size-8">
-                      <Icon
-                        icon="solar:copy-bold-duotone"
-                        width="18"
-                        height="18"
-                      />
+                      <Icon icon="solar:copy-bold" width="18" height="18" />
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
@@ -100,11 +170,7 @@ export default function AppsPage() {
                   />
                   <InputGroupAddon align="inline-end">
                     <Button variant="ghost" size="icon" className="size-8">
-                      <Icon
-                        icon="solar:eye-bold-duotone"
-                        width="18"
-                        height="18"
-                      />
+                      <Icon icon="solar:eye-bold" width="18" height="18" />
                     </Button>
                   </InputGroupAddon>
                 </InputGroup>
@@ -125,7 +191,7 @@ export default function AppsPage() {
                     className="size-6 text-muted-foreground hover:text-destructive"
                   >
                     <Icon
-                      icon="solar:trash-bin-trash-bold-duotone"
+                      icon="solar:trash-bin-trash-bold"
                       width="16"
                       height="16"
                     />
@@ -144,11 +210,7 @@ export default function AppsPage() {
           <CardFooter className="p-5 border-t border-border bg-muted/20 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <div className="size-10 rounded-full bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-                <Icon
-                  icon="solar:palette-bold-duotone"
-                  width="20"
-                  height="20"
-                />
+                <Icon icon="solar:palette-bold" width="20" height="20" />
               </div>
               <div>
                 <p className="text-sm font-bold text-foreground">

@@ -1,8 +1,18 @@
+"use client";
+
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useState } from "react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   InputGroup,
   InputGroupAddon,
@@ -12,12 +22,85 @@ import {
   Table,
   TableBody,
   TableCell,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
 
+import { UserActionModals } from "./user-action-modals";
+
+export interface UserItem {
+  id: string;
+  name: string;
+  email: string;
+  joined: string;
+  lastLogin: string;
+  status: "active" | "banned";
+  avatarText: string;
+  avatarColorClass: string;
+}
+
+const initialUsers: UserItem[] = [
+  {
+    id: "1",
+    name: "Hasan Mahmud",
+    email: "hasan@example.com",
+    joined: "১২ মে, ২০২৪",
+    lastLogin: "২ মিনিট আগে",
+    status: "active",
+    avatarText: "H",
+    avatarColorClass: "bg-blue-500/10 text-blue-500",
+  },
+  {
+    id: "2",
+    name: "Farjana Akter",
+    email: "farjana@example.com",
+    joined: "০১ জুন, ২০২৪",
+    lastLogin: "৩ দিন আগে",
+    status: "active",
+    avatarText: "F",
+    avatarColorClass: "bg-amber-500/10 text-amber-500",
+  },
+  {
+    id: "3",
+    name: "Spammer Account",
+    email: "spam@tempmail.com",
+    joined: "আজ",
+    lastLogin: "-",
+    status: "banned",
+    avatarText: "S",
+    avatarColorClass: "bg-muted text-muted-foreground",
+  },
+];
+
 export default function UsersPage() {
+  const [users, setUsers] = useState<UserItem[]>(initialUsers);
+  const [selectedUser, setSelectedUser] = useState<UserItem | null>(null);
+  const [activeDialog, setActiveDialog] = useState<
+    "profile" | "access" | "ban" | null
+  >(null);
+
+  const handleOpenDialog = (
+    user: UserItem,
+    dialogType: "profile" | "access" | "ban",
+  ) => {
+    setSelectedUser(user);
+    setActiveDialog(dialogType);
+  };
+
+  const handleBanToggle = () => {
+    if (!selectedUser) return;
+    setUsers((prev) =>
+      prev.map((u) =>
+        u.id === selectedUser.id
+          ? { ...u, status: u.status === "active" ? "banned" : "active" }
+          : u,
+      ),
+    );
+    setActiveDialog(null);
+  };
+
   return (
     <div className="max-w-5xl space-y-8">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -48,150 +131,143 @@ export default function UsersPage() {
         <Table>
           <TableHeader className="bg-muted/50">
             <TableRow>
-              <TableHead>ইউজার (User)</TableHead>
-              <TableHead>সাইন আপ (Joined)</TableHead>
-              <TableHead>শেষ লগইন (Last Login)</TableHead>
-              <TableHead>স্ট্যাটাস (Status)</TableHead>
-              <TableHead className="text-right">অ্যাকশন</TableHead>
+              <TableHead className="px-5 py-3.5 font-bold">
+                ইউজার (User)
+              </TableHead>
+              <TableHead className="px-5 py-3.5 font-bold">
+                সাইন আপ (Joined)
+              </TableHead>
+              <TableHead className="px-5 py-3.5 font-bold">
+                শেষ লগইন (Last Login)
+              </TableHead>
+              <TableHead className="px-5 py-3.5 font-bold">
+                স্ট্যাটাস (Status)
+              </TableHead>
+              <TableHead className="px-5 py-3.5 font-bold text-right">
+                অ্যাকশন
+              </TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            <TableRow>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="size-8">
-                    <AvatarFallback className="bg-blue-500/10 text-blue-500 font-bold text-xs">
-                      H
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-foreground">
-                      Hasan Mahmud
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      hasan@example.com
-                    </p>
+            {users.map((user) => (
+              <TableRow
+                key={user.id}
+                className={user.status === "banned" ? "opacity-60" : ""}
+              >
+                <TableCell className="px-5 py-4">
+                  <div className="flex items-center gap-3">
+                    <Avatar className="size-8">
+                      <AvatarFallback
+                        className={`${user.avatarColorClass} font-bold text-xs`}
+                      >
+                        {user.avatarText}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p
+                        className={`font-semibold text-foreground ${
+                          user.status === "banned" ? "line-through" : ""
+                        }`}
+                      >
+                        {user.name}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {user.email}
+                      </p>
+                    </div>
                   </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                ১২ মে, ২০২৪
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                ২ মিনিট আগে
-              </TableCell>
-              <TableCell>
-                <Badge
-                  variant="secondary"
-                  className="bg-emerald-500/10 text-emerald-500 font-bold"
-                >
-                  অ্যাক্টিভ
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="icon" className="size-8">
-                  <Icon
-                    icon="solar:menu-dots-bold-duotone"
-                    width="18"
-                    height="18"
-                  />
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="size-8">
-                    <AvatarFallback className="bg-amber-500/10 text-amber-500 font-bold text-xs">
-                      F
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-foreground">
-                      Farjana Akter
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      farjana@example.com
-                    </p>
-                  </div>
-                </div>
-              </TableCell>
-              <TableCell className="text-muted-foreground">
-                ০১ জুন, ২০২৪
-              </TableCell>
-              <TableCell className="text-muted-foreground">৩ দিন আগে</TableCell>
-              <TableCell>
-                <Badge
-                  variant="secondary"
-                  className="bg-emerald-500/10 text-emerald-500 font-bold"
-                >
-                  অ্যাক্টিভ
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="icon" className="size-8">
-                  <Icon
-                    icon="solar:menu-dots-bold-duotone"
-                    width="18"
-                    height="18"
-                  />
-                </Button>
-              </TableCell>
-            </TableRow>
-            <TableRow className="opacity-60">
-              <TableCell>
-                <div className="flex items-center gap-3">
-                  <Avatar className="size-8">
-                    <AvatarFallback className="bg-muted text-muted-foreground">
+                </TableCell>
+                <TableCell className="px-5 py-4 text-muted-foreground">
+                  {user.joined}
+                </TableCell>
+                <TableCell className="px-5 py-4 text-muted-foreground">
+                  {user.lastLogin}
+                </TableCell>
+                <TableCell className="px-5 py-4">
+                  {user.status === "active" ? (
+                    <Badge
+                      variant="secondary"
+                      className="bg-emerald-500/10 text-emerald-500 font-bold"
+                    >
+                      অ্যাক্টিভ
+                    </Badge>
+                  ) : (
+                    <Badge variant="destructive" className="font-bold">
+                      ব্যানড (Banned)
+                    </Badge>
+                  )}
+                </TableCell>
+                <TableCell className="px-5 py-4 text-right">
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="size-8"
+                        />
+                      }
+                    >
                       <Icon
-                        icon="solar:user-bold-duotone"
-                        width="14"
-                        height="14"
+                        icon="solar:menu-dots-bold"
+                        width="18"
+                        height="18"
                       />
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <p className="font-semibold text-foreground line-through">
-                      Spammer Account
-                    </p>
-                    <p className="text-[11px] text-muted-foreground">
-                      spam@tempmail.com
-                    </p>
-                  </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuGroup>
+                        <DropdownMenuItem
+                          onClick={() => handleOpenDialog(user, "profile")}
+                        >
+                          ভিউ প্রোফাইল
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => handleOpenDialog(user, "access")}
+                        >
+                          এডিট অ্যাক্সেস
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          variant="destructive"
+                          onClick={() => handleOpenDialog(user, "ban")}
+                        >
+                          {user.status === "active" ? "ব্যান করুন" : "অনব্যান করুন"}
+                        </DropdownMenuItem>
+                      </DropdownMenuGroup>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+          <TableFooter className="bg-muted/20 border-t border-border">
+            <TableRow>
+              <TableCell
+                colSpan={3}
+                className="px-5 py-4 text-sm text-muted-foreground font-normal"
+              >
+                মোট {users.length} জন ব্যবহারকারী
+              </TableCell>
+              <TableCell colSpan={2} className="px-5 py-4 text-right">
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" size="sm" disabled>
+                    আগের
+                  </Button>
+                  <Button variant="outline" size="sm">
+                    পরের
+                  </Button>
                 </div>
               </TableCell>
-              <TableCell className="text-muted-foreground">আজ</TableCell>
-              <TableCell className="text-muted-foreground">-</TableCell>
-              <TableCell>
-                <Badge variant="destructive" className="font-bold">
-                  ব্যানড (Banned)
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">
-                <Button variant="ghost" size="icon" className="size-8">
-                  <Icon
-                    icon="solar:menu-dots-bold-duotone"
-                    width="18"
-                    height="18"
-                  />
-                </Button>
-              </TableCell>
             </TableRow>
-          </TableBody>
+          </TableFooter>
         </Table>
-
-        <div className="p-4 border-t border-border flex items-center justify-between text-sm text-muted-foreground bg-muted/20">
-          <span>মোট ১,২০৪ জন ব্যবহারকারী</span>
-          <div className="flex gap-2">
-            <Button variant="outline" size="sm" disabled>
-              আগের
-            </Button>
-            <Button variant="outline" size="sm">
-              পরের
-            </Button>
-          </div>
-        </div>
       </Card>
+
+      <UserActionModals
+        selectedUser={selectedUser}
+        activeDialog={activeDialog}
+        setActiveDialog={setActiveDialog}
+        handleBanToggle={handleBanToggle}
+      />
     </div>
   );
 }

@@ -9,7 +9,7 @@ export function MagicLinkCard() {
     <div className="flex flex-col items-center gap-6">
       <div className="size-16 rounded-full bg-accent flex items-center justify-center border border-border shadow-inner">
         <Icon
-          icon="solar:letter-bold-duotone"
+          icon="solar:letter-bold"
           width="32"
           height="32"
           className="text-foreground"

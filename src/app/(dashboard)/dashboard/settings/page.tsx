@@ -2,6 +2,14 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
 export default function SettingsPage() {
@@ -28,33 +36,21 @@ export default function SettingsPage() {
                     variant="outline"
                     className="flex flex-col items-center gap-2 p-6 h-auto border-ring bg-accent text-foreground cursor-pointer"
                   >
-                    <Icon
-                      icon="solar:monitor-bold-duotone"
-                      width="24"
-                      height="24"
-                    />
+                    <Icon icon="solar:monitor-bold" width="24" height="24" />
                     <span className="text-xs font-semibold">সিস্টেম</span>
                   </Button>
                   <Button
                     variant="outline"
                     className="flex flex-col items-center gap-2 p-6 h-auto cursor-pointer"
                   >
-                    <Icon
-                      icon="solar:sun-bold-duotone"
-                      width="24"
-                      height="24"
-                    />
+                    <Icon icon="solar:sun-bold" width="24" height="24" />
                     <span className="text-xs font-semibold">লাইট</span>
                   </Button>
                   <Button
                     variant="outline"
                     className="flex flex-col items-center gap-2 p-6 h-auto cursor-pointer"
                   >
-                    <Icon
-                      icon="solar:moon-bold-duotone"
-                      width="24"
-                      height="24"
-                    />
+                    <Icon icon="solar:moon-bold" width="24" height="24" />
                     <span className="text-xs font-semibold">ডার্ক</span>
                   </Button>
                 </div>
@@ -62,14 +58,17 @@ export default function SettingsPage() {
 
               <Field>
                 <FieldLabel htmlFor="language">ভাষা (Language)</FieldLabel>
-                <select
-                  id="language"
-                  aria-label="ভাষা (Language)"
-                  className="w-full rounded-md bg-background border border-input px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-                >
-                  <option>বাংলা (Bangla)</option>
-                  <option>English (US)</option>
-                </select>
+                <Select defaultValue="bn">
+                  <SelectTrigger id="language" className="w-full">
+                    <SelectValue placeholder="ভাষা নির্বাচন করুন" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectGroup>
+                      <SelectItem value="bn">বাংলা (Bangla)</SelectItem>
+                      <SelectItem value="en">English (US)</SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </Field>
             </FieldGroup>
           </Card>

@@ -17,32 +17,28 @@ export function WorkspaceSwitcher({ isDeveloper }: { isDeveloper: boolean }) {
         render={
           <SidebarMenuButton
             size="lg"
-            className="w-full flex items-center justify-between px-3 py-6 bg-background border border-border rounded-xl cursor-pointer hover:border-ring transition-colors shadow-sm mb-2"
+            className="w-full flex items-center justify-between px-3 py-6 bg-background border border-border rounded-xl cursor-pointer hover:border-ring transition-colors shadow-sm mb-2 group-data-[collapsible=icon]:p-2 group-data-[collapsible=icon]:justify-center"
           />
         }
         className="outline-none border-none"
       >
         <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold">
+          <div className="w-6 h-6 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-xs font-bold shrink-0">
             {isDeveloper ? (
-              <Icon
-                icon="solar:code-square-bold-duotone"
-                width="14"
-                height="14"
-              />
+              <Icon icon="solar:code-square-bold" width="14" height="14" />
             ) : (
-              <Icon icon="solar:user-id-bold-duotone" width="14" height="14" />
+              <Icon icon="solar:user-id-bold" width="14" height="14" />
             )}
           </div>
-          <span className="text-sm font-semibold text-foreground">
+          <span className="text-sm font-semibold text-foreground group-data-[collapsible=icon]:hidden">
             {isDeveloper ? "ডেভেলপার পোর্টাল" : "ব্যক্তিগত অ্যাকাউন্ট"}
           </span>
         </div>
         <Icon
-          icon="solar:alt-arrow-down-bold-duotone"
+          icon="solar:alt-arrow-down-bold"
           width="16"
           height="16"
-          className="text-muted-foreground"
+          className="text-muted-foreground group-data-[collapsible=icon]:hidden shrink-0"
         />
       </DropdownMenuTrigger>
 
@@ -55,7 +51,7 @@ export function WorkspaceSwitcher({ isDeveloper }: { isDeveloper: boolean }) {
           className="p-3 cursor-pointer w-full flex items-center gap-3"
         >
           <div className="w-8 h-8 rounded-md bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold shadow-sm">
-            <Icon icon="solar:user-id-bold-duotone" width="18" height="18" />
+            <Icon icon="solar:user-id-bold" width="18" height="18" />
           </div>
           <div className="flex flex-col">
             <p className="text-sm font-semibold text-foreground">
@@ -72,11 +68,7 @@ export function WorkspaceSwitcher({ isDeveloper }: { isDeveloper: boolean }) {
           className="p-3 cursor-pointer w-full flex items-center gap-3"
         >
           <div className="w-8 h-8 rounded-md border border-border bg-background text-foreground flex items-center justify-center text-sm font-bold shadow-sm">
-            <Icon
-              icon="solar:code-square-bold-duotone"
-              width="18"
-              height="18"
-            />
+            <Icon icon="solar:code-square-bold" width="18" height="18" />
           </div>
           <div className="flex flex-col">
             <p className="text-sm font-semibold text-foreground">

@@ -13,32 +13,32 @@ const items = [
   {
     title: "সার্ভিস ও ওভারভিউ",
     url: "/dashboard",
-    icon: "solar:home-smile-bold-duotone",
+    icon: "solar:home-smile-bold",
   },
   {
     title: "প্রোফাইল ও তথ্য",
     url: "/dashboard/profile",
-    icon: "solar:user-circle-bold-duotone",
+    icon: "solar:user-circle-bold",
   },
   {
     title: "নিরাপত্তা ও সেশন",
     url: "/dashboard/security",
-    icon: "solar:shield-check-bold-duotone",
+    icon: "solar:shield-check-bold",
   },
   {
     title: "ডেটা ও গোপনীয়তা",
     url: "/dashboard/privacy",
-    icon: "solar:lock-keyhole-bold-duotone",
+    icon: "solar:lock-keyhole-bold",
   },
   {
     title: "পেমেন্ট ও ফ্যামিলি",
     url: "/dashboard/billing",
-    icon: "solar:users-group-two-rounded-bold-duotone",
+    icon: "solar:users-group-two-rounded-bold",
   },
   {
     title: "সেটিংস ও নোটিফিকেশন",
     url: "/dashboard/settings",
-    icon: "solar:bell-bold-duotone",
+    icon: "solar:bell-bold",
   },
 ];
 

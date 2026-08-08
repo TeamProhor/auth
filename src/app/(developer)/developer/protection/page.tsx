@@ -18,11 +18,7 @@ export default function ProtectionPage() {
         <div className="flex items-start justify-between gap-6 pb-6 border-b border-border">
           <div className="flex gap-4">
             <div className="size-12 rounded-xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center shrink-0">
-              <Icon
-                icon="solar:shield-warning-bold-duotone"
-                width="28"
-                height="28"
-              />
+              <Icon icon="solar:shield-warning-bold" width="28" height="28" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-foreground">
@@ -40,11 +36,7 @@ export default function ProtectionPage() {
         <div className="flex items-start justify-between gap-6 pb-6 border-b border-border">
           <div className="flex gap-4">
             <div className="size-12 rounded-xl bg-orange-500/10 text-orange-500 border border-orange-500/20 flex items-center justify-center shrink-0">
-              <Icon
-                icon="solar:hourglass-line-bold-duotone"
-                width="28"
-                height="28"
-              />
+              <Icon icon="solar:hourglass-line-bold" width="28" height="28" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-foreground">
@@ -62,7 +54,7 @@ export default function ProtectionPage() {
         <div className="flex items-start justify-between gap-6">
           <div className="flex gap-4">
             <div className="size-12 rounded-xl bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center shrink-0">
-              <Icon icon="solar:ghost-bold-duotone" width="28" height="28" />
+              <Icon icon="solar:ghost-bold" width="28" height="28" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-foreground">
