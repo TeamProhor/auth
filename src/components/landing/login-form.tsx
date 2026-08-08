@@ -39,6 +39,7 @@ type Mode = "email" | "password" | "register";
 
 export function LoginForm() {
   const [mode, setMode] = useState<Mode>("email");
+  const [isGitHubPending, setIsGitHubPending] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [totpError, setTotpError] = useState("");
   const [isPending2FA, startTransition2FA] = useTransition();
@@ -336,17 +337,19 @@ export function LoginForm() {
       </div>
 
       <div className="w-full flex flex-col gap-2">
-        <Button
+        <SubmitButton
           type="button"
           variant="outline"
+          isPending={isGitHubPending}
           onClick={() => {
+            setIsGitHubPending(true);
             window.location.href = "/api/auth/github";
           }}
           className="w-full rounded-xl bg-card hover:bg-accent hover:text-foreground px-4 py-6 text-sm font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm"
         >
           <Icon icon="mdi:github" width="22" height="22" />
           গিটহাব দিয়ে চালিয়ে যান
-        </Button>
+        </SubmitButton>
       </div>
 
       <p className="w-11/12 text-pretty text-center text-muted-foreground text-[11px] leading-relaxed">

@@ -12,8 +12,12 @@ const hindSiliguri = Hind_Siliguri({
 });
 
 export const metadata: Metadata = {
-  title: "প্রহর অ্যাকাউন্ট (Prohor Auth) — আইডেন্টিটি এবং প্ল্যাটফর্ম হাব",
-  description: "Prohor Auth Identity and Platform Hub",
+  title: {
+    default: "Prohor Auth — Identity & Access Management Platform",
+    template: "%s | Prohor Auth",
+  },
+  description:
+    "Identity, Access Management and Single Sign-On (SSO) Platform Hub for Prohor Ecosystem",
   icons: {
     icon: "/logo.svg",
     apple: "/logo.svg",

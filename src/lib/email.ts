@@ -40,25 +40,42 @@ export async function sendMagicLinkEmail({
               <meta charset="utf-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
               <title>প্রহর অ্যাকাউন্টে লগইন করুন</title>
-              <link rel="preconnect" href="https://fonts.googleapis.com">
-              <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-              <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet" type="text/css">
               <style>
-                @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap');
+                @font-face {
+                  font-family: 'Hind Siliguri';
+                  font-style: normal;
+                  font-weight: 400;
+                  font-display: swap;
+                  src: url('https://fonts.gstatic.com/s/hindsiliguri/v12/ijw645U5w4-e4ku9W7I8aB8q28a2.woff2') format('woff2');
+                }
+                @font-face {
+                  font-family: 'Hind Siliguri';
+                  font-style: normal;
+                  font-weight: 600;
+                  font-display: swap;
+                  src: url('https://fonts.gstatic.com/s/hindsiliguri/v12/ijw445U5w4-e4ku9W7I8aB8q25Wc.woff2') format('woff2');
+                }
+                @font-face {
+                  font-family: 'Hind Siliguri';
+                  font-style: normal;
+                  font-weight: 700;
+                  font-display: swap;
+                  src: url('https://fonts.gstatic.com/s/hindsiliguri/v12/ijw445U5w4-e4ku9W7I8aB8q23Gc.woff2') format('woff2');
+                }
                 * {
                   box-sizing: border-box;
                 }
-                body, table, td, p, a, h1, h2, span, div {
-                  font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'SolaimanLipi', sans-serif !important;
+                body, table, td, p, a, h1, h2, span, strong, div {
+                  font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', 'Siyam Rupali', 'Kalpurush', sans-serif !important;
                 }
               </style>
             </head>
-            <body style="background-color: #f4f4f5; margin: 0; padding: 48px 16px; -webkit-font-smoothing: antialiased; font-family: 'Hind Siliguri', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+            <body style="background-color: #f4f4f5; margin: 0; padding: 48px 16px; -webkit-font-smoothing: antialiased; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
               <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 520px; margin: 0 auto; background-color: #ffffff; border-radius: 24px; border: 1px solid #e4e4e7; box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.05); overflow: hidden;">
                 <tr>
-                  <td style="padding: 40px 32px; text-align: center; font-family: 'Hind Siliguri', sans-serif;">
+                  <td style="padding: 40px 32px; text-align: center; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                     
-                    <!-- Logo Image (Image tag for Gmail/Outlook compatibility) -->
+                    <!-- Logo Image -->
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto 16px auto;">
                       <tr>
                         <td align="center">
@@ -68,10 +85,10 @@ export async function sendMagicLinkEmail({
                     </table>
 
                     <!-- Brand Header -->
-                    <h1 style="font-size: 22px; font-weight: 700; color: #09090b; margin: 0 0 4px 0; font-family: 'Hind Siliguri', sans-serif;">
+                    <h1 style="font-size: 22px; font-weight: 700; color: #09090b; margin: 0 0 4px 0; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                       প্রহর অ্যাকাউন্ট (Prohor Auth)
                     </h1>
-                    <p style="font-size: 13px; font-weight: 500; color: #71717a; margin: 0 0 28px 0; font-family: 'Hind Siliguri', sans-serif;">
+                    <p style="font-size: 13px; font-weight: 500; color: #71717a; margin: 0 0 28px 0; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                       নিরাপদ ও নির্ভরযোগ্য অ্যাক্সেস প্ল্যাটফর্ম
                     </p>
 
@@ -79,10 +96,10 @@ export async function sendMagicLinkEmail({
                     <div style="height: 1px; background-color: #f4f4f5; width: 100%; margin-bottom: 28px;"></div>
 
                     <!-- Email Main Title & Subtitle -->
-                    <h2 style="font-size: 19px; font-weight: 700; color: #18181b; margin: 0 0 12px 0; font-family: 'Hind Siliguri', sans-serif;">
+                    <h2 style="font-size: 19px; font-weight: 700; color: #18181b; margin: 0 0 12px 0; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                       অ্যাকোউন্টে প্রবেশ নিশ্চিত করুন
                     </h2>
-                    <p style="font-size: 15px; color: #52525b; line-height: 1.65; margin: 0 0 32px 0; font-family: 'Hind Siliguri', sans-serif;">
+                    <p style="font-size: 15px; color: #52525b; line-height: 1.65; margin: 0 0 32px 0; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                       আপনার পাসওয়ার্ডহীন নিরাপদে লগইন করার জন্য ম্যাজিক লিংক প্রস্তুত। নিচের বাটনে ক্লিক করে সরাসরি অ্যাকাউন্টে প্রবেশ করুন।
                     </p>
 
@@ -90,7 +107,7 @@ export async function sendMagicLinkEmail({
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" align="center" style="margin: 0 auto 32px auto;">
                       <tr>
                         <td align="center" style="border-radius: 14px; background-color: #09090b;">
-                          <a href="${magicUrl}" target="_blank" style="display: inline-block; padding: 16px 36px; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 14px; font-family: 'Hind Siliguri', sans-serif;">
+                          <a href="${magicUrl}" target="_blank" style="display: inline-block; padding: 16px 36px; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 15px; border-radius: 14px; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                             লগইন করুন &nbsp;→
                           </a>
                         </td>
@@ -100,16 +117,16 @@ export async function sendMagicLinkEmail({
                     <!-- Security Notice Box -->
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #fafafa; border: 1px solid #f4f4f5; border-radius: 16px; margin-bottom: 28px;">
                       <tr>
-                        <td style="padding: 14px 18px; text-align: center; font-family: 'Hind Siliguri', sans-serif;">
-                          <p style="font-size: 13px; font-weight: 500; color: #71717a; margin: 0; line-height: 1.5; font-family: 'Hind Siliguri', sans-serif;">
-                            ⏱️ নিরাপত্তার স্বার্থে এই লিংকটি <strong>১৫ মিনিট</strong> পর্যন্ত কার্যকর থাকবে।
+                        <td style="padding: 14px 18px; text-align: center; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
+                          <p style="font-size: 13px; font-weight: 500; color: #71717a; margin: 0; line-height: 1.5; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
+                            ⏱️ নিরাপত্তার স্বার্থে এই লিংকটি <strong style="font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">১৫ মিনিট</strong> পর্যন্ত কার্যকর থাকবে।
                           </p>
                         </td>
                       </tr>
                     </table>
 
                     <!-- Fallback URL -->
-                    <p style="font-size: 12px; color: #a1a1aa; line-height: 1.5; margin: 0 0 20px 0; font-family: 'Hind Siliguri', sans-serif;">
+                    <p style="font-size: 12px; color: #a1a1aa; line-height: 1.5; margin: 0 0 20px 0; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                       বাটন কাজ না করলে নিচের লিংকটি কপি করে ব্রাউজারে পেস্ট করুন:<br/>
                       <a href="${magicUrl}" style="color: #09090b; word-break: break-all; font-size: 11px; text-decoration: underline; font-family: sans-serif;">${magicUrl}</a>
                     </p>
