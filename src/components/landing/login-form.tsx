@@ -337,15 +337,15 @@ export function LoginForm() {
 
       <div className="w-full flex flex-col gap-2">
         <Button
+          type="button"
           variant="outline"
-          className="w-full rounded-xl bg-card hover:bg-accent px-4 py-6 text-sm font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm"
-          disabled
+          onClick={() => {
+            window.location.href = "/api/auth/github";
+          }}
+          className="w-full rounded-xl bg-card hover:bg-accent hover:text-foreground px-4 py-6 text-sm font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm"
         >
           <Icon icon="mdi:github" width="22" height="22" />
           গিটহাব দিয়ে চালিয়ে যান
-          <span className="ml-auto text-[10px] text-muted-foreground">
-            (শীঘ্রই)
-          </span>
         </Button>
       </div>
 

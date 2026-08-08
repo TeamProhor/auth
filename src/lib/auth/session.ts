@@ -35,12 +35,16 @@ export async function createSession(
     expiresAt,
   });
 
+  const isHttps =
+    process.env.NEXT_PUBLIC_APP_URL?.startsWith("https://") ?? false;
+
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: process.env.NODE_ENV === "production" && isHttps,
     sameSite: "lax",
     expires: expiresAt,
+    maxAge: Math.floor(SESSION_DURATION_MS / 1000),
     path: "/",
   });
 }
