@@ -129,31 +129,29 @@ export default async function AnalyticsPage() {
         ) : (
           <>
             <div className="h-[200px] flex items-end justify-between gap-2 border-b border-border pb-2">
-              {chartData.map((day, i) => {
+              {chartData.map((day) => {
                 const pct = (day.count / maxCount) * 100;
                 const opacity = 20 + Math.round((pct / 100) * 80);
+
                 return (
                   <div
-                    key={i}
+                    key={day.label}
                     className="w-full rounded-t-md bg-primary transition-all hover:opacity-100 cursor-pointer group relative"
                     style={{
                       height: `${Math.max(pct, 4)}%`,
                       opacity: opacity / 100,
                     }}
-                    title={`${day.count} requests`}
                   >
-                    {day.count > 0 && (
-                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                        {toBn(day.count)}
-                      </div>
-                    )}
+                    <div className="absolute -top-9 left-1/2 -translate-x-1/2 bg-popover text-popover-foreground text-[10px] px-2 py-1 rounded shadow opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10 border border-border">
+                      {day.label}: {day.count} টি লগ
+                    </div>
                   </div>
                 );
               })}
             </div>
             <div className="flex justify-between text-xs text-muted-foreground mt-2 font-medium">
-              {chartData.map((day, i) => (
-                <span key={i}>{day.label}</span>
+              {chartData.map((day) => (
+                <span key={day.label}>{day.label}</span>
               ))}
             </div>
           </>

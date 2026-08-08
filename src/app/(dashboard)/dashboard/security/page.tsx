@@ -1,10 +1,11 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { redirect } from "next/navigation";
 import { revokeAllSessionsAction, revokeSessionAction } from "@/actions/user";
+import { MaskedIpAddress } from "@/components/dashboard/masked-ip";
+import { TwoFactorSection } from "@/components/security/two-factor-section";
+import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { SubmitButton } from "@/components/submit-button";
-import { MaskedIpAddress } from "@/components/dashboard/masked-ip";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -32,7 +33,7 @@ function getDeviceIcon(userAgent: string | null): string {
   return "solar:laptop-bold";
 }
 
-function formatIp(ip: string | null): string {
+function _formatIp(ip: string | null): string {
   if (!ip) return "অজানা";
   const cleaned = ip.replace(/^::ffff:/, "");
   if (cleaned === "::1") return "127.0.0.1";
@@ -82,22 +83,7 @@ export default async function SecurityPage() {
             পাসওয়ার্ড আপডেট করুন
           </Button>
         </Card>
-        <Card className="p-6 flex flex-col justify-between space-y-4">
-          <div>
-            <CardTitle className="text-lg font-bold">
-              টু-ফ্যাক্টর অথেন্টিকেশন (2FA)
-            </CardTitle>
-            <CardDescription className="text-sm mt-1">
-              বর্তমানে নিষ্ক্রিয়। অতিরিক্ত নিরাপত্তা স্তর যোগ করুন।
-            </CardDescription>
-          </div>
-          <Button
-            className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
-            disabled
-          >
-            শীঘ্রই আসছে
-          </Button>
-        </Card>
+        <TwoFactorSection twoFactorEnabled={user.twoFactorEnabled} />
       </div>
 
       <div className="space-y-4 pt-6 border-t border-border">

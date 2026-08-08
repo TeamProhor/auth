@@ -9,6 +9,7 @@ import {
   removeRedirectUriAction,
   rotateClientSecretAction,
 } from "@/actions/developer";
+import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -23,7 +24,6 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
 import {
   InputGroup,
@@ -50,7 +50,7 @@ export function AppsPageClient({ apps }: AppsPageClientProps) {
     secret: string;
   } | null>(null);
   const [newUriInputs, setNewUriInputs] = useState<Record<string, string>>({});
-  const [createState, createFormAction, createPending] = useActionState(
+  const [createState, createFormAction, _createPending] = useActionState(
     async (_prev: unknown, formData: FormData) => {
       const result = await createAppAction(null, formData);
       if (result.success && result.data) {
@@ -178,9 +178,7 @@ export function AppsPageClient({ apps }: AppsPageClientProps) {
                 >
                   বাতিল
                 </DialogClose>
-                <SubmitButton pendingText="তৈরি হচ্ছে...">
-                  তৈরি করুন
-                </SubmitButton>
+                <SubmitButton pendingText="তৈরি হচ্ছে...">তৈরি করুন</SubmitButton>
               </DialogFooter>
             </form>
           </DialogContent>

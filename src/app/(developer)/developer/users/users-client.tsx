@@ -4,9 +4,8 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { useMemo, useState, useTransition } from "react";
 import { banUserAction, unbanUserAction } from "@/actions/admin";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Field, FieldLabel } from "@/components/ui/field";
 import { SubmitButton } from "@/components/submit-button";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -203,12 +202,6 @@ export function UsersPageClient({
             </TableHeader>
             <TableBody>
               {filtered.map(({ user, consent }) => {
-                const initials = user.name
-                  .split(" ")
-                  .map((w) => w[0])
-                  .join("")
-                  .toUpperCase()
-                  .slice(0, 2);
                 const appName =
                   apps.find((a) => a.clientId === consent.clientId)?.name ??
                   consent.clientId;
@@ -221,17 +214,12 @@ export function UsersPageClient({
                     <TableCell className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <Avatar className="size-8">
-                          {user.avatarUrl ? (
-                            <img
-                              src={user.avatarUrl}
-                              alt={user.name}
-                              className="object-cover"
-                            />
-                          ) : (
-                            <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
-                              {initials}
-                            </AvatarFallback>
+                          {user.avatarUrl && (
+                            <AvatarImage src={user.avatarUrl} alt={user.name} />
                           )}
+                          <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs">
+                            {user.name.charAt(0).toUpperCase()}
+                          </AvatarFallback>
                         </Avatar>
                         <div>
                           <p

@@ -79,7 +79,8 @@ export const PROHOR_SERVICES = [
     title: "Prohor Mail",
     desc: "ইমেইল ও বার্তা",
     icon: "solar:inbox-bold",
-    color: "text-rose-500 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-500/20",
+    color:
+      "text-rose-500 bg-rose-500/10 dark:text-rose-400 dark:bg-rose-500/20",
     href: "#",
   },
   {
@@ -93,21 +94,24 @@ export const PROHOR_SERVICES = [
     title: "Prohor Notes",
     desc: "নোটস ও ডকুমেন্ট",
     icon: "solar:notes-bold",
-    color: "text-amber-500 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-500/20",
+    color:
+      "text-amber-500 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-500/20",
     href: "#",
   },
   {
     title: "Calendar",
     desc: "শিডিউল ও মিটিং",
     icon: "solar:calendar-date-bold",
-    color: "text-emerald-500 bg-emerald-500/10 dark:text-emerald-400 dark:bg-emerald-500/20",
+    color:
+      "text-emerald-500 bg-emerald-500/10 dark:text-emerald-400 dark:bg-emerald-500/20",
     href: "#",
   },
   {
     title: "Prohor Meet",
     desc: "ভিডিও কনফারেন্স",
     icon: "solar:videocamera-record-bold",
-    color: "text-violet-500 bg-violet-500/10 dark:text-violet-400 dark:bg-violet-500/20",
+    color:
+      "text-violet-500 bg-violet-500/10 dark:text-violet-400 dark:bg-violet-500/20",
     href: "#",
   },
 ];

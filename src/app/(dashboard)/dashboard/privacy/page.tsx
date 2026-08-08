@@ -92,7 +92,7 @@ export default async function PrivacyPage() {
                         <span>{client.name}</span>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">
-                        {consent.scopes ? consent.scopes.join(", ") : "বেসিক প্রোফাইল"}
+                        {consent.grantedScopes ?? "বেসিক প্রোফাইল"}
                       </TableCell>
                       <TableCell className="text-right">
                         <form

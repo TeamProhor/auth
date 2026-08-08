@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import { type NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
 import { verifyMagicLinkAction } from "@/actions/auth";
 
 export async function GET(request: NextRequest) {

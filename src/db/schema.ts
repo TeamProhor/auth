@@ -2,6 +2,7 @@ import { relations } from "drizzle-orm";
 import {
   boolean,
   index,
+  integer,
   pgEnum,
   pgTable,
   text,
@@ -42,6 +43,8 @@ export const users = pgTable(
     dob: text("dob"), // ISO date string
     gender: text("gender"),
     bio: text("bio"),
+    totpSecret: text("totp_secret"),
+    twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
     isBanned: boolean("is_banned").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()
@@ -288,6 +291,63 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   user: one(users, { fields: [auditLogs.userId], references: [users.id] }),
 }));
 
+// ─── Subscriptions ────────────────────────────────────────────────────────────
+
+export const subscriptions = pgTable(
+  "subscriptions",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .unique()
+      .references(() => users.id, { onDelete: "cascade" }),
+    planId: text("plan_id").notNull().default("prohor-free"), // prohor-free, prohor-pro, prohor-plus, prohor-elite
+    status: text("status").notNull().default("active"), // active, canceled, past_due
+    paymentMethod: text("payment_method").default("N/A"), // bKash, Nagad, Mastercard ••• 4242
+    currentPeriodStart: timestamp("current_period_start", {
+      withTimezone: true,
+    })
+      .notNull()
+      .defaultNow(),
+    currentPeriodEnd: timestamp("current_period_end", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [index("subscriptions_user_idx").on(t.userId)],
+);
+
+// ─── Invoices (Payment Receipts) ──────────────────────────────────────────────
+
+export const invoices = pgTable(
+  "invoices",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    userId: uuid("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    amount: integer("amount").notNull(), // amount in BDT (e.g. 299, 599, 999)
+    planName: text("plan_name").notNull(), // Prohor Pro, Prohor Plus, Prohor Elite
+    paymentMethod: text("payment_method").notNull(), // bKash, Nagad, Card
+    status: text("status").notNull().default("paid"), // paid, failed
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+  },
+  (t) => [index("invoices_user_idx").on(t.userId)],
+);
+
+export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
+  user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
+}));
+
+export const invoicesRelations = relations(invoices, ({ one }) => ({
+  user: one(users, { fields: [invoices.userId], references: [users.id] }),
+}));
+
 // ─── Type Exports ─────────────────────────────────────────────────────────────
 
 export type User = typeof users.$inferSelect;
@@ -300,3 +360,5 @@ export type AuthorizationCode = typeof authorizationCodes.$inferSelect;
 export type AccessToken = typeof accessTokens.$inferSelect;
 export type UserConsent = typeof userConsents.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
+export type Subscription = typeof subscriptions.$inferSelect;
+export type Invoice = typeof invoices.$inferSelect;

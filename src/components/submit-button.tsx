@@ -1,9 +1,9 @@
 "use client";
 
+import type { ComponentProps } from "react";
 import { useFormStatus } from "react-dom";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import type { ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -21,16 +21,22 @@ export function SubmitButton({
   ...props
 }: SubmitButtonProps) {
   const { pending: formPending } = useFormStatus();
-  const isPending = manualIsPending !== undefined ? manualIsPending : formPending;
+  const isPending =
+    manualIsPending !== undefined ? manualIsPending : formPending;
 
   return (
-    <Button 
-      type="submit" 
-      disabled={isPending || disabled} 
+    <Button
+      type="submit"
+      disabled={isPending || disabled}
       className={cn("relative", className)}
       {...props}
     >
-      <span className={cn("flex items-center justify-center transition-opacity", isPending ? "opacity-0" : "opacity-100")}>
+      <span
+        className={cn(
+          "flex items-center justify-center transition-opacity",
+          isPending ? "opacity-0" : "opacity-100",
+        )}
+      >
         {children}
       </span>
       {isPending && (

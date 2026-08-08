@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import { Icon } from "@iconify/react";
+import { useState } from "react";
 
 export function MaskedIpAddress({ ip }: { ip: string | null }) {
   const [show, setShow] = useState(false);

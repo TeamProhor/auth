@@ -16,7 +16,12 @@ import {
 } from "@/lib/validations";
 
 type ActionResult =
-  | { success: true; message?: string }
+  | {
+      success: true;
+      message?: string;
+      requires2FA?: boolean;
+      data?: { userId: string };
+    }
   | { success: false; error: string; fieldErrors?: Record<string, string[]> };
 
 async function getRequestMeta() {
@@ -95,6 +100,14 @@ export async function loginAction(
       details: "Failed: wrong password",
     });
     return { success: false, error: "ইমেইল বা পাসওয়ার্ড ভুল।" };
+  }
+
+  if (user.twoFactorEnabled) {
+    return {
+      success: true,
+      requires2FA: true,
+      data: { userId: user.id },
+    };
   }
 
   await createSession(user.id, meta);

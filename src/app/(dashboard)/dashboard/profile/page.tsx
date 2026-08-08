@@ -1,7 +1,6 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { redirect } from "next/navigation";
 import { updateProfileAction } from "@/actions/user";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { AvatarUploader } from "@/components/dashboard/avatar-uploader";
 import { SubmitButton } from "@/components/submit-button";
 import {
   Card,
@@ -39,36 +38,21 @@ export default async function ProfilePage() {
         </p>
       </div>
 
-      <form key={user.updatedAt?.toString()} action={updateProfileAction.bind(null, null)}>
+      <form
+        key={user.updatedAt?.toString()}
+        action={updateProfileAction.bind(null, null)}
+      >
         <Card>
           <CardHeader className="flex flex-row items-center gap-6 border-b border-border pb-6">
-            <div className="relative group cursor-pointer shrink-0">
-              <Avatar className="size-24 border border-border">
-                {user.avatarUrl ? (
-                  <img
-                    src={user.avatarUrl}
-                    alt={user.name}
-                    className="object-cover"
-                  />
-                ) : (
-                  <AvatarFallback className="bg-muted text-muted-foreground">
-                    <Icon icon="solar:user-bold" width="48" height="48" />
-                  </AvatarFallback>
-                )}
-              </Avatar>
-              <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <Icon
-                  icon="solar:camera-bold"
-                  width="28"
-                  height="28"
-                  className="text-white"
-                />
-              </div>
-            </div>
+            <AvatarUploader
+              currentAvatarUrl={user.avatarUrl}
+              userName={user.name}
+            />
             <div className="space-y-1">
               <CardTitle className="text-lg font-bold">প্রোফাইল ছবি</CardTitle>
               <CardDescription className="text-xs">
-                আপনার ছবি অন্যান্য প্রহর পরিষেবাতে দৃশ্যমান হবে। (সর্বোচ্চ ২ মেগাবাইট)
+                ক্লিক করে ছবি আপলোড করুন। Sharp দিয়ে স্বয়ংক্রিয়ভাবে WebP ফরম্যাটে
+                কম্প্রেস হবে।
               </CardDescription>
             </div>
           </CardHeader>
@@ -149,9 +133,7 @@ export default async function ProfilePage() {
           </CardContent>
 
           <CardFooter className="flex justify-end border-t border-border pt-4">
-            <SubmitButton
-              className="rounded-xl px-6 py-6 text-sm font-semibold cursor-pointer"
-            >
+            <SubmitButton className="rounded-xl px-6 py-6 text-sm font-semibold cursor-pointer">
               সেভ করুন
             </SubmitButton>
           </CardFooter>

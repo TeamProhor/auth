@@ -3,8 +3,8 @@
 import { Icon } from "@iconify/react";
 import { useTransition } from "react";
 import { approveConsentAction, denyConsentAction } from "@/actions/oauth";
-import { Button } from "@/components/ui/button";
 import { SubmitButton } from "@/components/submit-button";
+import { Button } from "@/components/ui/button";
 
 interface ConsentCardProps {
   client: {

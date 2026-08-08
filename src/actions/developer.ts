@@ -185,9 +185,7 @@ export async function getMyApps() {
 
 // ─── Revoke App Access (User side) ───────────────────────────────────────────
 
-export async function revokeAppAccessAction(
-  clientId: string,
-): Promise<ActionResult> {
+export async function revokeAppAccessAction(clientId: string): Promise<void> {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
@@ -206,5 +204,4 @@ export async function revokeAppAccessAction(
     details: clientId,
   });
   revalidatePath("/dashboard");
-  return { success: true };
 }

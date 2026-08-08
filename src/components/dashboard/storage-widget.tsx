@@ -24,7 +24,10 @@ export function StorageWidget() {
       </div>
       <div className="space-y-3 mt-6 flex-1">
         {STORAGE_BREAKDOWN.map((item) => (
-          <div key={item.title} className="flex items-center justify-between text-sm">
+          <div
+            key={item.title}
+            className="flex items-center justify-between text-sm"
+          >
             <div className="flex items-center gap-2">
               <div className={`size-3 rounded-sm ${item.color}`} />
               <span className="text-foreground font-medium">{item.title}</span>

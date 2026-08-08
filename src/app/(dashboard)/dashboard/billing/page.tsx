@@ -1,153 +1,233 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { getUserInvoices, getUserSubscription } from "@/actions/billing";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { getCurrentUser } from "@/lib/auth/session";
+import { PLANS } from "@/lib/constants/billing";
 
-export default function BillingPage() {
+const bnDateFormatter = new Intl.DateTimeFormat("bn", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+interface BillingPageProps {
+  searchParams: Promise<{ subscribed?: string }>;
+}
+
+export default async function BillingPage({ searchParams }: BillingPageProps) {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const { subscribed } = await searchParams;
+  const [subscription, userInvoices] = await Promise.all([
+    getUserSubscription(user.id),
+    getUserInvoices(user.id),
+  ]);
+
+  const currentPlanId = subscription?.planId ?? "prohor-free";
+  const currentPlan = PLANS[currentPlanId] ?? PLANS["prohor-free"];
+
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-5xl space-y-10 pb-12">
+      {/* ─── Header ─── */}
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           পেমেন্ট ও ফ্যামিলি
         </h2>
         <p className="text-muted-foreground text-sm">
-          সাবস্ক্রিপশন পরিচালনা করুন এবং পরিবারের সদস্যদের সাথে প্রহর প্রো শেয়ার করুন।
+          আপনার সাবস্ক্রিপশন প্ল্যান নির্বাচন করুন এবং ইনভয়েস হিস্ট্রি চেক করুন।
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card className="border-primary/30 bg-primary/5 p-6 flex flex-col justify-between space-y-6 relative overflow-hidden">
-          <div>
-            <h3 className="text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-2">
-              <Icon icon="solar:crown-star-bold" width="16" height="16" /> বর্তমান
-              প্ল্যান
-            </h3>
-            <div className="mt-3 flex items-end gap-2">
-              <span className="text-4xl font-bold text-foreground">প্রো</span>
-              <span className="text-sm text-muted-foreground pb-1">/ মাস</span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-3">
-              ২ টিবি স্টোরেজ এবং ফ্যামিলি শেয়ারিং অন্তর্ভুক্ত।
-            </p>
-          </div>
-          <Dialog>
-            <DialogTrigger
-              render={
-                <Button
-                  variant="outline"
-                  className="w-full rounded-xl border-primary text-primary hover:bg-primary hover:text-primary-foreground py-6 text-sm font-semibold cursor-pointer"
-                >
-                  প্ল্যান ম্যানেজ করুন
-                </Button>
-              }
-            />
-            <DialogContent className="sm:max-w-md">
-              <DialogHeader>
-                <DialogTitle>সাবস্ক্রিপশন প্ল্যান পরিবর্তন</DialogTitle>
-                <DialogDescription>
-                  আপনার প্রয়োজন অনুযায়ী প্রহর অথের উপযুক্ত প্ল্যান নির্বাচন করুন।
-                </DialogDescription>
-              </DialogHeader>
-              <RadioGroup defaultValue="pro" className="grid gap-3 py-2">
-                <label
-                  htmlFor="plan-free"
-                  className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-background hover:bg-accent/50 cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <RadioGroupItem value="free" id="plan-free" />
-                    <div>
-                      <p className="font-bold text-foreground text-sm">
-                        ফ্রি প্ল্যান
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        ১৫ জিবি স্টোরেজ
-                      </p>
-                    </div>
-                  </div>
-                  <span className="font-bold text-sm">৳০ / মাস</span>
-                </label>
-                <label
-                  htmlFor="plan-pro"
-                  className="flex items-center justify-between p-3.5 rounded-xl border border-primary bg-primary/5 cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <RadioGroupItem value="pro" id="plan-pro" />
-                    <div>
-                      <p className="font-bold text-primary text-sm">
-                        প্রো (Pro)
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        ২ টিবি স্টোরেজ + ফ্যামিলি
-                      </p>
-                    </div>
-                  </div>
-                  <span className="font-bold text-sm text-primary">
-                    ৳২৯৯ / মাস
-                  </span>
-                </label>
-                <label
-                  htmlFor="plan-business"
-                  className="flex items-center justify-between p-3.5 rounded-xl border border-border bg-background hover:bg-accent/50 cursor-pointer"
-                >
-                  <div className="flex items-center gap-3">
-                    <RadioGroupItem value="business" id="plan-business" />
-                    <div>
-                      <p className="font-bold text-foreground text-sm">
-                        বিজনেস (Business)
-                      </p>
-                      <p className="text-xs text-muted-foreground">
-                        আনলিমিটেড + কাস্টম ডোমেইন
-                      </p>
-                    </div>
-                  </div>
-                  <span className="font-bold text-sm">৳৯৯৯ / মাস</span>
-                </label>
-              </RadioGroup>
-              <DialogFooter>
-                <DialogClose render={<Button variant="outline" />}>
-                  বাতিল
-                </DialogClose>
-                <Button>প্ল্যান আপডেট করুন</Button>
-              </DialogFooter>
-            </DialogContent>
-          </Dialog>
+      {subscribed && (
+        <Card className="p-4 border-emerald-500/30 bg-emerald-500/10 text-emerald-500 flex items-center gap-3">
+          <Icon icon="solar:check-circle-bold" width="20" height="20" />
+          <p className="text-sm font-semibold">
+            অভিনন্দন! আপনার সাবস্ক্রিপশন সফলভাবে আপডেট করা হয়েছে।
+          </p>
         </Card>
+      )}
 
-        <Card className="p-6 space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-sm font-bold text-foreground">পেমেন্ট মাধ্যম</h3>
-            <Button
-              variant="link"
-              className="text-primary text-sm font-semibold p-0 h-auto cursor-pointer"
-            >
-              + যোগ করুন
-            </Button>
+      {/* ─── Active Subscription Overview ─── */}
+      <Card className="p-6 md:p-8 border-primary/30 bg-primary/5 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-1.5">
+              <Icon icon="solar:crown-star-bold" width="16" height="16" /> বর্তমান
+              সক্রিয় প্ল্যান
+            </span>
+            <Badge variant="default" className="text-xs">
+              {subscription?.status === "active" ? "সক্রিয়" : "ফ্রি"}
+            </Badge>
           </div>
-          <div className="flex items-center justify-between p-4 border border-border rounded-xl bg-background">
-            <div className="flex items-center gap-3">
-              <div className="bg-card border border-border p-1.5 rounded-md">
-                <Icon icon="logos:mastercard" width="24" height="24" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-foreground">
-                  •••• ৪২৪২
-                </p>
-                <p className="text-xs text-muted-foreground">মেয়াদ: ১২/২৮</p>
-              </div>
-            </div>
-            <Badge variant="secondary">প্রাথমিক</Badge>
-          </div>
+          <h3 className="text-3xl font-extrabold text-foreground">
+            {currentPlan.name}
+          </h3>
+          <p className="text-sm text-muted-foreground">
+            স্টোরেজ সীমা:{" "}
+            <span className="font-semibold text-foreground">
+              {currentPlan.storage}
+            </span>{" "}
+            | পেমেন্ট মাধ্যম:{" "}
+            <span className="font-mono text-foreground">
+              {subscription?.paymentMethod ?? "N/A"}
+            </span>
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3 w-full md:w-auto">
+          <Button
+            variant="outline"
+            render={<Link href="#plans" />}
+            nativeButton={false}
+            className="w-full md:w-auto rounded-xl border-primary text-primary hover:bg-primary hover:text-primary-foreground py-6 px-6 text-sm font-semibold cursor-pointer"
+          >
+            প্ল্যান পরিবর্তন করুন
+          </Button>
+        </div>
+      </Card>
+
+      {/* ─── Plans Grid ─── */}
+      <div id="plans" className="space-y-4">
+        <h3 className="text-xl font-bold text-foreground">
+          উপলব্ধ সাবস্ক্রিপশন প্ল্যানসমূহ
+        </h3>
+        <div className="grid gap-6 md:grid-cols-3">
+          {Object.values(PLANS)
+            .filter((p) => p.id !== "prohor-free")
+            .map((plan) => {
+              const isCurrent = currentPlanId === plan.id;
+              return (
+                <Card
+                  key={plan.id}
+                  className={`p-6 flex flex-col justify-between space-y-6 relative transition-all ${plan.color}`}
+                >
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <h4 className="text-xl font-bold text-foreground">
+                        {plan.name}
+                      </h4>
+                      {plan.badge && (
+                        <Badge variant="secondary" className="text-xs">
+                          {plan.badge}
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-3xl font-extrabold text-foreground">
+                        {plan.priceFormatted}
+                      </span>
+                      <span className="text-xs text-muted-foreground">
+                        / {plan.period}
+                      </span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed">
+                      {plan.description}
+                    </p>
+
+                    <ul className="space-y-2 pt-2 border-t border-border/50">
+                      {plan.features.map((feat) => (
+                        <li
+                          key={feat}
+                          className="flex items-center gap-2 text-xs text-foreground"
+                        >
+                          <Icon
+                            icon="solar:check-circle-bold"
+                            className="size-4 text-emerald-500 shrink-0"
+                          />
+                          <span>{feat}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {isCurrent ? (
+                    <Button
+                      disabled
+                      className="w-full rounded-xl py-6 text-sm font-semibold"
+                    >
+                      বর্তমান প্ল্যান
+                    </Button>
+                  ) : (
+                    <Button
+                      render={<Link href={`/dashboard/checkout/${plan.id}`} />}
+                      nativeButton={false}
+                      className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
+                    >
+                      আপগ্রেড করুন
+                    </Button>
+                  )}
+                </Card>
+              );
+            })}
+        </div>
+      </div>
+
+      {/* ─── Payment Receipts / Invoices Table ─── */}
+      <div className="space-y-4 pt-6 border-t border-border">
+        <h3 className="text-xl font-bold text-foreground">
+          পেমেন্ট ইতিহাস (Invoices)
+        </h3>
+        <Card className="overflow-hidden p-0">
+          <Table>
+            <TableHeader className="bg-muted/50">
+              <TableRow>
+                <TableHead>তারিখ</TableHead>
+                <TableHead>প্ল্যান</TableHead>
+                <TableHead>পেমেন্ট পদ্ধতি</TableHead>
+                <TableHead>পরিমাণ</TableHead>
+                <TableHead className="text-right">স্ট্যাটাস</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {userInvoices.length === 0 ? (
+                <TableRow>
+                  <TableCell
+                    colSpan={5}
+                    className="text-center text-muted-foreground py-8"
+                  >
+                    কোনো পেমেন্ট হিস্ট্রি পাওয়া যায়নি।
+                  </TableCell>
+                </TableRow>
+              ) : (
+                userInvoices.map((inv) => (
+                  <TableRow key={inv.id}>
+                    <TableCell className="text-xs text-muted-foreground">
+                      {bnDateFormatter.format(new Date(inv.createdAt))}
+                    </TableCell>
+                    <TableCell className="font-bold text-sm text-foreground">
+                      {inv.planName}
+                    </TableCell>
+                    <TableCell className="text-xs text-muted-foreground font-mono">
+                      {inv.paymentMethod}
+                    </TableCell>
+                    <TableCell className="font-bold text-sm text-foreground">
+                      ৳{inv.amount}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Badge
+                        variant="secondary"
+                        className="bg-emerald-500/10 text-emerald-500"
+                      >
+                        {inv.status === "paid" ? "পরিশোধিত" : inv.status}
+                      </Badge>
+                    </TableCell>
+                  </TableRow>
+                ))
+              )}
+            </TableBody>
+          </Table>
         </Card>
       </div>
     </div>

@@ -13,6 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { db } from "@/db";
 import { oauthClients } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/session";
+import { QUICKSTART_GUIDES } from "@/lib/constants/docs";
 import { QuickstartCopyButton } from "./quickstart-copy-button";
 
 const ISSUER_URL =
@@ -127,7 +128,7 @@ export default async function QuickstartPage() {
         {/* ─── Next.js ─── */}
         <TabsContent value="nextjs" className="space-y-6">
           <Step num="১" title="SDK ইন্সটল করুন">
-            <CopyInput value="npm install @prohor/nextjs" />
+            <CopyInput value={QUICKSTART_GUIDES.nextjs.install} />
           </Step>
 
           <Step num="২" title="এনভায়রনমেন্ট ভেরিয়েবল সেট করুন">
@@ -156,28 +157,11 @@ export default async function QuickstartPage() {
           </Step>
 
           <Step num="৩" title="প্রক্সি (Middleware) যোগ করুন">
-            <CodeBlock>{`import { withProhorAuth } from '@prohor/nextjs/proxy';
-
-export default withProhorAuth({
-  clientId: process.env.PROHOR_CLIENT_ID,
-  issuerUrl: process.env.PROHOR_ISSUER_URL,
-  publicRoutes: ['/', '/about'],
-});
-
-export const config = {
-  matcher: ['/((?!_next/static|_next/image|favicon.ico).*)'],
-};`}</CodeBlock>
+            <CodeBlock>{QUICKSTART_GUIDES.nextjs.proxyCode}</CodeBlock>
           </Step>
 
           <Step num="৪" title="ব্যবহারকারীর তথ্য পড়ুন">
-            <CodeBlock>{`import { getSession } from '@prohor/nextjs';
-
-export default async function Page() {
-  const session = await getSession();
-  if (!session) return <div>লগইন করুন</div>;
-
-  return <div>স্বাগতম, {session.user.name}!</div>;
-}`}</CodeBlock>
+            <CodeBlock>{QUICKSTART_GUIDES.nextjs.userCode}</CodeBlock>
           </Step>
 
           <div className="rounded-xl border border-border bg-muted/30 p-4 flex items-start gap-3 text-sm">
@@ -200,71 +184,39 @@ export default async function Page() {
         {/* ─── React SPA ─── */}
         <TabsContent value="react" className="space-y-6">
           <Step num="১" title="React Provider ইন্সটল করুন">
-            <CopyInput value="npm install @prohor/react" />
+            <CopyInput value={QUICKSTART_GUIDES.react.install} />
           </Step>
           <Step num="২" title="Provider যুক্ত করুন">
-            <CodeBlock>{`import { ProhorProvider } from '@prohor/react';
-
-export default function App() {
-  return (
-    <ProhorProvider
-      clientId="${clientId}"
-      issuerUrl="${ISSUER_URL}"
-    >
-      <YourApp />
-    </ProhorProvider>
-  );
-}`}</CodeBlock>
+            <CodeBlock>
+              {QUICKSTART_GUIDES.react.providerCode(clientId, ISSUER_URL)}
+            </CodeBlock>
           </Step>
           <Step num="৩" title="Login Button ব্যবহার করুন">
-            <CodeBlock>{`import { useProhorAuth } from '@prohor/react';
-
-export function LoginButton() {
-  const { login, logout, user } = useProhorAuth();
-  if (user) return <button onClick={logout}>লগআউট ({user.name})</button>;
-  return <button onClick={login}>লগইন করুন</button>;
-}`}</CodeBlock>
+            <CodeBlock>{QUICKSTART_GUIDES.react.buttonCode}</CodeBlock>
           </Step>
         </TabsContent>
 
         {/* ─── Node.js ─── */}
         <TabsContent value="node" className="space-y-6">
           <Step num="১" title="Express Middleware ইন্সটল করুন">
-            <CopyInput value="npm install @prohor/node express" />
+            <CopyInput value={QUICKSTART_GUIDES.node.install} />
           </Step>
           <Step num="২" title="JWT Verification Middleware">
-            <CodeBlock>{`import { verifyProhorToken } from '@prohor/node';
-
-const auth = verifyProhorToken({
-  issuerUrl: '${ISSUER_URL}',
-  audience: '${clientId}',
-});
-
-app.get('/api/protected', auth, (req, res) => {
-  res.json({ user: req.prohorUser });
-});`}</CodeBlock>
+            <CodeBlock>
+              {QUICKSTART_GUIDES.node.middlewareCode(clientId, ISSUER_URL)}
+            </CodeBlock>
           </Step>
         </TabsContent>
 
         {/* ─── Python ─── */}
         <TabsContent value="python" className="space-y-6">
           <Step num="১" title="Python SDK ইন্সটল করুন">
-            <CopyInput value="pip install prohor-py" />
+            <CopyInput value={QUICKSTART_GUIDES.python.install} />
           </Step>
           <Step num="২" title="FastAPI Dependency">
-            <CodeBlock>{`from prohor import verify_token, ProhorUser
-from fastapi import Depends
-
-async def get_current_user(token: str = Depends(oauth2_scheme)):
-    return await verify_token(
-        token,
-        issuer="${ISSUER_URL}",
-        audience="${clientId}",
-    )
-
-@app.get("/protected")
-async def protected(user: ProhorUser = Depends(get_current_user)):
-    return {"name": user.name}`}</CodeBlock>
+            <CodeBlock>
+              {QUICKSTART_GUIDES.python.fastApiCode(clientId, ISSUER_URL)}
+            </CodeBlock>
           </Step>
         </TabsContent>
       </Tabs>
