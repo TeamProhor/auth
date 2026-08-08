@@ -8,6 +8,7 @@ import {
   requestMagicLinkAction,
 } from "@/actions/auth";
 import { verify2FALoginAction } from "@/actions/two-factor";
+import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -160,14 +161,7 @@ export function LoginForm() {
 
   return (
     <div className="flex flex-col items-center gap-8">
-      <div className="bg-background border border-border rounded-2xl p-3 shadow-sm">
-        <Icon
-          icon="solar:shield-bold"
-          width="40"
-          height="40"
-          className="text-foreground"
-        />
-      </div>
+      <ProhorLogo className="size-14 rounded-2xl shadow-sm" />
 
       <div className="flex flex-col gap-2 text-center">
         <h1 className="text-balance font-semibold text-2xl text-foreground tracking-tight">

@@ -3,6 +3,7 @@
 import { Icon } from "@iconify/react";
 import { useTransition } from "react";
 import { approveConsentAction, denyConsentAction } from "@/actions/oauth";
+import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 
@@ -81,14 +82,7 @@ export function ConsentCard({
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center gap-4">
-        <div className="bg-background border border-border rounded-2xl p-3 shadow-sm">
-          <Icon
-            icon="solar:shield-bold"
-            width="32"
-            height="32"
-            className="text-foreground"
-          />
-        </div>
+        <ProhorLogo className="size-14 rounded-2xl shadow-sm" />
         <Icon
           icon="solar:arrow-right-bold"
           width="24"

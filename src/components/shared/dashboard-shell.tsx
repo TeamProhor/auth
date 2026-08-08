@@ -1,7 +1,7 @@
 "use client";
 
-import { Icon } from "@iconify/react";
 import { AppSidebar, MobileBottomNav } from "@/components/shared/app-sidebar";
+import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SidebarProvider, useSidebar } from "@/components/ui/sidebar";
 
 function DashboardHeader() {
@@ -15,13 +15,10 @@ function DashboardHeader() {
   return (
     <div className="lg:hidden fixed top-0 left-0 right-0 z-40 flex items-center justify-center bg-background/90 backdrop-blur-xl border-b border-border px-4 py-3 shadow-xs">
       <div className="flex items-center gap-2">
-        <Icon
-          icon="solar:shield-bold"
-          width="24"
-          height="24"
-          className="text-foreground"
-        />
-        <span className="font-[800] text-[18px] text-foreground">প্রহর</span>
+        <ProhorLogo className="size-6 rounded" />
+        <span className="font-[800] text-[18px] text-foreground">
+          প্রহর অ্যাকাউন্ট
+        </span>
       </div>
     </div>
   );
