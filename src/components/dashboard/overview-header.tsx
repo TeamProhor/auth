@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/react";
 import type { User } from "@/db/schema";
+import type { Plan } from "@/lib/constants/billing";
 
 interface OverviewHeaderProps {
   user: User;
@@ -8,13 +9,15 @@ interface OverviewHeaderProps {
     connectedApps: number;
     auditEvents: number;
   };
+  plan?: Plan;
 }
 
 const toBengaliNum = (n: number) =>
   n.toString().replace(/[0-9]/g, (d) => "০১২৩৪৫৬৭৮৯"[+d]);
 
-export function OverviewHeader({ user, stats }: OverviewHeaderProps) {
+export function OverviewHeader({ user, stats, plan }: OverviewHeaderProps) {
   const firstName = user.name.split(" ")[0];
+  const planName = plan?.nameBn || "প্রহর ফ্রি";
 
   return (
     <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -41,7 +44,7 @@ export function OverviewHeader({ user, stats }: OverviewHeaderProps) {
             width="18"
             height="18"
           />
-          প্রহর প্রো মেম্বার
+          {planName} মেম্বার
         </div>
       </div>
     </div>

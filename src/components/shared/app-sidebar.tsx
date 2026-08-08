@@ -16,12 +16,16 @@ import {
   SidebarRail,
   useSidebar,
 } from "@/components/ui/sidebar";
+import type { User } from "@/db/schema";
 import { NavDeveloper } from "./nav-developer";
 import { NavPersonal } from "./nav-personal";
 import { UserDropdown } from "./user-dropdown";
 import { WorkspaceSwitcher } from "./workspace-switcher";
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+export function AppSidebar({
+  user,
+  ...props
+}: React.ComponentProps<typeof Sidebar> & { user?: User | null }) {
   const pathname = usePathname();
   const isDeveloper = pathname.startsWith("/developer");
   const { setTheme, theme } = useTheme();
@@ -33,16 +37,19 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <SidebarMenu>
           <SidebarMenuItem>
             <div className="flex items-center justify-between w-full px-2 py-1 mb-2 group-data-[collapsible=icon]:px-0">
-              <div className="flex items-center hover:bg-accent rounded-lg transition-colors overflow-hidden shrink-0 w-full cursor-pointer group-data-[collapsible=icon]:justify-center">
-                <ProhorLogo className="size-6 shrink-0 group-data-[collapsible=icon]:mr-0 mr-3 rounded" />
-                <h3 className="font-[800] text-[16px] whitespace-nowrap mt-1 group-data-[collapsible=icon]:hidden">
-                  প্রহর অ্যাকাউন্ট
+              <div className="flex items-center gap-2.5 px-2 py-1.5 hover:bg-accent rounded-lg transition-colors cursor-pointer w-full group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+                <ProhorLogo className="size-6 shrink-0 rounded" />
+                <h3 className="font-extrabold text-base whitespace-nowrap text-foreground group-data-[collapsible=icon]:hidden">
+                  অ্যাকাউন্ট
                 </h3>
               </div>
             </div>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <WorkspaceSwitcher isDeveloper={isDeveloper} />
+            <WorkspaceSwitcher
+              isDeveloper={isDeveloper}
+              userIsDeveloper={user?.isDeveloper ?? false}
+            />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
@@ -92,7 +99,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </button>
           </SidebarMenuItem>
           <SidebarMenuItem>
-            <UserDropdown />
+            <UserDropdown user={user} />
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>

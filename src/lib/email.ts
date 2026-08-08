@@ -32,14 +32,14 @@ export async function sendMagicLinkEmail({
       const { error } = await resend.emails.send({
         from,
         to,
-        subject: "প্রহর অ্যাকাউন্টে লগইন করুন",
+        subject: "অ্যাকাউন্টে লগইন করুন",
         html: `
           <!DOCTYPE html>
           <html lang="bn">
             <head>
               <meta charset="utf-8">
               <meta name="viewport" content="width=device-width, initial-scale=1.0">
-              <title>প্রহর অ্যাকাউন্টে লগইন করুন</title>
+              <title>অ্যাকাউন্টে লগইন করুন</title>
               <style>
                 @font-face {
                   font-family: 'Hind Siliguri';
@@ -86,7 +86,7 @@ export async function sendMagicLinkEmail({
 
                     <!-- Brand Header -->
                     <h1 style="font-size: 22px; font-weight: 700; color: #09090b; margin: 0 0 4px 0; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
-                      প্রহর অ্যাকাউন্ট (Prohor Auth)
+                      অ্যাকাউন্ট (Prohor Auth)
                     </h1>
                     <p style="font-size: 13px; font-weight: 500; color: #71717a; margin: 0 0 28px 0; font-family: 'Hind Siliguri', 'Noto Sans Bengali', 'SolaimanLipi', sans-serif;">
                       নিরাপদ ও নির্ভরযোগ্য অ্যাক্সেস প্ল্যাটফর্ম

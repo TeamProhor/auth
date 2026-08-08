@@ -5,7 +5,7 @@ import { and, eq } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { db } from "@/db";
-import { oauthClients, userConsents } from "@/db/schema";
+import { oauthClients, userConsents, users } from "@/db/schema";
 import { logEvent } from "@/lib/auth/audit";
 import { hashPassword } from "@/lib/auth/crypto";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -21,6 +21,29 @@ function generateClientId(): string {
 
 function generateClientSecret(): string {
   return `pr_secret_${randomBytes(24).toString("hex")}`;
+}
+
+// ─── Enable Developer Access ──────────────────────────────────────────────────
+
+export async function enableDeveloperAccessAction(): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  await db
+    .update(users)
+    .set({ isDeveloper: true, updatedAt: new Date() })
+    .where(eq(users.id, user.id));
+
+  await logEvent({
+    userId: user.id,
+    eventType: "profile_updated",
+    details: "Enabled developer mode",
+  });
+
+  revalidatePath("/developer");
+  revalidatePath("/dashboard");
+
+  return { success: true };
 }
 
 // ─── Create OAuth App ─────────────────────────────────────────────────────────

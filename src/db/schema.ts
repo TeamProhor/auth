@@ -45,6 +45,7 @@ export const users = pgTable(
     bio: text("bio"),
     totpSecret: text("totp_secret"),
     twoFactorEnabled: boolean("two_factor_enabled").notNull().default(false),
+    isDeveloper: boolean("is_developer").notNull().default(false),
     isBanned: boolean("is_banned").notNull().default(false),
     createdAt: timestamp("created_at", { withTimezone: true })
       .notNull()

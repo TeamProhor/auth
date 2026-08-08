@@ -166,7 +166,7 @@ export function LoginForm() {
 
       <div className="flex flex-col gap-2 text-center">
         <h1 className="text-balance font-semibold text-2xl text-foreground tracking-tight">
-          {mode === "register" ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "প্রহর অ্যাকাউন্টে স্বাগতম"}
+          {mode === "register" ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "অ্যাকাউন্টে স্বাগতম"}
         </h1>
         <p className="text-pretty text-muted-foreground text-sm">
           {mode === "register" ? (

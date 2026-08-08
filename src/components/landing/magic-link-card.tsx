@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-export function MagicLinkCard() {
+export function MagicLinkCard({ email }: { email?: string }) {
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="size-16 rounded-full bg-accent flex items-center justify-center border border-border shadow-inner">
@@ -20,7 +20,9 @@ export function MagicLinkCard() {
         <h1 className="text-2xl font-bold text-foreground">ইমেইল চেক করুন</h1>
         <p className="text-sm text-muted-foreground leading-relaxed">
           আমরা{" "}
-          <span className="font-medium text-foreground">user@example.com</span>{" "}
+          <span className="font-medium text-foreground">
+            {email || "আপনার ইমেইল"}
+          </span>{" "}
           ঠিকানায় একটি ম্যাজিক লিংক পাঠিয়েছি।
         </p>
       </div>

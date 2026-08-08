@@ -1,4 +1,8 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
+"use client";
+
+import { Icon } from "@iconify/react";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
@@ -13,6 +17,15 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 export default function SettingsPage() {
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const currentTheme = mounted ? theme : "system";
+
   return (
     <div className="max-w-4xl space-y-8">
       <div className="space-y-1">
@@ -33,22 +46,40 @@ export default function SettingsPage() {
                 <FieldLabel>থিম (Theme)</FieldLabel>
                 <div className="grid grid-cols-3 gap-3">
                   <Button
+                    type="button"
                     variant="outline"
-                    className="flex flex-col items-center gap-2 p-6 h-auto border-ring bg-accent text-foreground cursor-pointer"
+                    onClick={() => setTheme("system")}
+                    className={`flex flex-col items-center gap-2 p-6 h-auto cursor-pointer transition-all ${
+                      currentTheme === "system"
+                        ? "border-primary bg-primary/10 text-primary font-bold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                   >
                     <Icon icon="solar:monitor-bold" width="24" height="24" />
                     <span className="text-xs font-semibold">সিস্টেম</span>
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
-                    className="flex flex-col items-center gap-2 p-6 h-auto cursor-pointer"
+                    onClick={() => setTheme("light")}
+                    className={`flex flex-col items-center gap-2 p-6 h-auto cursor-pointer transition-all ${
+                      currentTheme === "light"
+                        ? "border-primary bg-primary/10 text-primary font-bold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                   >
                     <Icon icon="solar:sun-bold" width="24" height="24" />
                     <span className="text-xs font-semibold">লাইট</span>
                   </Button>
                   <Button
+                    type="button"
                     variant="outline"
-                    className="flex flex-col items-center gap-2 p-6 h-auto cursor-pointer"
+                    onClick={() => setTheme("dark")}
+                    className={`flex flex-col items-center gap-2 p-6 h-auto cursor-pointer transition-all ${
+                      currentTheme === "dark"
+                        ? "border-primary bg-primary/10 text-primary font-bold"
+                        : "text-muted-foreground hover:text-foreground"
+                    }`}
                   >
                     <Icon icon="solar:moon-bold" width="24" height="24" />
                     <span className="text-xs font-semibold">ডার্ক</span>

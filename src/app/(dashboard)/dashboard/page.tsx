@@ -1,19 +1,24 @@
 import { redirect } from "next/navigation";
+import { getUserSubscription } from "@/actions/billing";
 import { OverviewHeader } from "@/components/dashboard/overview-header";
 import { ProfileCompletion } from "@/components/dashboard/profile-completion";
 import { ServicesGrid } from "@/components/dashboard/services-grid";
 import { StorageWidget } from "@/components/dashboard/storage-widget";
 import { getCurrentUser } from "@/lib/auth/session";
+import { PLANS } from "@/lib/constants/billing";
 import { getConnectedApps, getDashboardStats } from "@/lib/queries";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [stats, connectedApps] = await Promise.all([
+  const [stats, connectedApps, sub] = await Promise.all([
     getDashboardStats(user.id),
     getConnectedApps(user.id),
+    getUserSubscription(user.id),
   ]);
+
+  const plan = PLANS[sub?.planId || "prohor-free"];
 
   // Compute profile completion score
   const fields = [
@@ -30,7 +35,7 @@ export default async function DashboardPage() {
 
   return (
     <>
-      <OverviewHeader user={user} stats={stats} />
+      <OverviewHeader user={user} stats={stats} plan={plan} />
       <ProfileCompletion completionPct={completionPct} user={user} />
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-4">

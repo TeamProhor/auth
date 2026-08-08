@@ -10,7 +10,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
 
-export function WorkspaceSwitcher({ isDeveloper }: { isDeveloper: boolean }) {
+export function WorkspaceSwitcher({
+  isDeveloper,
+  userIsDeveloper = true,
+}: {
+  isDeveloper: boolean;
+  userIsDeveloper?: boolean;
+}) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -43,7 +49,7 @@ export function WorkspaceSwitcher({ isDeveloper }: { isDeveloper: boolean }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
-        className="w-56 rounded-xl border border-border"
+        className="w-64 rounded-xl border border-border p-1"
         align="start"
       >
         <DropdownMenuItem
@@ -65,19 +71,26 @@ export function WorkspaceSwitcher({ isDeveloper }: { isDeveloper: boolean }) {
 
         <DropdownMenuItem
           render={<Link href="/developer" />}
-          className="p-3 cursor-pointer w-full flex items-center gap-3"
+          className="p-3 cursor-pointer w-full flex items-center justify-between"
         >
-          <div className="w-8 h-8 rounded-md border border-border bg-background text-foreground flex items-center justify-center text-sm font-bold shadow-sm">
-            <Icon icon="solar:code-square-bold" width="18" height="18" />
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-md border border-border bg-background text-foreground flex items-center justify-center text-sm font-bold shadow-sm">
+              <Icon icon="solar:code-square-bold" width="18" height="18" />
+            </div>
+            <div className="flex flex-col">
+              <p className="text-sm font-semibold text-foreground">
+                ডেভেলপার পোর্টাল
+              </p>
+              <p className="text-xs text-muted-foreground">
+                অ্যাপ, এপিআই ও অ্যানালিটিক্স
+              </p>
+            </div>
           </div>
-          <div className="flex flex-col">
-            <p className="text-sm font-semibold text-foreground">
-              ডেভেলপার পোর্টাল
-            </p>
-            <p className="text-xs text-muted-foreground">
-              অ্যাপ, এপিআই ও অ্যানালিটিক্স
-            </p>
-          </div>
+          {!userIsDeveloper && (
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-primary/10 text-primary border border-primary/20 shrink-0">
+              চালু করুন
+            </span>
+          )}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

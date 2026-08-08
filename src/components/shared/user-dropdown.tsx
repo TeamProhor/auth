@@ -1,7 +1,9 @@
 "use client";
 
 import { Icon } from "@iconify/react";
-import Link from "next/link";
+import { useTransition } from "react";
+import { logoutAction } from "@/actions/auth";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -10,8 +12,26 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
+import type { User } from "@/db/schema";
 
-export function UserDropdown() {
+interface UserDropdownProps {
+  user?: User | null;
+}
+
+export function UserDropdown({ user }: UserDropdownProps) {
+  const [isPending, startTransition] = useTransition();
+
+  const name = user?.name || "ব্যবহারকারী";
+  const email = user?.email || "";
+  const avatarUrl = user?.avatarUrl || undefined;
+  const initial = (name[0] || email[0] || "U").toUpperCase();
+
+  const handleLogout = () => {
+    startTransition(async () => {
+      await logoutAction();
+    });
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -22,15 +42,18 @@ export function UserDropdown() {
           />
         }
       >
-        <div className="w-9 h-9 rounded-full bg-muted border border-border flex items-center justify-center shrink-0">
-          <Icon icon="solar:user-linear" width="20" height="20" />
-        </div>
+        <Avatar className="size-9 shrink-0">
+          <AvatarImage src={avatarUrl} alt={name} />
+          <AvatarFallback className="bg-primary/20 text-primary font-bold text-sm">
+            {initial}
+          </AvatarFallback>
+        </Avatar>
         <div className="flex flex-col flex-1 overflow-hidden group-data-[collapsible=icon]:hidden">
           <span className="text-sm font-semibold text-foreground truncate">
-            ব্যবহারকারীর নাম
+            {name}
           </span>
           <span className="text-[11px] text-muted-foreground truncate">
-            user@example.com
+            {email}
           </span>
         </div>
         <Icon
@@ -48,15 +71,18 @@ export function UserDropdown() {
       >
         <div className="p-2">
           <div className="flex items-center gap-3 px-2 py-2 rounded-lg bg-accent">
-            <div className="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-bold text-xs shrink-0">
-              U
-            </div>
+            <Avatar className="size-8 shrink-0">
+              <AvatarImage src={avatarUrl} alt={name} />
+              <AvatarFallback className="bg-primary/20 text-primary font-bold text-xs">
+                {initial}
+              </AvatarFallback>
+            </Avatar>
             <div className="flex flex-col flex-1 overflow-hidden">
               <span className="text-xs font-bold text-foreground truncate">
-                ব্যবহারকারীর নাম
+                {name}
               </span>
               <span className="text-[10px] text-muted-foreground truncate">
-                user@example.com
+                {email}
               </span>
             </div>
             <Icon
@@ -66,32 +92,16 @@ export function UserDropdown() {
               className="text-chart-2 shrink-0"
             />
           </div>
-          <DropdownMenuItem className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-accent transition-colors w-full mt-1 text-left cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-muted border border-border flex items-center justify-center text-muted-foreground text-xs shrink-0">
-              <Icon icon="solar:case-bold" width="14" height="14" />
-            </div>
-            <div className="flex flex-col overflow-hidden">
-              <span className="text-xs font-semibold text-foreground truncate">
-                ওয়ার্ক অ্যাকাউন্ট
-              </span>
-              <span className="text-[10px] text-muted-foreground truncate">
-                work@prohor.app
-              </span>
-            </div>
-          </DropdownMenuItem>
         </div>
         <DropdownMenuSeparator className="bg-border/50" />
         <div className="p-1">
-          <DropdownMenuItem className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-foreground hover:bg-accent rounded-lg cursor-pointer">
-            <Icon icon="solar:add-circle-bold" width="16" height="16" /> অন্য
-            অ্যাকাউন্ট যোগ করুন
-          </DropdownMenuItem>
           <DropdownMenuItem
-            render={<Link href="/login" />}
-            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive rounded-lg cursor-pointer"
+            onClick={handleLogout}
+            disabled={isPending}
+            className="flex items-center gap-2 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10 hover:text-destructive focus:bg-destructive/10 focus:text-destructive rounded-lg cursor-pointer disabled:opacity-50"
           >
-            <Icon icon="solar:logout-2-bold" width="16" height="16" /> সব থেকে
-            লগআউট
+            <Icon icon="solar:logout-2-bold" width="16" height="16" />
+            {isPending ? "লগআউট হচ্ছে..." : "লগআউট"}
           </DropdownMenuItem>
         </div>
       </DropdownMenuContent>
