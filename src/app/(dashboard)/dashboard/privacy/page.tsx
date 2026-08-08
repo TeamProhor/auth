@@ -1,4 +1,7 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { redirect } from "next/navigation";
+import { revokeAppAccessAction } from "@/actions/developer";
+import { SubmitButton } from "@/components/submit-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,8 +13,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getConnectedApps } from "@/lib/queries";
 
-export default function PrivacyPage() {
+export default async function PrivacyPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const connectedApps = await getConnectedApps(user.id);
+
   return (
     <div className="max-w-4xl space-y-8">
       <div className="space-y-1">
@@ -49,7 +59,7 @@ export default function PrivacyPage() {
 
         <div className="pt-2">
           <h3 className="text-lg font-bold text-foreground mb-4">
-            থার্ড-পার্টি অ্যাপ অ্যাক্সেস
+            থার্ড-পার্টি অ্যাপ অ্যাক্সেস ({connectedApps.length}টি সংযুক্ত)
           </h3>
           <Card className="overflow-hidden p-0">
             <Table>
@@ -61,28 +71,48 @@ export default function PrivacyPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <TableRow>
-                  <TableCell className="font-bold flex items-center gap-3">
-                    <Avatar className="size-8">
-                      <AvatarFallback className="bg-accent font-bold text-foreground text-xs">
-                        V
-                      </AvatarFallback>
-                    </Avatar>
-                    <span>Vawzine App</span>
-                  </TableCell>
-                  <TableCell className="text-muted-foreground text-xs">
-                    বেসিক প্রোফাইল, ইমেইল
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                {connectedApps.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={3}
+                      className="text-center text-muted-foreground py-8"
                     >
-                      অ্যাক্সেস বাতিল
-                    </Button>
-                  </TableCell>
-                </TableRow>
+                      কোনো থার্ড-পার্টি অ্যাপের অ্যাক্সেস দেওয়া নেই।
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  connectedApps.map(({ consent, client }) => (
+                    <TableRow key={consent.id}>
+                      <TableCell className="font-bold flex items-center gap-3">
+                        <Avatar className="size-8">
+                          <AvatarFallback className="bg-accent font-bold text-foreground text-xs">
+                            {client.name.charAt(0).toUpperCase()}
+                          </AvatarFallback>
+                        </Avatar>
+                        <span>{client.name}</span>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {consent.scopes ? consent.scopes.join(", ") : "বেসিক প্রোফাইল"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <form
+                          action={revokeAppAccessAction.bind(
+                            null,
+                            client.clientId,
+                          )}
+                        >
+                          <SubmitButton
+                            variant="ghost"
+                            size="sm"
+                            className="text-destructive hover:bg-destructive/10 cursor-pointer"
+                          >
+                            অ্যাক্সেস বাতিল
+                          </SubmitButton>
+                        </form>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </Card>

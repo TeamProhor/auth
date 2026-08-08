@@ -1,7 +1,33 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
+import type { User } from "@/db/schema";
 
-export function ProfileCompletion() {
+interface ProfileCompletionProps {
+  completionPct: number;
+  user: User;
+}
+
+const CIRCUMFERENCE = 2 * Math.PI * 40; // r=40
+
+function getIncompleteFields(user: User): string[] {
+  const missing: string[] = [];
+  if (!user.avatarUrl) missing.push("প্রোফাইল ছবি");
+  if (!user.phone) missing.push("ফোন নম্বর");
+  if (!user.dob) missing.push("জন্ম তারিখ");
+  if (!user.bio) missing.push("পরিচিতি (Bio)");
+  if (!user.emailVerified) missing.push("ইমেইল যাচাই");
+  return missing;
+}
+
+export function ProfileCompletion({
+  completionPct,
+  user,
+}: ProfileCompletionProps) {
+  if (completionPct >= 100) return null;
+
+  const offset = CIRCUMFERENCE - (completionPct / 100) * CIRCUMFERENCE;
+  const missing = getIncompleteFields(user);
+
   return (
     <div className="rounded-[20px] border border-border bg-card p-1 relative overflow-hidden flex flex-col md:flex-row items-center gap-4 shadow-sm">
       <div className="p-5 flex-1 flex flex-col md:flex-row items-start md:items-center gap-6 w-full">
@@ -16,7 +42,7 @@ export function ProfileCompletion() {
               strokeWidth="8"
               fill="transparent"
               className="text-muted"
-            ></circle>
+            />
             <circle
               cx="50"
               cy="50"
@@ -24,26 +50,28 @@ export function ProfileCompletion() {
               stroke="currentColor"
               strokeWidth="8"
               fill="transparent"
-              strokeDasharray="251.2"
-              strokeDashoffset="50.24"
+              strokeDasharray={CIRCUMFERENCE}
+              strokeDashoffset={offset}
               className="text-chart-3 transition-[stroke-dashoffset] duration-1000 ease-out"
-            ></circle>
+            />
           </svg>
           <span className="absolute text-sm font-bold text-foreground">
-            ৮০%
+            {completionPct}%
           </span>
         </div>
         <div className="flex-1 space-y-1.5">
           <h3 className="text-lg font-bold text-foreground">
-            আপনার প্রোফাইল ৮০% সম্পূর্ণ
+            আপনার প্রোফাইল {completionPct}% সম্পূর্ণ
           </h3>
-          <p className="text-sm text-muted-foreground leading-relaxed">
-            অ্যাকাউন্টের সর্বোচ্চ নিরাপত্তা নিশ্চিত করতে একটি রিকভারি ইমেইল যুক্ত করুন এবং
-            প্রোফাইল হেলথ ১০০% সম্পন্ন করুন।
-          </p>
+          {missing.length > 0 && (
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              বাকি: {missing.slice(0, 3).join(", ")}
+              {missing.length > 3 ? ` এবং আরও ${missing.length - 3}টি` : ""}
+            </p>
+          )}
         </div>
         <Button
-          render={<Link href="/dashboard/security" />}
+          render={<Link href="/dashboard/profile" />}
           nativeButton={false}
           className="w-full md:w-auto shrink-0 rounded-xl px-5 py-6 text-sm font-semibold whitespace-nowrap"
         >

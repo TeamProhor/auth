@@ -1,8 +1,43 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { redirect } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getDeveloperDailyUsage, getDeveloperStats } from "@/lib/queries";
 
-export default function AnalyticsPage() {
+const toBn = (n: number) => n.toLocaleString("bn-BD");
+
+const DAY_LABELS = ["রবি", "সোম", "মঙ্গল", "বুধ", "বৃহঃ", "শুক্র", "শনি"];
+
+function getLast7Days() {
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (6 - i));
+    return d;
+  });
+}
+
+export default async function AnalyticsPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const [stats, dailyUsage] = await Promise.all([
+    getDeveloperStats(user.id),
+    getDeveloperDailyUsage(user.id),
+  ]);
+
+  // Build chart data for last 7 days
+  const last7 = getLast7Days();
+  const usageMap = new Map(dailyUsage.map((r) => [r.day, r.count]));
+  const chartData = last7.map((date) => {
+    const key = date.toISOString().split("T")[0];
+    return {
+      label: DAY_LABELS[date.getDay()],
+      count: usageMap.get(key) ?? 0,
+    };
+  });
+  const maxCount = Math.max(...chartData.map((d) => d.count), 1);
+
   return (
     <div className="max-w-4xl space-y-10">
       <div className="space-y-1">
@@ -18,7 +53,7 @@ export default function AnalyticsPage() {
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-muted-foreground">
-              মাসিক সক্রিয় ব্যবহারকারী
+              মোট ব্যবহারকারী
             </h3>
             <Icon
               icon="solar:users-group-rounded-bold"
@@ -27,25 +62,16 @@ export default function AnalyticsPage() {
               className="text-muted-foreground"
             />
           </div>
-          <p className="text-3xl font-bold text-foreground">১,২০৪</p>
-          <Badge
-            variant="secondary"
-            className="mt-2 text-emerald-500 bg-emerald-500/10"
-          >
-            <Icon
-              icon="solar:trend-up-bold"
-              width="14"
-              height="14"
-              className="mr-1"
-            />{" "}
-            গত মাস থেকে +১২%
-          </Badge>
+          <p className="text-3xl font-bold text-foreground">
+            {toBn(stats.totalUsers)}
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">আপনার অ্যাপ অনুমোদিত</p>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-muted-foreground">
-              সফল লগইন
+              মোট অ্যাক্সেস টোকেন
             </h3>
             <Icon
               icon="solar:check-circle-bold"
@@ -54,24 +80,35 @@ export default function AnalyticsPage() {
               className="text-emerald-500"
             />
           </div>
-          <p className="text-3xl font-bold text-foreground">৮,৪৩২</p>
-          <p className="text-xs text-muted-foreground mt-2">গত ৩০ দিনে</p>
+          <p className="text-3xl font-bold text-foreground">
+            {toBn(stats.totalTokens)}
+          </p>
+          <Badge
+            variant="secondary"
+            className={`mt-2 ${stats.activeTokens > 0 ? "text-emerald-500 bg-emerald-500/10" : ""}`}
+          >
+            সক্রিয়: {toBn(stats.activeTokens)}টি
+          </Badge>
         </Card>
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-semibold text-muted-foreground">
-              ব্যর্থ প্রচেষ্টা
+              সক্রিয় অ্যাপস
             </h3>
             <Icon
-              icon="solar:danger-triangle-bold"
+              icon="solar:box-minimalistic-bold"
               width="20"
               height="20"
-              className="text-destructive"
+              className="text-primary"
             />
           </div>
-          <p className="text-3xl font-bold text-foreground">২৩</p>
-          <p className="text-xs text-muted-foreground mt-2">গত ৩০ দিনে</p>
+          <p className="text-3xl font-bold text-foreground">
+            {toBn(stats.totalApps)}
+          </p>
+          <p className="text-xs text-muted-foreground mt-2">
+            {stats.totalApps === 0 ? "কোনো অ্যাপ নেই" : "OAuth ক্লায়েন্ট"}
+          </p>
         </Card>
       </div>
 
@@ -79,45 +116,48 @@ export default function AnalyticsPage() {
         <h3 className="text-lg font-bold text-foreground mb-6">
           এপিআই রিকোয়েস্ট (গত ৭ দিন)
         </h3>
-        <div className="h-[200px] flex items-end justify-between gap-2 border-b border-border pb-2">
-          <div
-            className="w-full bg-primary/20 rounded-t-md relative group cursor-pointer hover:bg-primary/40 transition-colors"
-            style={{ height: "40%" }}
-          ></div>
-          <div
-            className="w-full bg-primary/40 rounded-t-md relative group cursor-pointer hover:bg-primary/60 transition-colors"
-            style={{ height: "60%" }}
-          ></div>
-          <div
-            className="w-full bg-primary/30 rounded-t-md relative group cursor-pointer hover:bg-primary/50 transition-colors"
-            style={{ height: "50%" }}
-          ></div>
-          <div
-            className="w-full bg-primary/80 rounded-t-md relative group cursor-pointer hover:bg-primary transition-colors"
-            style={{ height: "90%" }}
-          ></div>
-          <div
-            className="w-full bg-primary/50 rounded-t-md relative group cursor-pointer hover:bg-primary/70 transition-colors"
-            style={{ height: "70%" }}
-          ></div>
-          <div
-            className="w-full bg-primary/60 rounded-t-md relative group cursor-pointer hover:bg-primary/80 transition-colors"
-            style={{ height: "75%" }}
-          ></div>
-          <div
-            className="w-full bg-primary rounded-t-md relative group cursor-pointer hover:bg-primary/90 transition-colors"
-            style={{ height: "100%" }}
-          ></div>
-        </div>
-        <div className="flex justify-between text-xs text-muted-foreground mt-2 font-medium">
-          <span>সোম</span>
-          <span>মঙ্গল</span>
-          <span>বুধ</span>
-          <span>বৃহঃ</span>
-          <span>শুক্রবার</span>
-          <span>শনি</span>
-          <span>রবি</span>
-        </div>
+        {chartData.every((d) => d.count === 0) ? (
+          <div className="h-[200px] flex flex-col items-center justify-center text-muted-foreground gap-2">
+            <Icon
+              icon="solar:chart-2-bold"
+              width="40"
+              height="40"
+              className="opacity-30"
+            />
+            <p className="text-sm">এখনো কোনো এপিআই ব্যবহার নেই</p>
+          </div>
+        ) : (
+          <>
+            <div className="h-[200px] flex items-end justify-between gap-2 border-b border-border pb-2">
+              {chartData.map((day, i) => {
+                const pct = (day.count / maxCount) * 100;
+                const opacity = 20 + Math.round((pct / 100) * 80);
+                return (
+                  <div
+                    key={i}
+                    className="w-full rounded-t-md bg-primary transition-all hover:opacity-100 cursor-pointer group relative"
+                    style={{
+                      height: `${Math.max(pct, 4)}%`,
+                      opacity: opacity / 100,
+                    }}
+                    title={`${day.count} requests`}
+                  >
+                    {day.count > 0 && (
+                      <div className="absolute -top-7 left-1/2 -translate-x-1/2 bg-foreground text-background text-[10px] px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                        {toBn(day.count)}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex justify-between text-xs text-muted-foreground mt-2 font-medium">
+              {chartData.map((day, i) => (
+                <span key={i}>{day.label}</span>
+              ))}
+            </div>
+          </>
+        )}
       </Card>
     </div>
   );

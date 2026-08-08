@@ -1,8 +1,94 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { getCurrentUser } from "@/lib/auth/session";
+import { getDeveloperStats } from "@/lib/queries";
 
-export default function DeveloperPage() {
+const toBn = (n: number) => n.toLocaleString("bn-BD");
+
+export default async function DeveloperPage() {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const stats = await getDeveloperStats(user.id);
+
+  const STAT_CARDS = [
+    {
+      label: "সক্রিয় অ্যাপস",
+      value: toBn(stats.totalApps),
+      sub: stats.totalApps > 0 ? "● সব সিস্টেম সচল" : "কোনো অ্যাপ নেই",
+      subColor:
+        stats.totalApps > 0 ? "text-emerald-500" : "text-muted-foreground",
+      icon: "solar:box-minimalistic-bold",
+      iconColor: "text-primary",
+    },
+    {
+      label: "মোট অ্যাক্সেস টোকেন",
+      value: toBn(stats.totalTokens),
+      sub: `সক্রিয়: ${toBn(stats.activeTokens)}টি`,
+      subColor: "text-muted-foreground",
+      icon: "solar:chart-square-bold",
+      iconColor: "text-chart-1",
+    },
+    {
+      label: "রেজিস্টার্ড ইউজার",
+      value: toBn(stats.totalUsers),
+      sub: stats.totalUsers > 0 ? "অ্যাপ অনুমোদন করেছেন" : "এখনো কেউ নেই",
+      subColor:
+        stats.totalUsers > 0 ? "text-emerald-500" : "text-muted-foreground",
+      icon: "solar:users-group-rounded-bold",
+      iconColor: "text-chart-2",
+    },
+    {
+      label: "গড় রেসপন্স টাইম",
+      value: "৪৫ms",
+      sub: "৯৯.৯৯% আপটাইম",
+      subColor: "text-emerald-500",
+      icon: "solar:stopwatch-bold",
+      iconColor: "text-chart-3",
+    },
+  ];
+
+  const MODULES = [
+    {
+      title: "অ্যাপস ও ওয়েবহুক",
+      desc: "ক্লায়েন্ট আইডি, সিক্রেট ম্যানেজমেন্ট এবং ওয়েবহুক অ্যান্ডপয়েন্ট টেস্ট করুন।",
+      url: "/developer/apps",
+      icon: "solar:box-minimalistic-bold",
+    },
+    {
+      title: "ইউজার ডিরেক্টরি",
+      desc: "আপনার কানেক্টেড অ্যাপ্লিকেশনগুলোর ইউজারদের ডেটা ও সেশন তদারকি করুন।",
+      url: "/developer/users",
+      icon: "solar:users-group-rounded-bold",
+    },
+    {
+      title: "রোল ও পারমিশন (RBAC)",
+      desc: "কাস্টম স্কোপ, রোল এবং পারমিশন রুলস সেটআপ করুন।",
+      url: "/developer/rbac",
+      icon: "solar:shield-keyhole-bold",
+    },
+    {
+      title: "লগইন অ্যাকশনস (Hooks)",
+      desc: "সার্ভারলেস ইভেন্ট হুক এবং লগইনফ্লো কাস্টমাইজেশন।",
+      url: "/developer/hooks",
+      icon: "solar:code-file-bold",
+    },
+    {
+      title: "বট প্রোটেকশন & সিকিউরিটি",
+      desc: "রেট লিমিটিং, ক্যাপচা এবং আইপি রেস্ট্রিকশন কনফিগার করুন।",
+      url: "/developer/protection",
+      icon: "solar:shield-warning-bold",
+    },
+    {
+      title: "কুইকস্টার্ট ও SDK",
+      desc: "Next.js, Node.js, Python ও React SDK গাইড ও টেমপ্লেট।",
+      url: "/developer/quickstart",
+      icon: "solar:rocket-bold",
+    },
+  ];
+
   return (
     <div className="space-y-6">
       {/* Header Banner */}
@@ -16,8 +102,8 @@ export default function DeveloperPage() {
             প্রহর এপিআই ও অ্যাপ্লিকেশন ম্যানেজমেন্ট
           </h1>
           <p className="text-sm text-muted-foreground">
-            আপনার অ্যাপ্লিকেশন ইন্টিগ্রেট করুন, এপিআই কি (API Keys) জেনারেট করুন এবং
-            পারমিশন ও ওয়েবহুক কনফিগার করুন।
+            আপনার অ্যাপ্লিকেশন ইন্টিগ্রেট করুন, এপিআই কি জেনারেট করুন এবং পারমিশন ও ওয়েবহুক
+            কনফিগার করুন।
           </p>
         </div>
         <div className="flex items-center gap-3 z-10 shrink-0">
@@ -45,109 +131,33 @@ export default function DeveloperPage() {
         </div>
       </div>
 
-      {/* Quick Stats Grid */}
+      {/* Stats Grid — real DB data */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-card border border-border rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-semibold">সক্রিয় অ্যাপস</span>
-            <Icon
-              icon="solar:box-minimalistic-bold"
-              width="20"
-              height="20"
-              className="text-primary"
-            />
+        {STAT_CARDS.map((stat) => (
+          <div
+            key={stat.label}
+            className="bg-card border border-border rounded-xl p-5 space-y-2"
+          >
+            <div className="flex items-center justify-between text-muted-foreground">
+              <span className="text-xs font-semibold">{stat.label}</span>
+              <Icon
+                icon={stat.icon}
+                width="20"
+                height="20"
+                className={stat.iconColor}
+              />
+            </div>
+            <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+            <p className={`text-xs font-medium ${stat.subColor}`}>{stat.sub}</p>
           </div>
-          <p className="text-2xl font-bold text-foreground">৩টি</p>
-          <p className="text-xs text-emerald-500 font-medium">
-            ● সব সিস্টেম সচল
-          </p>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-semibold">মোট এপিআই কল (এই মাসে)</span>
-            <Icon
-              icon="solar:chart-square-bold"
-              width="20"
-              height="20"
-              className="text-chart-1"
-            />
-          </div>
-          <p className="text-2xl font-bold text-foreground">১২৪,৫৮০</p>
-          <p className="text-xs text-muted-foreground">লিমিট: ৫০,০০০,০০০</p>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-semibold">রেজিস্টার্ড ইউজার</span>
-            <Icon
-              icon="solar:users-group-rounded-bold"
-              width="20"
-              height="20"
-              className="text-chart-2"
-            />
-          </div>
-          <p className="text-2xl font-bold text-foreground">১,২৪৫</p>
-          <p className="text-xs text-emerald-500 font-medium">+১২% এই সপ্তাহে</p>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-5 space-y-2">
-          <div className="flex items-center justify-between text-muted-foreground">
-            <span className="text-xs font-semibold">গড় রেসপন্স টাইম</span>
-            <Icon
-              icon="solar:stopwatch-bold"
-              width="20"
-              height="20"
-              className="text-chart-3"
-            />
-          </div>
-          <p className="text-2xl font-bold text-foreground">৪৫ms</p>
-          <p className="text-xs text-emerald-500 font-medium">৯৯.৯৯% আপটাইম</p>
-        </div>
+        ))}
       </div>
 
-      {/* Developer Modules Navigation Grid */}
+      {/* Developer Modules */}
       <div className="space-y-4">
         <h3 className="text-lg font-bold text-foreground">ডেভেলপার ফিচারসমূহ</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[
-            {
-              title: "অ্যাপস ও ওয়েবহুক",
-              desc: "ক্লায়েন্ট আইডি, সিক্রেট ম্যানেজমেন্ট এবং ওয়েবহুক অ্যান্ডপয়েন্ট টেস্ট করুন।",
-              url: "/developer/apps",
-              icon: "solar:box-minimalistic-bold",
-            },
-            {
-              title: "ইউজার ডিরেক্টরি",
-              desc: "আপনার কানেক্টেড অ্যাপ্লিকেশনগুলোর ইউজারদের ডেটা ও সেশন তদারকি করুন।",
-              url: "/developer/users",
-              icon: "solar:users-group-rounded-bold",
-            },
-            {
-              title: "রোল ও পারমিশন (RBAC)",
-              desc: "কাস্টম স্কোপ, রোল এবং পারমিশন রুলস সেটআপ করুন।",
-              url: "/developer/rbac",
-              icon: "solar:shield-keyhole-bold",
-            },
-            {
-              title: "লগইন অ্যাকশনস (Hooks)",
-              desc: "সার্ভারলেস ইভেন্ট হুক এবং লগইনফ্লো কাস্টমাইজেশন।",
-              url: "/developer/hooks",
-              icon: "solar:code-file-bold",
-            },
-            {
-              title: "বট প্রোটেকশন & সিকিউরিটি",
-              desc: "রেট লিমিটিং, ক্যাপচা এবং আইপি রেস্ট্রিকশন কনফিগার করুন।",
-              url: "/developer/protection",
-              icon: "solar:shield-warning-bold",
-            },
-            {
-              title: "কুইকস্টার্ট ও SDK",
-              desc: "Next.js, Node.js, Python ও React SDK গাইড ও টেমপ্লেট।",
-              url: "/developer/quickstart",
-              icon: "solar:rocket-bold",
-            },
-          ].map((item) => (
+          {MODULES.map((item) => (
             <Link
               key={item.url}
               href={item.url}

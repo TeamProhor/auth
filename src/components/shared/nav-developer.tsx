@@ -9,54 +9,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const items = [
-  {
-    title: "অ্যাপস ও ওয়েবহুক",
-    url: "/developer/apps",
-    icon: "solar:box-minimalistic-bold",
-  },
-  {
-    title: "ইউজার ডিরেক্টরি",
-    url: "/developer/users",
-    icon: "solar:users-group-rounded-bold",
-  },
-  {
-    title: "রোল ও পারমিশন",
-    url: "/developer/rbac",
-    icon: "solar:shield-keyhole-bold",
-  },
-  {
-    title: "লগইন অ্যাকশনস",
-    url: "/developer/hooks",
-    icon: "solar:code-file-bold",
-  },
-  {
-    title: "বট প্রোটেকশন",
-    url: "/developer/protection",
-    icon: "solar:shield-warning-bold",
-  },
-  {
-    title: "অ্যানালিটিক্স ও কোটা",
-    url: "/developer/analytics",
-    icon: "solar:chart-square-bold",
-  },
-  {
-    title: "কুইকস্টার্ট ও SDK",
-    url: "/developer/quickstart",
-    icon: "solar:rocket-bold",
-  },
-  {
-    title: "এপিআই ডকস",
-    url: "/developer/docs",
-    icon: "solar:document-text-bold",
-  },
-];
+import { DEVELOPER_NAV_ITEMS } from "@/lib/constants/ui";
 
 export function NavDeveloper({ pathname }: { pathname: string }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => {
+        {DEVELOPER_NAV_ITEMS.map((item) => {
           const isActive =
             pathname === item.url ||
             (item.url !== "/developer" && pathname.startsWith(item.url));

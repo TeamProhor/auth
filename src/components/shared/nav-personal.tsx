@@ -9,44 +9,13 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const items = [
-  {
-    title: "সার্ভিস ও ওভারভিউ",
-    url: "/dashboard",
-    icon: "solar:home-smile-bold",
-  },
-  {
-    title: "প্রোফাইল ও তথ্য",
-    url: "/dashboard/profile",
-    icon: "solar:user-circle-bold",
-  },
-  {
-    title: "নিরাপত্তা ও সেশন",
-    url: "/dashboard/security",
-    icon: "solar:shield-check-bold",
-  },
-  {
-    title: "ডেটা ও গোপনীয়তা",
-    url: "/dashboard/privacy",
-    icon: "solar:lock-keyhole-bold",
-  },
-  {
-    title: "পেমেন্ট ও ফ্যামিলি",
-    url: "/dashboard/billing",
-    icon: "solar:users-group-two-rounded-bold",
-  },
-  {
-    title: "সেটিংস ও নোটিফিকেশন",
-    url: "/dashboard/settings",
-    icon: "solar:bell-bold",
-  },
-];
+import { PERSONAL_NAV_ITEMS } from "@/lib/constants/ui";
 
 export function NavPersonal({ pathname }: { pathname: string }) {
   return (
     <SidebarGroup>
       <SidebarMenu>
-        {items.map((item) => {
+        {PERSONAL_NAV_ITEMS.map((item) => {
           const isActive =
             pathname === item.url ||
             (item.url !== "/dashboard" && pathname.startsWith(item.url));
