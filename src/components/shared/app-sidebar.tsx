@@ -165,12 +165,6 @@ export function MobileBottomNav() {
       exact: false,
     },
     {
-      name: "রোলস",
-      path: "/developer/rbac",
-      icon: "solar:shield-keyhole-bold",
-      exact: false,
-    },
-    {
       name: "হুকস",
       path: "/developer/hooks",
       icon: "solar:code-file-bold",

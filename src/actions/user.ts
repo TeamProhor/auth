@@ -72,10 +72,7 @@ export async function changePasswordAction(
     return {
       success: false,
       error: "তথ্য যাচাই ব্যর্থ হয়েছে।",
-      fieldErrors: parsed.error.flatten().fieldErrors as Record<
-        string,
-        string[]
-      >,
+      fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
 
@@ -135,11 +132,4 @@ export async function revokeAllSessionsAction(): Promise<void> {
   revalidatePath("/dashboard/security");
 }
 
-// ─── Get User Sessions ─────────────────────────────────────────────────────────
 
-export async function getUserSessionsAction() {
-  const user = await getCurrentUser();
-  if (!user) return [];
-
-  return getUserSessions(user.id);
-}

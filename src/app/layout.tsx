@@ -35,7 +35,7 @@ export default function RootLayout({
       className={cn("h-full antialiased font-sans", hindSiliguri.variable)}
       suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col selection:bg-white/20 transition-colors duration-300">
+      <body className="min-h-full flex flex-col selection:bg-primary selection:text-primary-foreground transition-colors duration-300">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

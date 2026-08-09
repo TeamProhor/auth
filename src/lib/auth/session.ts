@@ -128,9 +128,13 @@ export async function revokeAllSessions(
       .from(sessions)
       .where(eq(sessions.userId, userId));
 
-    const toRevoke = allSessions.filter((s) => s.token !== currentToken);
-    for (const s of toRevoke) {
-      await db.delete(sessions).where(eq(sessions.id, s.id));
+    const toRevokeIds: string[] = [];
+    for (const s of allSessions) {
+      if (s.token !== currentToken) toRevokeIds.push(s.id);
+    }
+    if (toRevokeIds.length > 0) {
+      const { inArray } = await import("drizzle-orm");
+      await db.delete(sessions).where(inArray(sessions.id, toRevokeIds));
     }
   } else {
     await db.delete(sessions).where(eq(sessions.userId, userId));

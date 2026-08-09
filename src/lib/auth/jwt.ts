@@ -85,8 +85,6 @@ export async function signAccessToken(params: {
 
 export async function getPublicKeyJwks(): Promise<object> {
   const publicKey = await getPublicKey();
-  const _exported = await (publicKey as CryptoKey & { extractable: boolean });
-
   // Export JWK format using Web Crypto
   const jwk = await crypto.subtle.exportKey("jwk", publicKey);
   return {

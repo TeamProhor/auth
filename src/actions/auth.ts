@@ -8,7 +8,7 @@ import { db } from "@/db";
 import { accounts, magicLinkTokens, users } from "@/db/schema";
 import { logEvent } from "@/lib/auth/audit";
 import { hashPassword, verifyPassword } from "@/lib/auth/crypto";
-import { createSession, deleteSession } from "@/lib/auth/session";
+import { createSession, deleteSession, getCurrentSession } from "@/lib/auth/session";
 import {
   LoginSchema,
   MagicLinkSchema,
@@ -54,20 +54,17 @@ export async function loginAction(
     return {
       success: false,
       error: "তথ্য যাচাই ব্যর্থ হয়েছে।",
-      fieldErrors: parsed.error.flatten().fieldErrors as Record<
-        string,
-        string[]
-      >,
+      fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
 
   const { email, password } = parsed.data;
-  const meta = await getRequestMeta();
-
-  // Find user
-  const user = await db.query.users.findFirst({
-    where: eq(users.email, email),
-  });
+  const [meta, user] = await Promise.all([
+    getRequestMeta(),
+    db.query.users.findFirst({
+      where: eq(users.email, email),
+    }),
+  ]);
 
   if (!user) {
     await logEvent({
@@ -138,50 +135,47 @@ export async function registerAction(
     return {
       success: false,
       error: "তথ্য যাচাই ব্যর্থ হয়েছে।",
-      fieldErrors: parsed.error.flatten().fieldErrors as Record<
-        string,
-        string[]
-      >,
+      fieldErrors: parsed.error.flatten().fieldErrors,
     };
   }
 
   const { name, email, password } = parsed.data;
-  const meta = await getRequestMeta();
-
-  // Check for existing user
-  const existing = await db.query.users.findFirst({
-    where: eq(users.email, email),
-  });
+  const [meta, existing] = await Promise.all([
+    getRequestMeta(),
+    db.query.users.findFirst({
+      where: eq(users.email, email),
+    }),
+  ]);
 
   if (existing) {
     return { success: false, error: "এই ইমেইল দিয়ে ইতিমধ্যে একটি অ্যাকাউন্ট আছে।" };
   }
 
-  const passwordHash = await hashPassword(password);
-
-  // Create user
-  const [newUser] = await db
-    .insert(users)
-    .values({ name, email })
-    .returning({ id: users.id });
+  const [passwordHash, [newUser]] = await Promise.all([
+    hashPassword(password),
+    db
+      .insert(users)
+      .values({ name, email })
+      .returning({ id: users.id }),
+  ]);
 
   if (!newUser) {
     return { success: false, error: "অ্যাকাউন্ট তৈরি করতে সমস্যা হয়েছে।" };
   }
 
-  // Create email account record
-  await db.insert(accounts).values({
-    userId: newUser.id,
-    provider: "email",
-    passwordHash,
-  });
-
-  await createSession(newUser.id, meta);
-  await logEvent({
-    userId: newUser.id,
-    eventType: "register",
-    ipAddress: meta.ip,
-  });
+  await Promise.all([
+    db.insert(accounts).values({
+      userId: newUser.id,
+      provider: "email",
+      passwordHash,
+    }),
+    createSession(newUser.id, meta),
+    logEvent({
+      userId: newUser.id,
+      eventType: "register",
+      ipAddress: meta.ip,
+    }),
+  ]);
 
   redirect("/dashboard");
 }
@@ -192,6 +186,10 @@ export async function requestMagicLinkAction(
   _prevState: unknown,
   formData: FormData,
 ): Promise<ActionResult> {
+  // Check auth or allow public access for magic link initiation
+  const currentSession = await getCurrentSession();
+  if (currentSession) redirect("/dashboard");
+
   const raw = { email: formData.get("email") as string };
 
   const parsed = MagicLinkSchema.safeParse(raw);
@@ -203,10 +201,8 @@ export async function requestMagicLinkAction(
   const token = randomBytes(32).toString("hex");
   const expiresAt = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
 
-  // Delete old tokens for this email
+  // Delete old tokens for this email and save new token
   await db.delete(magicLinkTokens).where(eq(magicLinkTokens.email, email));
-
-  // Save new token
   await db.insert(magicLinkTokens).values({ email, token, expiresAt });
 
   // Send magic link email (logs to console in dev if RESEND_API_KEY not set)
@@ -236,11 +232,15 @@ export async function requestMagicLinkAction(
 export async function verifyMagicLinkAction(
   token: string,
 ): Promise<ActionResult> {
-  const meta = await getRequestMeta();
+  const currentSession = await getCurrentSession();
+  if (currentSession) redirect("/dashboard");
 
-  const record = await db.query.magicLinkTokens.findFirst({
-    where: eq(magicLinkTokens.token, token),
-  });
+  const [meta, record] = await Promise.all([
+    getRequestMeta(),
+    db.query.magicLinkTokens.findFirst({
+      where: eq(magicLinkTokens.token, token),
+    }),
+  ]);
 
   if (!record || record.expiresAt < new Date()) {
     return { success: false, error: "লিংকটি অকার্যকর বা মেয়াদোত্তীর্ণ।" };

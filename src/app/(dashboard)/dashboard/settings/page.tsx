@@ -16,15 +16,21 @@ import {
 } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 
+import { useSyncExternalStore } from "react";
+
+function subscribe() {
+  return () => {};
+}
+
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const isServer = useSyncExternalStore(
+    subscribe,
+    () => false,
+    () => true,
+  );
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  const currentTheme = mounted ? theme : "system";
+  const currentTheme = isServer ? "system" : theme;
 
   return (
     <div className="max-w-4xl space-y-8">

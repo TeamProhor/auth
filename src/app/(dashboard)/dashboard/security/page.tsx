@@ -2,6 +2,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { redirect } from "next/navigation";
 import { revokeAllSessionsAction, revokeSessionAction } from "@/actions/user";
 import { MaskedIpAddress } from "@/components/dashboard/masked-ip";
+import { PasswordChangeSection } from "@/components/security/password-change-dialog";
 import { TwoFactorSection } from "@/components/security/two-factor-section";
 import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
@@ -17,8 +18,14 @@ import {
 } from "@/components/ui/table";
 import { getCurrentUser, getUserSessions } from "@/lib/auth/session";
 
+const relativeTimeFormatter = new Intl.RelativeTimeFormat("bn", { numeric: "auto" });
+const bnDateTimeFormatter = new Intl.DateTimeFormat("bn", {
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
 function _formatDate(date: Date): string {
-  return new Intl.RelativeTimeFormat("bn", { numeric: "auto" }).format(
+  return relativeTimeFormatter.format(
     Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24)),
     "day",
   );
@@ -69,20 +76,7 @@ export default async function SecurityPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="p-6 flex flex-col justify-between space-y-4">
-          <div>
-            <CardTitle className="text-lg font-bold">পাসওয়ার্ড পরিবর্তন</CardTitle>
-            <CardDescription className="text-sm mt-1">
-              নিয়মিত পাসওয়ার্ড পরিবর্তন অ্যাকাউন্টের নিরাপত্তা বাড়ায়।
-            </CardDescription>
-          </div>
-          <Button
-            variant="outline"
-            className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
-          >
-            পাসওয়ার্ড আপডেট করুন
-          </Button>
-        </Card>
+        <PasswordChangeSection />
         <TwoFactorSection twoFactorEnabled={user.twoFactorEnabled} />
       </div>
 
@@ -142,10 +136,7 @@ export default async function SecurityPage() {
                       <MaskedIpAddress ip={session.ipAddress} />
                     </TableCell>
                     <TableCell className="text-muted-foreground text-xs">
-                      {new Intl.DateTimeFormat("bn", {
-                        dateStyle: "medium",
-                        timeStyle: "short",
-                      }).format(new Date(session.createdAt))}
+                      {bnDateTimeFormatter.format(new Date(session.createdAt))}
                     </TableCell>
                     <TableCell className="text-right">
                       {session.isCurrent ? (

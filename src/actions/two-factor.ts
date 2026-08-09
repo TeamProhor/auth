@@ -116,11 +116,12 @@ export async function disable2FAAction(token: string) {
 // ─── Verify 2FA on Login ───
 
 export async function verify2FALoginAction(userId: string, token: string) {
-  const meta = await getRequestMeta();
-
-  const user = await db.query.users.findFirst({
-    where: eq(users.id, userId),
-  });
+  const [meta, user] = await Promise.all([
+    getRequestMeta(),
+    db.query.users.findFirst({
+      where: eq(users.id, userId),
+    }),
+  ]);
 
   if (!user?.totpSecret || !user.twoFactorEnabled) {
     return { success: false, error: "অবৈধ ব্যবহারকারী অথবা 2FA সক্রিয় নয়।" };

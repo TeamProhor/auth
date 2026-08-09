@@ -6,16 +6,17 @@ import { ServicesGrid } from "@/components/dashboard/services-grid";
 import { StorageWidget } from "@/components/dashboard/storage-widget";
 import { getCurrentUser } from "@/lib/auth/session";
 import { PLANS } from "@/lib/constants/billing";
-import { getConnectedApps, getDashboardStats } from "@/lib/queries";
+import { getConnectedApps, getDashboardStats, getRecentActivity } from "@/lib/queries";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
-  const [stats, connectedApps, sub] = await Promise.all([
+  const [stats, connectedApps, sub, _activity] = await Promise.all([
     getDashboardStats(user.id),
     getConnectedApps(user.id),
     getUserSubscription(user.id),
+    getRecentActivity(user.id),
   ]);
 
   const plan = PLANS[sub?.planId || "prohor-free"];

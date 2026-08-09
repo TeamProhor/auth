@@ -33,7 +33,7 @@ export function SubmitButton({
     >
       <span
         className={cn(
-          "flex items-center justify-center transition-opacity",
+          "flex items-center justify-center gap-2 transition-opacity",
           isPending ? "opacity-0" : "opacity-100",
         )}
       >

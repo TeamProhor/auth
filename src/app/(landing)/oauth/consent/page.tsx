@@ -17,8 +17,7 @@ interface ConsentPageProps {
 }
 
 export default async function ConsentPage({ searchParams }: ConsentPageProps) {
-  const params = await searchParams;
-  const user = await getCurrentUser();
+  const [params, user] = await Promise.all([searchParams, getCurrentUser()]);
 
   if (!user) {
     redirect("/login?return_to=/oauth/consent");

@@ -1,15 +1,18 @@
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
+import { createClient } from "@libsql/client";
+import { drizzle } from "drizzle-orm/libsql";
 import * as schema from "./schema";
 
 // Lazily initialized to avoid throwing at build time when DATABASE_URL is not set.
-// Will throw at request time if missing, which is the correct behavior.
 function createDb() {
-  const connectionString = process.env.DATABASE_URL;
-  if (!connectionString) {
+  const url = process.env.DATABASE_URL;
+  if (!url) {
     throw new Error("DATABASE_URL environment variable is not set");
   }
-  const client = postgres(connectionString, { prepare: false });
+  const authToken = process.env.DATABASE_AUTH_TOKEN;
+  const client = createClient({
+    url,
+    authToken,
+  });
   return drizzle(client, { schema });
 }
 

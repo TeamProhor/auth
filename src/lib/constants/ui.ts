@@ -43,11 +43,6 @@ export const DEVELOPER_NAV_ITEMS = [
     icon: "solar:users-group-rounded-bold",
   },
   {
-    title: "রোল ও পারমিশন",
-    url: "/developer/rbac",
-    icon: "solar:shield-keyhole-bold",
-  },
-  {
     title: "লগইন অ্যাকশনস",
     url: "/developer/hooks",
     icon: "solar:code-file-bold",

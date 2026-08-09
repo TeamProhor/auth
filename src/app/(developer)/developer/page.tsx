@@ -64,12 +64,6 @@ export default async function DeveloperPage() {
       icon: "solar:users-group-rounded-bold",
     },
     {
-      title: "রোল ও পারমিশন (RBAC)",
-      desc: "কাস্টম স্কোপ, রোল এবং পারমিশন রুলস সেটআপ করুন।",
-      url: "/developer/rbac",
-      icon: "solar:shield-keyhole-bold",
-    },
-    {
       title: "লগইন অ্যাকশনস (Hooks)",
       desc: "সার্ভারলেস ইভেন্ট হুক এবং লগইনফ্লো কাস্টমাইজেশন।",
       url: "/developer/hooks",

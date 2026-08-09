@@ -136,7 +136,7 @@ export default async function AnalyticsPage() {
                 return (
                   <div
                     key={day.label}
-                    className="w-full rounded-t-md bg-primary transition-all hover:opacity-100 cursor-pointer group relative"
+                    className="w-full rounded-t-md bg-primary transition-opacity hover:opacity-100 cursor-pointer group relative"
                     style={{
                       height: `${Math.max(pct, 4)}%`,
                       opacity: opacity / 100,

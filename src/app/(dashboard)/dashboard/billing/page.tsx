@@ -16,6 +16,8 @@ import {
 import { getCurrentUser } from "@/lib/auth/session";
 import { PLANS } from "@/lib/constants/billing";
 
+const PAID_PLANS = Object.values(PLANS).filter((p) => p.id !== "prohor-free");
+
 const bnDateFormatter = new Intl.DateTimeFormat("bn", {
   dateStyle: "medium",
   timeStyle: "short",
@@ -26,10 +28,11 @@ interface BillingPageProps {
 }
 
 export default async function BillingPage({ searchParams }: BillingPageProps) {
-  const user = await getCurrentUser();
+  const [user, { subscribed }] = await Promise.all([
+    getCurrentUser(),
+    searchParams,
+  ]);
   if (!user) redirect("/login");
-
-  const { subscribed } = await searchParams;
   const [subscription, userInvoices] = await Promise.all([
     getUserSubscription(user.id),
     getUserInvoices(user.id),
@@ -104,10 +107,8 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
           উপলব্ধ সাবস্ক্রিপশন প্ল্যানসমূহ
         </h3>
         <div className="grid gap-6 md:grid-cols-3">
-          {Object.values(PLANS)
-            .filter((p) => p.id !== "prohor-free")
-            .map((plan) => {
-              const isCurrent = currentPlanId === plan.id;
+          {PAID_PLANS.map((plan) => {
+            const isCurrent = currentPlanId === plan.id;
               return (
                 <Card
                   key={plan.id}

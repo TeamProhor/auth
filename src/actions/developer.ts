@@ -9,7 +9,7 @@ import { oauthClients, userConsents, users } from "@/db/schema";
 import { logEvent } from "@/lib/auth/audit";
 import { hashPassword } from "@/lib/auth/crypto";
 import { getCurrentUser } from "@/lib/auth/session";
-import { CreateAppSchema } from "@/lib/validations";
+import { AddRedirectUriSchema, CreateAppSchema } from "@/lib/validations";
 
 type ActionResult =
   | { success: true; data?: Record<string, string> }
@@ -98,6 +98,11 @@ export async function addRedirectUriAction(
 ): Promise<ActionResult> {
   const user = await getCurrentUser();
   if (!user) redirect("/login");
+
+  const parsed = AddRedirectUriSchema.safeParse({ clientId, uri });
+  if (!parsed.success) {
+    return { success: false, error: "একটি বৈধ URI দিন।" };
+  }
 
   const app = await db.query.oauthClients.findFirst({
     where: and(

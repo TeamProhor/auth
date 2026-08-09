@@ -49,13 +49,6 @@ export function DeveloperApplyCard({ user }: DeveloperApplyCardProps) {
       color: "text-blue-500 bg-blue-500/10 border-blue-500/20",
     },
     {
-      icon: "solar:shield-keyhole-bold-duotone",
-      title: "RBAC & সিকিউরিটি পলিসি",
-      description: "রোলস, কাস্টম পারমিশন এবং সিকিউর এক্সেস টোকেন ম্যানেজ করুন।",
-      badge: "Security",
-      color: "text-emerald-500 bg-emerald-500/10 border-emerald-500/20",
-    },
-    {
       icon: "solar:code-file-bold-duotone",
       title: "ওয়েবহুক ও রিয়েল-টাইম হুকস",
       description:
@@ -156,7 +149,7 @@ export function DeveloperApplyCard({ user }: DeveloperApplyCardProps) {
           {features.map((item) => (
             <Card
               key={item.title}
-              className="p-6 rounded-2xl border border-border/80 hover:border-primary/50 transition-all hover:shadow-md flex flex-col justify-between group"
+              className="p-6 rounded-2xl border border-border/80 hover:border-primary/50 transition-colors transition-shadow hover:shadow-md flex flex-col justify-between group"
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

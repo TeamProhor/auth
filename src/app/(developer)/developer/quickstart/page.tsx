@@ -9,7 +9,7 @@ import {
   InputGroupAddon,
   InputGroupInput,
 } from "@/components/ui/input-group";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsContent, TabsList, TabsTab } from "@/components/ui/tabs";
 import { db } from "@/db";
 import { oauthClients } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -96,72 +96,53 @@ export default async function QuickstartPage() {
 
       <Tabs defaultValue="nextjs" className="w-full space-y-6">
         <div className="overflow-x-auto pb-1">
-          <TabsList className="w-full sm:w-auto h-11 p-1 bg-muted/60 rounded-xl gap-1 justify-start">
-            <TabsTrigger
+          <TabsList variant="default" className="p-1">
+            <TabsTab
               value="nextjs"
-              className="gap-2 px-4 py-2 text-sm font-semibold cursor-pointer"
+              className="gap-2 px-3.5 py-1.5 font-semibold"
             >
               <Icon icon="logos:nextjs-icon" width="18" height="18" /> Next.js
               (App Router)
-            </TabsTrigger>
-            <TabsTrigger
+            </TabsTab>
+            <TabsTab
               value="react"
-              className="gap-2 px-4 py-2 text-sm font-semibold cursor-pointer"
+              className="gap-2 px-3.5 py-1.5 font-semibold"
             >
               <Icon icon="logos:react" width="18" height="18" /> React SPA
-            </TabsTrigger>
-            <TabsTrigger
-              value="node"
-              className="gap-2 px-4 py-2 text-sm font-semibold cursor-pointer"
-            >
+            </TabsTab>
+            <TabsTab value="node" className="gap-2 px-3.5 py-1.5 font-semibold">
               <Icon icon="logos:nodejs-icon" width="18" height="18" /> Node.js
-            </TabsTrigger>
-            <TabsTrigger
+            </TabsTab>
+            <TabsTab
               value="python"
-              className="gap-2 px-4 py-2 text-sm font-semibold cursor-pointer"
+              className="gap-2 px-3.5 py-1.5 font-semibold"
             >
               <Icon icon="logos:python" width="18" height="18" /> Python
-            </TabsTrigger>
+            </TabsTab>
           </TabsList>
         </div>
 
         {/* ─── Next.js ─── */}
         <TabsContent value="nextjs" className="space-y-6">
-          <Step num="১" title="SDK ইন্সটল করুন">
-            <CopyInput value={QUICKSTART_GUIDES.nextjs.install} />
+          <Step num="১" title="এনভায়রনমেন্ট ভেরিয়েবল সেট করুন (.env.local)">
+            <CodeBlock>
+              {QUICKSTART_GUIDES.nextjs.envCode(clientId, ISSUER_URL)}
+            </CodeBlock>
           </Step>
 
-          <Step num="২" title="এনভায়রনমেন্ট ভেরিয়েবল সেট করুন">
-            <Card className="p-4 font-mono text-sm flex flex-col gap-2 shadow-sm text-muted-foreground">
-              <p>
-                <span className="text-blue-400">PROHOR_CLIENT_ID</span>
-                {`="`}
-                <span className="text-emerald-400">{clientId}</span>
-                {`"`}
-              </p>
-              <p>
-                <span className="text-blue-400">PROHOR_CLIENT_SECRET</span>
-                {`="`}
-                <span className="text-amber-400">
-                  {"••••••••••• (Apps পেজ থেকে কপি করুন)"}
-                </span>
-                {`"`}
-              </p>
-              <p>
-                <span className="text-blue-400">PROHOR_ISSUER_URL</span>
-                {`="`}
-                <span className="text-muted-foreground">{ISSUER_URL}</span>
-                {`"`}
-              </p>
-            </Card>
+          <Step num="২" title="লগইন রিডাইরেক্ট রুট তৈরি করুন (app/login/route.ts)">
+            <CodeBlock>
+              {QUICKSTART_GUIDES.nextjs.redirectCode(ISSUER_URL)}
+            </CodeBlock>
           </Step>
 
-          <Step num="৩" title="প্রক্সি (Middleware) যোগ করুন">
-            <CodeBlock>{QUICKSTART_GUIDES.nextjs.proxyCode}</CodeBlock>
-          </Step>
-
-          <Step num="৪" title="ব্যবহারকারীর তথ্য পড়ুন">
-            <CodeBlock>{QUICKSTART_GUIDES.nextjs.userCode}</CodeBlock>
+          <Step
+            num="৩"
+            title="কলব্যাক হ্যাণ্ডলার যোগ করুন (app/api/auth/callback/route.ts)"
+          >
+            <CodeBlock>
+              {QUICKSTART_GUIDES.nextjs.callbackCode(ISSUER_URL)}
+            </CodeBlock>
           </Step>
 
           <div className="rounded-xl border border-border bg-muted/30 p-4 flex items-start gap-3 text-sm">
@@ -172,50 +153,59 @@ export default async function QuickstartPage() {
               className="text-primary mt-0.5 shrink-0"
             />
             <p className="text-muted-foreground">
-              Redirect URI হিসেবে{" "}
+              আপনার অ্যাপের Apps পেজে Redirect URI হিসেবে{" "}
               <code className="bg-background px-1.5 py-0.5 rounded text-xs text-foreground">
                 http://localhost:3000/api/auth/callback
               </code>{" "}
-              আপনার অ্যাপে যুক্ত করুন।
+              নিবন্ধন করতে ভুলবেন না।
             </p>
           </div>
         </TabsContent>
 
         {/* ─── React SPA ─── */}
         <TabsContent value="react" className="space-y-6">
-          <Step num="১" title="React Provider ইন্সটল করুন">
-            <CopyInput value={QUICKSTART_GUIDES.react.install} />
-          </Step>
-          <Step num="২" title="Provider যুক্ত করুন">
+          <Step num="১" title="লগইন ফ্লো ও রিডাইরেক্ট যুক্ত করুন">
             <CodeBlock>
-              {QUICKSTART_GUIDES.react.providerCode(clientId, ISSUER_URL)}
+              {QUICKSTART_GUIDES.react.loginCode(clientId, ISSUER_URL)}
             </CodeBlock>
           </Step>
-          <Step num="৩" title="Login Button ব্যবহার করুন">
-            <CodeBlock>{QUICKSTART_GUIDES.react.buttonCode}</CodeBlock>
-          </Step>
+          <div className="rounded-xl border border-border bg-muted/30 p-4 flex items-start gap-3 text-sm">
+            <Icon
+              icon="solar:info-circle-bold"
+              width="18"
+              height="18"
+              className="text-primary mt-0.5 shrink-0"
+            />
+            <p className="text-muted-foreground">
+              Redirect URI হিসেবে{" "}
+              <code className="bg-background px-1.5 py-0.5 rounded text-xs text-foreground">
+                http://localhost:3000/callback
+              </code>{" "}
+              নিবন্ধন করুন।
+            </p>
+          </div>
         </TabsContent>
 
         {/* ─── Node.js ─── */}
         <TabsContent value="node" className="space-y-6">
-          <Step num="১" title="Express Middleware ইন্সটল করুন">
+          <Step num="১" title="ডিপেন্ডেন্সি ইন্সটল করুন">
             <CopyInput value={QUICKSTART_GUIDES.node.install} />
           </Step>
-          <Step num="২" title="JWT Verification Middleware">
+          <Step num="২" title="Express OAuth 2.0 সার্ভার তৈরি করুন">
             <CodeBlock>
-              {QUICKSTART_GUIDES.node.middlewareCode(clientId, ISSUER_URL)}
+              {QUICKSTART_GUIDES.node.expressCode(clientId, ISSUER_URL)}
             </CodeBlock>
           </Step>
         </TabsContent>
 
         {/* ─── Python ─── */}
         <TabsContent value="python" className="space-y-6">
-          <Step num="১" title="Python SDK ইন্সটল করুন">
+          <Step num="১" title="Python প্যাকেজ ইন্সটল করুন">
             <CopyInput value={QUICKSTART_GUIDES.python.install} />
           </Step>
-          <Step num="২" title="FastAPI Dependency">
+          <Step num="২" title="FastAPI OAuth 2.0 ইমপ্লিমেন্টেশন">
             <CodeBlock>
-              {QUICKSTART_GUIDES.python.fastApiCode(clientId, ISSUER_URL)}
+              {QUICKSTART_GUIDES.python.pythonCode(clientId, ISSUER_URL)}
             </CodeBlock>
           </Step>
         </TabsContent>

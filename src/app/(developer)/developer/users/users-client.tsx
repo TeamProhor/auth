@@ -2,11 +2,15 @@
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
-import { useMemo, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { banUserAction, unbanUserAction } from "@/actions/admin";
 import { SubmitButton } from "@/components/submit-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+
+const bnDateOnlyFormatter = new Intl.DateTimeFormat("bn", {
+  dateStyle: "medium",
+});
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {
@@ -81,17 +85,14 @@ export function UsersPageClient({
   const totalPages = Math.ceil(total / pageSize);
 
   // Client-side search filter
-  const filtered = useMemo(() => {
-    if (!search.trim() && appFilter === "all") return users;
-    return users.filter(({ user, consent }) => {
-      const matchesSearch =
-        !search.trim() ||
-        user.name.toLowerCase().includes(search.toLowerCase()) ||
-        user.email.toLowerCase().includes(search.toLowerCase());
-      const matchesApp = appFilter === "all" || consent.clientId === appFilter;
-      return matchesSearch && matchesApp;
-    });
-  }, [users, search, appFilter]);
+  const filtered = users.filter(({ user, consent }) => {
+    const matchesSearch =
+      !search.trim() ||
+      user.name.toLowerCase().includes(search.toLowerCase()) ||
+      user.email.toLowerCase().includes(search.toLowerCase());
+    const matchesApp = appFilter === "all" || consent.clientId === appFilter;
+    return matchesSearch && matchesApp;
+  });
 
   const handleBanAction = (user: User) => {
     setConfirmUser(user);
@@ -236,9 +237,7 @@ export function UsersPageClient({
                       </div>
                     </TableCell>
                     <TableCell className="px-5 py-4 text-muted-foreground text-xs">
-                      {new Intl.DateTimeFormat("bn", {
-                        dateStyle: "medium",
-                      }).format(new Date(user.createdAt))}
+                      {user.createdAt ? bnDateOnlyFormatter.format(user.createdAt) : "—"}
                     </TableCell>
                     <TableCell className="px-5 py-4">
                       <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded-lg">

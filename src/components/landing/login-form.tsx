@@ -8,6 +8,7 @@ import {
   requestMagicLinkAction,
 } from "@/actions/auth";
 import { verify2FALoginAction } from "@/actions/two-factor";
+import { GitHubIcon, GoogleIcon } from "@/components/icons";
 import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
@@ -40,6 +41,7 @@ type Mode = "email" | "password" | "register";
 export function LoginForm() {
   const [mode, setMode] = useState<Mode>("email");
   const [isGitHubPending, setIsGitHubPending] = useState(false);
+  const [isGooglePending, setIsGooglePending] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [totpError, setTotpError] = useState("");
   const [isPending2FA, startTransition2FA] = useTransition();
@@ -340,15 +342,29 @@ export function LoginForm() {
         <SubmitButton
           type="button"
           variant="outline"
+          isPending={isGooglePending}
+          onClick={() => {
+            setIsGooglePending(true);
+            window.location.href = "/api/auth/google";
+          }}
+          className="w-full rounded-xl bg-card hover:bg-accent hover:text-foreground px-4 py-6 text-sm font-medium flex items-center justify-center cursor-pointer shadow-sm"
+        >
+          <GoogleIcon className="w-5 h-5 shrink-0" />
+          <span>গুগল দিয়ে চালিয়ে যান</span>
+        </SubmitButton>
+
+        <SubmitButton
+          type="button"
+          variant="outline"
           isPending={isGitHubPending}
           onClick={() => {
             setIsGitHubPending(true);
             window.location.href = "/api/auth/github";
           }}
-          className="w-full rounded-xl bg-card hover:bg-accent hover:text-foreground px-4 py-6 text-sm font-medium flex items-center justify-center gap-3 cursor-pointer shadow-sm"
+          className="w-full rounded-xl bg-card hover:bg-accent hover:text-foreground px-4 py-6 text-sm font-medium flex items-center justify-center cursor-pointer shadow-sm"
         >
-          <Icon icon="mdi:github" width="22" height="22" />
-          গিটহাব দিয়ে চালিয়ে যান
+          <GitHubIcon className="w-5 h-5 shrink-0 fill-current text-foreground" />
+          <span>গিটহাব দিয়ে চালিয়ে যান</span>
         </SubmitButton>
       </div>
 

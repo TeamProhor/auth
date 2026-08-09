@@ -81,11 +81,19 @@ export async function approveConsentAction(params: {
   });
 
   // Redirect back to the third-party app with authorization code
-  const callbackUrl = new URL(params.redirectUri);
+  let callbackUrl: URL;
+  try {
+    callbackUrl = new URL(params.redirectUri);
+    if (!["http:", "https:"].includes(callbackUrl.protocol)) {
+      throw new Error("Invalid protocol");
+    }
+  } catch {
+    redirect("/dashboard?error=invalid_redirect_uri");
+  }
   callbackUrl.searchParams.set("code", code);
   if (params.state) callbackUrl.searchParams.set("state", params.state);
 
-  redirect(callbackUrl.toString());
+  redirect(callbackUrl.href);
 }
 
 // ─── Deny OAuth Consent ───────────────────────────────────────────────────────
@@ -94,9 +102,20 @@ export async function denyConsentAction(params: {
   redirectUri: string;
   state?: string;
 }): Promise<void> {
-  const callbackUrl = new URL(params.redirectUri);
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  let callbackUrl: URL;
+  try {
+    callbackUrl = new URL(params.redirectUri);
+    if (!["http:", "https:"].includes(callbackUrl.protocol)) {
+      throw new Error("Invalid protocol");
+    }
+  } catch {
+    redirect("/dashboard?error=invalid_redirect_uri");
+  }
   callbackUrl.searchParams.set("error", "access_denied");
   if (params.state) callbackUrl.searchParams.set("state", params.state);
 
-  redirect(callbackUrl.toString());
+  redirect(callbackUrl.href);
 }

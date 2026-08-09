@@ -9,6 +9,7 @@ import {
   removeRedirectUriAction,
   rotateClientSecretAction,
 } from "@/actions/developer";
+import { AppCard } from "@/components/developer/app-card";
 import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -232,138 +233,18 @@ export function AppsPageClient({ apps }: AppsPageClientProps) {
       ) : (
         <div className="grid gap-6">
           {apps.map((app) => (
-            <Card key={app.id} className="overflow-hidden shadow-sm p-0">
-              <CardHeader className="p-5 flex flex-col md:flex-row md:items-center gap-5 border-b border-border bg-muted/30">
-                <div className="flex items-center gap-4">
-                  <div className="size-12 rounded-xl bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold shadow-sm">
-                    {app.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div>
-                    <CardTitle className="text-lg font-bold text-foreground">
-                      {app.name}
-                    </CardTitle>
-                    <Badge
-                      variant="secondary"
-                      className={`mt-0.5 ${app.isActive ? "text-emerald-500 bg-emerald-500/10" : "text-muted-foreground"}`}
-                    >
-                      {app.isActive ? "● সক্রিয়" : "● নিষ্ক্রিয়"}
-                    </Badge>
-                  </div>
-                </div>
-                <div className="md:ml-auto flex gap-2 w-full md:w-auto">
-                  <Button
-                    variant="outline"
-                    className="rounded-xl px-4 py-5 text-sm font-medium"
-                    onClick={() => handleRotate(app.clientId)}
-                  >
-                    সিক্রেট রোটেট করুন
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    className="rounded-xl px-4 py-5 text-sm text-destructive hover:bg-destructive/10"
-                    onClick={() => handleDelete(app.clientId)}
-                  >
-                    মুছুন
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="p-6 space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest block">
-                      ক্লায়েন্ট আইডি (Client ID)
-                    </span>
-                    <InputGroup className="mt-2">
-                      <InputGroupInput
-                        readOnly
-                        defaultValue={app.clientId}
-                        className="font-mono text-sm"
-                      />
-                      <InputGroupAddon align="inline-end">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-8"
-                          onClick={() =>
-                            navigator.clipboard.writeText(app.clientId)
-                          }
-                        >
-                          <Icon icon="solar:copy-bold" width="18" height="18" />
-                        </Button>
-                      </InputGroupAddon>
-                    </InputGroup>
-                  </div>
-                  <div>
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-widest block">
-                      ক্লায়েন্ট সিক্রেট (Client Secret)
-                    </span>
-                    <InputGroup className="mt-2">
-                      <InputGroupInput
-                        readOnly
-                        defaultValue="••••••••••••••••••••••••••••••••"
-                        className="font-mono text-sm"
-                      />
-                      <InputGroupAddon align="inline-end">
-                        <Button variant="ghost" size="icon" className="size-8">
-                          <Icon icon="solar:eye-bold" width="18" height="18" />
-                        </Button>
-                      </InputGroupAddon>
-                    </InputGroup>
-                  </div>
-                </div>
-
-                {/* Redirect URIs */}
-                <div className="pt-4 border-t border-border">
-                  <span className="text-sm font-semibold text-foreground block">
-                    অনুমোদিত রিডাইরেক্ট ইউআরআই
-                  </span>
-                  <div className="mt-2 flex flex-col gap-2">
-                    {app.redirectUris.map((uri) => (
-                      <div
-                        key={uri}
-                        className="flex items-center justify-between px-3 py-2 bg-background border border-border rounded-lg"
-                      >
-                        <span className="text-sm font-mono text-muted-foreground">
-                          {uri}
-                        </span>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="size-6 text-muted-foreground hover:text-destructive"
-                          onClick={() => handleRemoveUri(app.clientId, uri)}
-                        >
-                          <Icon
-                            icon="solar:trash-bin-trash-bold"
-                            width="16"
-                            height="16"
-                          />
-                        </Button>
-                      </div>
-                    ))}
-                    <div className="flex gap-2 mt-1">
-                      <Input
-                        placeholder="https://example.com/callback"
-                        className="text-sm"
-                        value={newUriInputs[app.clientId] ?? ""}
-                        onChange={(e) =>
-                          setNewUriInputs((prev) => ({
-                            ...prev,
-                            [app.clientId]: e.target.value,
-                          }))
-                        }
-                      />
-                      <Button
-                        variant="outline"
-                        className="shrink-0"
-                        onClick={() => handleAddUri(app.clientId)}
-                      >
-                        + যোগ করুন
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+            <AppCard
+              key={app.id}
+              app={app}
+              newUriInput={newUriInputs[app.clientId] ?? ""}
+              onRotate={handleRotate}
+              onDelete={handleDelete}
+              onAddUri={handleAddUri}
+              onRemoveUri={handleRemoveUri}
+              onUriInputChange={(clientId, val) =>
+                setNewUriInputs((prev) => ({ ...prev, [clientId]: val }))
+              }
+            />
           ))}
         </div>
       )}
