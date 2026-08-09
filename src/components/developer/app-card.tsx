@@ -5,7 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group";
+import {
+  InputGroup,
+  InputGroupAddon,
+  InputGroupInput,
+} from "@/components/ui/input-group";
 import type { OAuthClient } from "@/db/schema";
 
 interface AppCardProps {
@@ -80,9 +84,7 @@ export function AppCard({
                   variant="ghost"
                   size="icon"
                   className="size-8"
-                  onClick={() =>
-                    navigator.clipboard.writeText(app.clientId)
-                  }
+                  onClick={() => navigator.clipboard.writeText(app.clientId)}
                 >
                   <Icon icon="solar:copy-bold" width="18" height="18" />
                 </Button>

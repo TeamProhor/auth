@@ -6,7 +6,11 @@ import { ServicesGrid } from "@/components/dashboard/services-grid";
 import { StorageWidget } from "@/components/dashboard/storage-widget";
 import { getCurrentUser } from "@/lib/auth/session";
 import { PLANS } from "@/lib/constants/billing";
-import { getConnectedApps, getDashboardStats, getRecentActivity } from "@/lib/queries";
+import {
+  getConnectedApps,
+  getDashboardStats,
+  getRecentActivity,
+} from "@/lib/queries";
 
 export default async function DashboardPage() {
   const user = await getCurrentUser();

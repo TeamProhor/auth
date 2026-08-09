@@ -6,8 +6,7 @@ import { PasswordChangeSection } from "@/components/security/password-change-dia
 import { TwoFactorSection } from "@/components/security/two-factor-section";
 import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -18,7 +17,9 @@ import {
 } from "@/components/ui/table";
 import { getCurrentUser, getUserSessions } from "@/lib/auth/session";
 
-const relativeTimeFormatter = new Intl.RelativeTimeFormat("bn", { numeric: "auto" });
+const relativeTimeFormatter = new Intl.RelativeTimeFormat("bn", {
+  numeric: "auto",
+});
 const bnDateTimeFormatter = new Intl.DateTimeFormat("bn", {
   dateStyle: "medium",
   timeStyle: "short",

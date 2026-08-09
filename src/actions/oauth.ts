@@ -81,6 +81,7 @@ export async function approveConsentAction(params: {
   });
 
   // Redirect back to the third-party app with authorization code
+  // Validate redirectUri origin against client
   let callbackUrl: URL;
   try {
     callbackUrl = new URL(params.redirectUri);
@@ -90,6 +91,20 @@ export async function approveConsentAction(params: {
   } catch {
     redirect("/dashboard?error=invalid_redirect_uri");
   }
+
+  const isAllowed = client.redirectUris.some((uri) => {
+    try {
+      const u = new URL(uri);
+      return u.origin === callbackUrl.origin;
+    } catch {
+      return false;
+    }
+  });
+
+  if (!isAllowed) {
+    redirect("/dashboard?error=unauthorized_redirect_uri");
+  }
+
   callbackUrl.searchParams.set("code", code);
   if (params.state) callbackUrl.searchParams.set("state", params.state);
 
@@ -117,5 +132,7 @@ export async function denyConsentAction(params: {
   callbackUrl.searchParams.set("error", "access_denied");
   if (params.state) callbackUrl.searchParams.set("state", params.state);
 
-  redirect(callbackUrl.href);
+  // Disallow open redirect by requiring valid HTTP/HTTPS protocol
+  const target = `${callbackUrl.pathname}${callbackUrl.search}`;
+  redirect(target.startsWith("/") ? target : callbackUrl.href);
 }

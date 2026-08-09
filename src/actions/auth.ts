@@ -8,7 +8,11 @@ import { db } from "@/db";
 import { accounts, magicLinkTokens, users } from "@/db/schema";
 import { logEvent } from "@/lib/auth/audit";
 import { hashPassword, verifyPassword } from "@/lib/auth/crypto";
-import { createSession, deleteSession, getCurrentSession } from "@/lib/auth/session";
+import {
+  createSession,
+  deleteSession,
+  getCurrentSession,
+} from "@/lib/auth/session";
 import {
   LoginSchema,
   MagicLinkSchema,
@@ -153,10 +157,7 @@ export async function registerAction(
 
   const [passwordHash, [newUser]] = await Promise.all([
     hashPassword(password),
-    db
-      .insert(users)
-      .values({ name, email })
-      .returning({ id: users.id }),
+    db.insert(users).values({ name, email }).returning({ id: users.id }),
   ]);
 
   if (!newUser) {

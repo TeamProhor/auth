@@ -109,69 +109,69 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
         <div className="grid gap-6 md:grid-cols-3">
           {PAID_PLANS.map((plan) => {
             const isCurrent = currentPlanId === plan.id;
-              return (
-                <Card
-                  key={plan.id}
-                  className={`p-6 flex flex-col justify-between space-y-6 relative transition-all ${plan.color}`}
-                >
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <h4 className="text-xl font-bold text-foreground">
-                        {plan.name}
-                      </h4>
-                      {plan.badge && (
-                        <Badge variant="secondary" className="text-xs">
-                          {plan.badge}
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-3xl font-extrabold text-foreground">
-                        {plan.priceFormatted}
-                      </span>
-                      <span className="text-xs text-muted-foreground">
-                        / {plan.period}
-                      </span>
-                    </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {plan.description}
-                    </p>
-
-                    <ul className="space-y-2 pt-2 border-t border-border/50">
-                      {plan.features.map((feat) => (
-                        <li
-                          key={feat}
-                          className="flex items-center gap-2 text-xs text-foreground"
-                        >
-                          <Icon
-                            icon="solar:check-circle-bold"
-                            className="size-4 text-emerald-500 shrink-0"
-                          />
-                          <span>{feat}</span>
-                        </li>
-                      ))}
-                    </ul>
+            return (
+              <Card
+                key={plan.id}
+                className={`p-6 flex flex-col justify-between space-y-6 relative transition-all ${plan.color}`}
+              >
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <h4 className="text-xl font-bold text-foreground">
+                      {plan.name}
+                    </h4>
+                    {plan.badge && (
+                      <Badge variant="secondary" className="text-xs">
+                        {plan.badge}
+                      </Badge>
+                    )}
                   </div>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-3xl font-extrabold text-foreground">
+                      {plan.priceFormatted}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      / {plan.period}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground leading-relaxed">
+                    {plan.description}
+                  </p>
 
-                  {isCurrent ? (
-                    <Button
-                      disabled
-                      className="w-full rounded-xl py-6 text-sm font-semibold"
-                    >
-                      বর্তমান প্ল্যান
-                    </Button>
-                  ) : (
-                    <Button
-                      render={<Link href={`/dashboard/checkout/${plan.id}`} />}
-                      nativeButton={false}
-                      className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
-                    >
-                      আপগ্রেড করুন
-                    </Button>
-                  )}
-                </Card>
-              );
-            })}
+                  <ul className="space-y-2 pt-2 border-t border-border/50">
+                    {plan.features.map((feat) => (
+                      <li
+                        key={feat}
+                        className="flex items-center gap-2 text-xs text-foreground"
+                      >
+                        <Icon
+                          icon="solar:check-circle-bold"
+                          className="size-4 text-emerald-500 shrink-0"
+                        />
+                        <span>{feat}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {isCurrent ? (
+                  <Button
+                    disabled
+                    className="w-full rounded-xl py-6 text-sm font-semibold"
+                  >
+                    বর্তমান প্ল্যান
+                  </Button>
+                ) : (
+                  <Button
+                    render={<Link href={`/dashboard/checkout/${plan.id}`} />}
+                    nativeButton={false}
+                    className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
+                  >
+                    আপগ্রেড করুন
+                  </Button>
+                )}
+              </Card>
+            );
+          })}
         </div>
       </div>
 

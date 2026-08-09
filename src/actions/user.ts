@@ -9,7 +9,6 @@ import { logEvent } from "@/lib/auth/audit";
 import { hashPassword, verifyPassword } from "@/lib/auth/crypto";
 import {
   getCurrentUser,
-  getUserSessions,
   revokeAllSessions,
   revokeSession,
 } from "@/lib/auth/session";
@@ -131,5 +130,3 @@ export async function revokeAllSessionsAction(): Promise<void> {
 
   revalidatePath("/dashboard/security");
 }
-
-

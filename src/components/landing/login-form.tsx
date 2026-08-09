@@ -1,40 +1,15 @@
 "use client";
 
-import { Icon } from "@iconify/react";
-import { useActionState, useState, useTransition } from "react";
-import {
-  loginAction,
-  registerAction,
-  requestMagicLinkAction,
-} from "@/actions/auth";
-import { verify2FALoginAction } from "@/actions/two-factor";
-import { GitHubIcon, GoogleIcon } from "@/components/icons";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { useActionState, useState } from "react";
+import { loginAction, requestMagicLinkAction } from "@/actions/auth";
+import { RegisterFormSection } from "@/components/landing/register-form-section";
+import { SocialLogins } from "@/components/landing/social-logins";
+import { TwoFactorLoginCard } from "@/components/landing/two-factor-login-card";
 import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSlot,
-} from "@/components/ui/input-otp";
-
-type ActionResult =
-  | {
-      success: true;
-      message?: string;
-      requires2FA?: boolean;
-      data?: { userId: string };
-    }
-  | { success: false; error: string; fieldErrors?: Record<string, string[]> };
-
-function fieldErr(
-  state: ActionResult | null,
-  field: string,
-): string | undefined {
-  if (!state || state.success) return undefined;
-  return state.fieldErrors?.[field]?.[0];
-}
 
 type Mode = "email" | "password" | "register";
 
@@ -42,36 +17,12 @@ export function LoginForm() {
   const [mode, setMode] = useState<Mode>("email");
   const [isGitHubPending, setIsGitHubPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
-  const [otpCode, setOtpCode] = useState("");
-  const [totpError, setTotpError] = useState("");
-  const [isPending2FA, startTransition2FA] = useTransition();
 
   const [loginState, loginFormAction] = useActionState(loginAction, null);
-  const [registerState, registerFormAction] = useActionState(
-    registerAction,
-    null,
-  );
   const [magicState, magicFormAction] = useActionState(
     requestMagicLinkAction,
     null,
   );
-
-  const handle2FASubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!loginState?.success || !loginState.data?.userId) return;
-    const userId = loginState.data.userId;
-    if (otpCode.length !== 6) {
-      setTotpError("৬-ডিজিটের সম্পূর্ণ কোডটি লিখুন।");
-      return;
-    }
-    setTotpError("");
-    startTransition2FA(async () => {
-      const res = await verify2FALoginAction(userId, otpCode);
-      if (res && !res.success) {
-        setTotpError(res.error);
-      }
-    });
-  };
 
   if (magicState?.success) {
     return (
@@ -102,64 +53,7 @@ export function LoginForm() {
     loginState.requires2FA &&
     loginState.data?.userId
   ) {
-    return (
-      <div className="flex flex-col items-center gap-6 w-full">
-        <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-primary">
-          <Icon icon="solar:shield-keyhole-bold" width="36" height="36" />
-        </div>
-
-        <div className="flex flex-col gap-1 text-center">
-          <h1 className="font-semibold text-2xl text-foreground tracking-tight">
-            ২FA যাচাইকরণ
-          </h1>
-          <p className="text-muted-foreground text-xs">
-            আপনার Authenticator App থেকে ৬-ডিজিটের নিরাপত্তা কোডটি লিখুন।
-          </p>
-        </div>
-
-        <form
-          onSubmit={handle2FASubmit}
-          className="w-full flex flex-col gap-6 items-center"
-        >
-          <InputOTP
-            maxLength={6}
-            value={otpCode}
-            onChange={(val) => setOtpCode(val)}
-          >
-            <InputOTPGroup>
-              <InputOTPSlot index={0} />
-              <InputOTPSlot index={1} />
-              <InputOTPSlot index={2} />
-              <InputOTPSlot index={3} />
-              <InputOTPSlot index={4} />
-              <InputOTPSlot index={5} />
-            </InputOTPGroup>
-          </InputOTP>
-
-          {totpError && (
-            <p className="text-xs text-destructive text-center font-medium bg-destructive/10 px-3 py-2 rounded-lg w-full">
-              {totpError}
-            </p>
-          )}
-
-          <SubmitButton
-            isPending={isPending2FA}
-            className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
-          >
-            যাচাই ও লগইন করুন
-          </SubmitButton>
-
-          <Button
-            type="button"
-            variant="ghost"
-            onClick={() => window.location.reload()}
-            className="text-xs text-muted-foreground hover:text-foreground cursor-pointer"
-          >
-            ← পুনরায় লগইন পাতায় ফিরুন
-          </Button>
-        </form>
-      </div>
-    );
+    return <TwoFactorLoginCard userId={loginState.data.userId} />;
   }
 
   return (
@@ -198,62 +92,7 @@ export function LoginForm() {
       </div>
 
       {/* ─── Register Mode ─── */}
-      {mode === "register" && (
-        <form
-          action={registerFormAction}
-          className="w-full flex flex-col gap-4"
-        >
-          {registerState && !registerState.success && (
-            <p className="text-sm text-destructive text-center rounded-xl bg-destructive/10 px-4 py-3">
-              {registerState.error}
-            </p>
-          )}
-          <Input
-            id="reg-name"
-            name="name"
-            className="w-full rounded-xl px-4 py-6 text-sm"
-            placeholder="আপনার পুরো নাম"
-            required
-          />
-          {fieldErr(registerState, "name") && (
-            <p className="text-xs text-destructive">
-              {fieldErr(registerState, "name")}
-            </p>
-          )}
-          <Input
-            id="reg-email"
-            name="email"
-            type="email"
-            className="w-full rounded-xl px-4 py-6 text-sm"
-            placeholder="আপনার ইমেইল ঠিকানা"
-            required
-          />
-          {fieldErr(registerState, "email") && (
-            <p className="text-xs text-destructive">
-              {fieldErr(registerState, "email")}
-            </p>
-          )}
-          <Input
-            id="reg-password"
-            name="password"
-            type="password"
-            className="w-full rounded-xl px-4 py-6 text-sm"
-            placeholder="পাসওয়ার্ড (অন্তত ৮ অক্ষর)"
-            required
-          />
-          {fieldErr(registerState, "password") && (
-            <p className="text-xs text-destructive">
-              {fieldErr(registerState, "password")}
-            </p>
-          )}
-          <SubmitButton
-            pendingText="তৈরি হচ্ছে..."
-            className="w-full rounded-xl px-4 py-6 text-sm font-semibold"
-          >
-            অ্যাকাউন্ট তৈরি করুন
-          </SubmitButton>
-        </form>
-      )}
+      {mode === "register" && <RegisterFormSection />}
 
       {/* ─── Email / Magic Link Mode ─── */}
       {mode === "email" && (
@@ -329,44 +168,18 @@ export function LoginForm() {
         </form>
       )}
 
-      {/* ─── Divider ─── */}
-      <div className="w-full flex items-center gap-4 py-2 opacity-60">
-        <div className="h-[1px] flex-1 bg-border" />
-        <span className="text-muted-foreground text-xs uppercase tracking-wider font-semibold">
-          অথবা
-        </span>
-        <div className="h-[1px] flex-1 bg-border" />
-      </div>
-
-      <div className="w-full flex flex-col gap-2">
-        <SubmitButton
-          type="button"
-          variant="outline"
-          isPending={isGooglePending}
-          onClick={() => {
-            setIsGooglePending(true);
-            window.location.href = "/api/auth/google";
-          }}
-          className="w-full rounded-xl bg-card hover:bg-accent hover:text-foreground px-4 py-6 text-sm font-medium flex items-center justify-center cursor-pointer shadow-sm"
-        >
-          <GoogleIcon className="w-5 h-5 shrink-0" />
-          <span>গুগল দিয়ে চালিয়ে যান</span>
-        </SubmitButton>
-
-        <SubmitButton
-          type="button"
-          variant="outline"
-          isPending={isGitHubPending}
-          onClick={() => {
-            setIsGitHubPending(true);
-            window.location.href = "/api/auth/github";
-          }}
-          className="w-full rounded-xl bg-card hover:bg-accent hover:text-foreground px-4 py-6 text-sm font-medium flex items-center justify-center cursor-pointer shadow-sm"
-        >
-          <GitHubIcon className="w-5 h-5 shrink-0 fill-current text-foreground" />
-          <span>গিটহাব দিয়ে চালিয়ে যান</span>
-        </SubmitButton>
-      </div>
+      <SocialLogins
+        isGooglePending={isGooglePending}
+        isGitHubPending={isGitHubPending}
+        onGoogleClick={() => {
+          setIsGooglePending(true);
+          window.location.href = "/api/auth/google";
+        }}
+        onGitHubClick={() => {
+          setIsGitHubPending(true);
+          window.location.href = "/api/auth/github";
+        }}
+      />
 
       <p className="w-11/12 text-pretty text-center text-muted-foreground text-[11px] leading-relaxed">
         এগিয়ে যাওয়ার মাধ্যমে আপনি আমাদের{" "}

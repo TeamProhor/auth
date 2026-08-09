@@ -30,13 +30,15 @@ export function PasswordChangeSection() {
       </div>
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogTrigger asChild>
-          <Button
-            variant="outline"
-            className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
-          >
-            পাসওয়ার্ড আপডেট করুন
-          </Button>
+        <DialogTrigger
+          render={
+            <Button
+              variant="outline"
+              className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
+            />
+          }
+        >
+          পাসওয়ার্ড আপডেট করুন
         </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -47,11 +49,15 @@ export function PasswordChangeSection() {
           </DialogHeader>
 
           <form action={formAction} className="space-y-4 pt-2">
-            {state?.error && (
-              <p className="text-sm text-destructive font-medium">{state.error}</p>
+            {state && !state.success && (
+              <p className="text-sm text-destructive font-medium">
+                {state.error}
+              </p>
             )}
-            {state?.message && (
-              <p className="text-sm text-emerald-500 font-medium">{state.message}</p>
+            {state && state.success && "message" in state && (
+              <p className="text-sm text-emerald-500 font-medium">
+                {state.message}
+              </p>
             )}
 
             <FieldGroup>
@@ -74,7 +80,9 @@ export function PasswordChangeSection() {
                 />
               </Field>
               <Field>
-                <FieldLabel htmlFor="confirmPassword">পাসওয়ার্ড নিশ্চিত করুন</FieldLabel>
+                <FieldLabel htmlFor="confirmPassword">
+                  পাসওয়ার্ড নিশ্চিত করুন
+                </FieldLabel>
                 <Input
                   id="confirmPassword"
                   name="confirmPassword"

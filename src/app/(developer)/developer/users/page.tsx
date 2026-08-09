@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
+import { DeveloperUsersContent } from "@/components/developer/developer-users-content";
 import { getCurrentUser } from "@/lib/auth/session";
 import { getDeveloperUsers } from "@/lib/queries";
-import { UsersPageClient } from "./users-client";
 
 interface PageProps {
   searchParams: Promise<{ q?: string; page?: string }>;
@@ -22,7 +22,7 @@ export default async function UsersPage({ searchParams }: PageProps) {
   );
 
   return (
-    <UsersPageClient
+    <DeveloperUsersContent
       users={users}
       total={total}
       apps={apps}
