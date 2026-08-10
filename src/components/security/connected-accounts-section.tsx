@@ -23,17 +23,12 @@ export function ConnectedAccountsSection({
 
   const handleUnlink = (provider: "google" | "github") => {
     startTransition(async () => {
-      await showToast.promise(unlinkAccountAction(provider), {
-        loading: MESSAGES.SECURITY.UNLINK_LOADING,
-        success: (res) => {
-          if (!res.success) {
-            throw new Error(res.error);
-          }
-          return res.message ?? MESSAGES.SECURITY.UNLINK_SUCCESS;
-        },
-        error: (err) =>
-          err instanceof Error ? err.message : MESSAGES.SECURITY.UNLINK_ERROR,
-      });
+      const res = await unlinkAccountAction(provider);
+      if (res.success) {
+        showToast.success(res.message ?? MESSAGES.SECURITY.UNLINK_SUCCESS);
+      } else {
+        showToast.error(res.error ?? MESSAGES.SECURITY.UNLINK_ERROR);
+      }
     });
   };
 
