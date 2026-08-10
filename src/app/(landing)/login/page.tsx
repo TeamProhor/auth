@@ -1,7 +1,7 @@
 import { LoginForm } from "@/components/landing/login-form";
 
 interface LoginPageProps {
-  searchParams: Promise<{ error?: string }>;
+  searchParams: Promise<{ error?: string; "2fa_user_id"?: string }>;
 }
 
 const ERROR_MESSAGES: Record<string, string> = {
@@ -22,7 +22,7 @@ const ERROR_MESSAGES: Record<string, string> = {
 };
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
-  const { error } = await searchParams;
+  const { error, "2fa_user_id": initial2FAUserId } = await searchParams;
   const errorMessage = error
     ? (ERROR_MESSAGES[error] ?? "একটি ত্রুটি হয়েছে। আবার চেষ্টা করুন।")
     : null;
@@ -35,7 +35,7 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
             {errorMessage}
           </div>
         )}
-        <LoginForm />
+        <LoginForm initial2FAUserId={initial2FAUserId} />
       </div>
     </main>
   );

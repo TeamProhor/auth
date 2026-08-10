@@ -1,6 +1,5 @@
 "use client";
 
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { useActionState, useState } from "react";
 import { loginAction, requestMagicLinkAction } from "@/actions/auth";
 import { RegisterFormSection } from "@/components/landing/register-form-section";
@@ -13,7 +12,11 @@ import { Input } from "@/components/ui/input";
 
 type Mode = "email" | "password" | "register";
 
-export function LoginForm() {
+interface LoginFormProps {
+  initial2FAUserId?: string;
+}
+
+export function LoginForm({ initial2FAUserId }: LoginFormProps) {
   const [mode, setMode] = useState<Mode>("email");
   const [isGitHubPending, setIsGitHubPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
@@ -24,36 +27,13 @@ export function LoginForm() {
     null,
   );
 
-  if (magicState?.success) {
-    return (
-      <div className="flex flex-col items-center gap-6 text-center">
-        <div className="size-16 rounded-2xl bg-primary/10 text-primary border border-primary/20 flex items-center justify-center">
-          <Icon icon="solar:letter-bold" width="32" height="32" />
-        </div>
-        <div className="space-y-2">
-          <h1 className="text-xl font-bold text-foreground">
-            ইমেইল পাঠানো হয়েছে!
-          </h1>
-          <p className="text-sm text-muted-foreground">{magicState.message}</p>
-        </div>
-        <Button
-          variant="ghost"
-          onClick={() => window.location.reload()}
-          className="text-sm cursor-pointer"
-        >
-          আবার চেষ্টা করুন
-        </Button>
-      </div>
-    );
-  }
+  const target2FAUserId =
+    loginState?.success && loginState.requires2FA && loginState.data?.userId
+      ? loginState.data.userId
+      : initial2FAUserId;
 
-  // ─── 2FA Interception Verification Card ───
-  if (
-    loginState?.success &&
-    loginState.requires2FA &&
-    loginState.data?.userId
-  ) {
-    return <TwoFactorLoginCard userId={loginState.data.userId} />;
+  if (target2FAUserId) {
+    return <TwoFactorLoginCard userId={target2FAUserId} />;
   }
 
   return (

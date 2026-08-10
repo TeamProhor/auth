@@ -160,6 +160,16 @@ export async function GET(request: NextRequest) {
     });
 
     if (accountByProvider) {
+      const existingUser = await db.query.users.findFirst({
+        where: eq(users.id, accountByProvider.userId),
+      });
+
+      if (existingUser?.twoFactorEnabled) {
+        return NextResponse.redirect(
+          new URL(`/login?2fa_user_id=${existingUser.id}`, appUrl),
+        );
+      }
+
       await createSession(accountByProvider.userId, { ip, userAgent });
       await logEvent({
         userId: accountByProvider.userId,

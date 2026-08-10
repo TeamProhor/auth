@@ -14,6 +14,12 @@ export async function GET(request: NextRequest) {
   // and throws a navigation error which Next.js will catch.
   const result = await verifyMagicLinkAction(token);
 
+  if (result.success && result.requires2FA && result.data?.userId) {
+    const url = new URL("/login", request.url);
+    url.searchParams.set("2fa_user_id", result.data.userId);
+    redirect(url.toString());
+  }
+
   if (!result.success) {
     // If it didn't throw a redirect, it failed.
     const url = new URL("/login", request.url);

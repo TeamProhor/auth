@@ -282,6 +282,14 @@ export async function verifyMagicLinkAction(
     return { success: false, error: "এই অ্যাকাউন্টটি স্থগিত করা হয়েছে।" };
   }
 
+  if (user.twoFactorEnabled) {
+    return {
+      success: true,
+      requires2FA: true,
+      data: { userId: user.id },
+    };
+  }
+
   await createSession(user.id, meta);
   await logEvent({
     userId: user.id,
