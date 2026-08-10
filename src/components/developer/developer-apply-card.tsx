@@ -4,7 +4,7 @@ import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { enableDeveloperAccessAction } from "@/actions/developer";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/submit-button";
 import { Card } from "@/components/ui/card";
 import type { User } from "@/db/schema";
 import { showToast } from "@/lib/toast";
@@ -98,34 +98,21 @@ export function DeveloperApplyCard({ user }: DeveloperApplyCardProps) {
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button
+          <SubmitButton
+            type="button"
             size="lg"
             onClick={handleEnableDeveloper}
-            disabled={isPending}
+            isPending={isPending}
             className="w-full sm:w-auto px-8 py-6 rounded-2xl text-base font-bold shadow-lg transition-transform active:scale-95 cursor-pointer"
           >
-            {isPending ? (
-              <>
-                <Icon
-                  icon="solar:spinner-single-bold"
-                  className="animate-spin mr-2"
-                  width="20"
-                  height="20"
-                />
-                ডেভেলপার অ্যাক্সেস চালু হচ্ছে...
-              </>
-            ) : (
-              <>
-                <Icon
-                  icon="solar:verified-check-bold"
-                  width="20"
-                  height="20"
-                  className="mr-2"
-                />
-                ডেভেলপার অ্যাক্সেস চালু করুন (বিনামূল্যে)
-              </>
-            )}
-          </Button>
+            <Icon
+              icon="solar:verified-check-bold"
+              width="20"
+              height="20"
+              className="mr-2"
+            />
+            ডেভেলপার অ্যাক্সেস চালু করুন (বিনামূল্যে)
+          </SubmitButton>
         </div>
 
         <p className="mt-3 text-xs text-muted-foreground">

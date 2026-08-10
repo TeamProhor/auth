@@ -138,13 +138,13 @@ export function TwoFactorSection({ twoFactorEnabled }: TwoFactorSectionProps) {
             2FA নিষ্ক্রিয় করুন
           </Button>
         ) : (
-          <Button
+          <SubmitButton
             onClick={handleStartSetup}
-            disabled={isPending}
+            isPending={isPending}
             className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
           >
-            {isPending ? "প্রসেস হচ্ছে..." : "2FA সক্রিয় করুন"}
-          </Button>
+            2FA সক্রিয় করুন
+          </SubmitButton>
         )}
       </Card>
 
