@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -51,20 +52,22 @@ export function AppCard({
           </div>
         </div>
         <div className="md:ml-auto flex gap-2 w-full md:w-auto">
-          <Button
+          <SubmitButton
+            type="button"
             variant="outline"
             className="rounded-xl px-4 py-5 text-sm font-medium"
             onClick={() => onRotate(app.clientId)}
           >
             সিক্রেট রোটেট করুন
-          </Button>
-          <Button
+          </SubmitButton>
+          <SubmitButton
+            type="button"
             variant="ghost"
             className="rounded-xl px-4 py-5 text-sm text-destructive hover:bg-destructive/10"
             onClick={() => onDelete(app.clientId)}
           >
             মুছুন
-          </Button>
+          </SubmitButton>
         </div>
       </CardHeader>
       <CardContent className="p-6 space-y-6">
@@ -145,13 +148,14 @@ export function AppCard({
                 value={newUriInput}
                 onChange={(e) => onUriInputChange(app.clientId, e.target.value)}
               />
-              <Button
+              <SubmitButton
+                type="button"
                 variant="outline"
                 className="shrink-0"
                 onClick={() => onAddUri(app.clientId)}
               >
                 + যোগ করুন
-              </Button>
+              </SubmitButton>
             </div>
           </div>
         </div>

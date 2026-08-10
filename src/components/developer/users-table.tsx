@@ -2,7 +2,7 @@
 
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { UserRow } from "@/components/developer/user-row";
-import { Button } from "@/components/ui/button";
+import { SubmitButton } from "@/components/submit-button";
 import { Card } from "@/components/ui/card";
 import {
   Table,
@@ -109,25 +109,29 @@ export function UsersTable({
             </TableCell>
             <TableCell colSpan={2} className="px-5 py-4 text-right">
               <div className="flex justify-end gap-2">
-                <Button
+                <SubmitButton
+                  type="button"
                   variant="outline"
                   size="sm"
-                  disabled={page <= 1 || isPending}
+                  isPending={isPending}
+                  disabled={page <= 1}
                   onClick={() => onPageChange(page - 1)}
                 >
                   আগের
-                </Button>
+                </SubmitButton>
                 <span className="flex items-center px-3 text-xs text-muted-foreground">
                   {page} / {Math.max(1, totalPages)}
                 </span>
-                <Button
+                <SubmitButton
+                  type="button"
                   variant="outline"
                   size="sm"
-                  disabled={page >= totalPages || isPending}
+                  isPending={isPending}
+                  disabled={page >= totalPages}
                   onClick={() => onPageChange(page + 1)}
                 >
                   পরের
-                </Button>
+                </SubmitButton>
               </div>
             </TableCell>
           </TableRow>

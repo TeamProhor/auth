@@ -5,7 +5,6 @@ import { useTransition } from "react";
 import { approveConsentAction, denyConsentAction } from "@/actions/oauth";
 import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
-import { Button } from "@/components/ui/button";
 
 interface ConsentCardProps {
   client: {
@@ -153,19 +152,19 @@ export function ConsentCard({
       </div>
 
       <div className="w-full pt-2 flex flex-col-reverse sm:flex-row gap-3">
-        <Button
+        <SubmitButton
+          type="button"
           variant="outline"
           onClick={handleDeny}
-          disabled={isPending}
+          isPending={isPending}
           className="flex-1 rounded-xl bg-card hover:bg-accent px-4 py-6 text-sm font-semibold cursor-pointer"
         >
           বাতিল করুন
-        </Button>
+        </SubmitButton>
         <SubmitButton
           onClick={handleApprove}
           type="button"
           isPending={isPending}
-          pendingText="অনুমোদন হচ্ছে..."
           className="flex-1 rounded-xl px-4 py-6 text-sm font-semibold cursor-pointer"
         >
           অনুমোদন করুন
