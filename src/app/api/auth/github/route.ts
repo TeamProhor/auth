@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { createOAuthLinkState } from "@/lib/auth/oauth-state";
+import { getCurrentUser } from "@/lib/auth/session";
 
 export async function GET() {
   const clientId = process.env.GITHUB_CLIENT_ID;
@@ -18,6 +20,13 @@ export async function GET() {
   githubAuthUrl.searchParams.set("client_id", clientId);
   githubAuthUrl.searchParams.set("redirect_uri", redirectUri);
   githubAuthUrl.searchParams.set("scope", scope);
+
+  // If user is logged in, create a secure link state (CSRF-safe)
+  const user = await getCurrentUser();
+  if (user) {
+    const linkState = await createOAuthLinkState(user.id, "github");
+    githubAuthUrl.searchParams.set("state", linkState);
+  }
 
   return NextResponse.redirect(githubAuthUrl.toString());
 }

@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { type NextRequest, NextResponse } from "next/server";
 import { db } from "@/db";
-import { users } from "@/db/schema";
+import { accounts, users } from "@/db/schema";
 import { logEvent } from "@/lib/auth/audit";
+import { consumeOAuthLinkState } from "@/lib/auth/oauth-state";
 import { createSession } from "@/lib/auth/session";
 
 interface GoogleUserInfo {
@@ -20,6 +21,7 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const code = searchParams.get("code");
   const error = searchParams.get("error");
+  const state = searchParams.get("state");
 
   if (error || !code) {
     return NextResponse.redirect(
@@ -37,14 +39,14 @@ export async function GET(request: NextRequest) {
   }
 
   const redirectUri = `${appUrl}/api/auth/callback/google`;
+  const ip = request.headers.get("x-forwarded-for") ?? undefined;
+  const userAgent = request.headers.get("user-agent") ?? undefined;
 
   try {
-    // 1. Exchange code for tokens with Google OAuth endpoint
+    // 1. Exchange code for access token
     const tokenRes = await fetch("https://oauth2.googleapis.com/token", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
       body: new URLSearchParams({
         code,
         client_id: clientId,
@@ -72,11 +74,7 @@ export async function GET(request: NextRequest) {
     // 2. Fetch Google User Profile
     const profileRes = await fetch(
       "https://www.googleapis.com/oauth2/v3/userinfo",
-      {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-        },
-      },
+      { headers: { Authorization: `Bearer ${accessToken}` } },
     );
 
     if (!profileRes.ok) {
@@ -86,63 +84,135 @@ export async function GET(request: NextRequest) {
     }
 
     const gUser = (await profileRes.json()) as GoogleUserInfo;
-    const userEmail = gUser.email;
+    const providerAccountId = gUser.sub;
 
-    if (!userEmail) {
+    // Reject unverified Google emails
+    if (!gUser.email || !gUser.email_verified) {
       return NextResponse.redirect(
-        new URL("/login?error=google_no_email", appUrl),
+        new URL("/login?error=google_email_not_verified", appUrl),
       );
     }
 
+    const verifiedEmail = gUser.email.toLowerCase();
     const name = gUser.name || gUser.given_name || "Google User";
     const avatarUrl = gUser.picture;
 
-    // 3. Find or Create User in SQLite Database
-    const existingUsers = await db
-      .select()
-      .from(users)
-      .where(eq(users.email, userEmail.toLowerCase()))
-      .limit(1);
+    // ─── EXPLICIT LINK FLOW (logged-in user linking a new provider) ────────────
 
-    let userId: string;
+    if (state) {
+      const linkingUserId = await consumeOAuthLinkState(state, "google");
 
-    if (existingUsers[0]) {
-      userId = existingUsers[0].id;
-      await db
-        .update(users)
-        .set({
-          name: existingUsers[0].name || name,
-          avatarUrl: existingUsers[0].avatarUrl || avatarUrl,
-          emailVerified: gUser.email_verified ?? true,
-          updatedAt: new Date(),
-        })
-        .where(eq(users.id, userId));
-    } else {
-      const [newUser] = await db
-        .insert(users)
-        .values({
-          email: userEmail.toLowerCase(),
-          name,
-          avatarUrl,
-          emailVerified: gUser.email_verified ?? true,
-        })
-        .returning();
-      userId = newUser.id;
+      if (!linkingUserId) {
+        return NextResponse.redirect(
+          new URL("/dashboard/security?error=link_state_invalid", appUrl),
+        );
+      }
+
+      // Check: is this Google account already linked to ANOTHER user?
+      const existingOwner = await db.query.accounts.findFirst({
+        where: and(
+          eq(accounts.provider, "google"),
+          eq(accounts.providerAccountId, providerAccountId),
+        ),
+      });
+
+      if (existingOwner && existingOwner.userId !== linkingUserId) {
+        await logEvent({
+          userId: linkingUserId,
+          eventType: "oauth_link_failed",
+          ipAddress: ip,
+          details: `Google sub ${providerAccountId} already owned by another account`,
+        });
+        return NextResponse.redirect(
+          new URL("/dashboard/security?error=provider_already_linked", appUrl),
+        );
+      }
+
+      if (!existingOwner) {
+        await db.insert(accounts).values({
+          userId: linkingUserId,
+          provider: "google",
+          providerAccountId,
+        });
+
+        await logEvent({
+          userId: linkingUserId,
+          eventType: "oauth_account_linked",
+          ipAddress: ip,
+          details: `Linked Google account sub: ${providerAccountId}`,
+        });
+      }
+
+      return NextResponse.redirect(
+        new URL("/dashboard/security?success=google_linked", appUrl),
+      );
     }
 
-    // 4. Create Persistent Session & Redirect to Dashboard
-    await createSession(userId, {
-      ip: request.headers.get("x-forwarded-for") ?? undefined,
-      userAgent: request.headers.get("user-agent") ?? undefined,
+    // ─── LOGIN FLOW ───────────────────────────────────────────────────────────
+
+    // Priority 1: Find by providerAccountId (most reliable)
+    const accountByProvider = await db.query.accounts.findFirst({
+      where: and(
+        eq(accounts.provider, "google"),
+        eq(accounts.providerAccountId, providerAccountId),
+      ),
+    });
+
+    if (accountByProvider) {
+      await createSession(accountByProvider.userId, { ip, userAgent });
+      await logEvent({
+        userId: accountByProvider.userId,
+        eventType: "login",
+        ipAddress: ip,
+        details: "Login via Google (provider ID match)",
+      });
+      return NextResponse.redirect(new URL("/dashboard", appUrl));
+    }
+
+    // Priority 2: Check whether verified email belongs to an existing Prohor user.
+    // If it does, we MUST NOT auto-link. The user must sign in to their existing
+    // account and connect Google from Security → Connected Accounts explicitly.
+    const emailOwner = await db.query.users.findFirst({
+      where: eq(users.email, verifiedEmail),
+    });
+
+    if (emailOwner) {
+      await logEvent({
+        userId: emailOwner.id,
+        eventType: "oauth_link_failed",
+        ipAddress: ip,
+        details: `Google login rejected: email belongs to existing account (no linked provider)`,
+      });
+      return NextResponse.redirect(
+        new URL("/login?error=email_account_exists", appUrl),
+      );
+    }
+
+    // Priority 3: No existing user — create new user
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        email: verifiedEmail,
+        name,
+        avatarUrl,
+        emailVerified: true,
+      })
+      .returning();
+
+    await db.insert(accounts).values({
+      userId: newUser.id,
+      provider: "google",
+      providerAccountId,
     });
 
     await logEvent({
-      userId,
-      eventType: "login",
-      ipAddress: request.headers.get("x-forwarded-for") ?? undefined,
-      details: "LoggedIn via Google OAuth",
+      userId: newUser.id,
+      eventType: "register",
+      ipAddress: ip,
+      details: "Registered via Google OAuth",
     });
 
+    await createSession(newUser.id, { ip, userAgent });
     return NextResponse.redirect(new URL("/dashboard", appUrl));
   } catch (err) {
     console.error("[google oauth callback error]:", err);

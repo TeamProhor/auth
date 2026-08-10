@@ -1,5 +1,10 @@
 import { relations, sql } from "drizzle-orm";
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import {
+  integer,
+  sqliteTable,
+  text,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 
 // ─── Users ────────────────────────────────────────────────────────────────────
 
@@ -35,20 +40,32 @@ export const users = sqliteTable("users", {
 
 // ─── Authentication Accounts ──────────────────────────────────────────────────
 
-export const accounts = sqliteTable("accounts", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  provider: text("provider", { enum: ["email", "google", "github"] }).notNull(),
-  providerAccountId: text("provider_account_id"),
-  passwordHash: text("password_hash"), // Only for email provider
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
+export const accounts = sqliteTable(
+  "accounts",
+  {
+    id: text("id")
+      .primaryKey()
+      .$defaultFn(() => crypto.randomUUID()),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    provider: text("provider", {
+      enum: ["email", "google", "github"],
+    }).notNull(),
+    // NULL for email provider, required for OAuth providers
+    providerAccountId: text("provider_account_id"),
+    passwordHash: text("password_hash"), // Only for email provider
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (t) => [
+    uniqueIndex("accounts_provider_account_idx").on(
+      t.provider,
+      t.providerAccountId,
+    ),
+  ],
+);
 
 // ─── Sessions ─────────────────────────────────────────────────────────────────
 
@@ -63,6 +80,25 @@ export const sessions = sqliteTable("sessions", {
   ipAddress: text("ip_address"),
   userAgent: text("user_agent"),
   location: text("location"),
+  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+// ─── OAuth Link Requests (CSRF-safe account linking state) ──────────────────
+
+export const oauthLinkRequests = sqliteTable("oauth_link_requests", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  provider: text("provider", { enum: ["google", "github"] }).notNull(),
+  // SHA-256 hash of the random state token
+  stateHash: text("state_hash").notNull().unique(),
+  usedAt: integer("used_at", { mode: "timestamp" }),
   expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
@@ -217,6 +253,9 @@ export const auditLogs = sqliteTable("audit_logs", {
       "profile_updated",
       "user_banned",
       "user_unbanned",
+      "oauth_account_linked",
+      "oauth_account_unlinked",
+      "oauth_link_failed",
     ],
   }).notNull(),
   ipAddress: text("ip_address"),
@@ -234,11 +273,22 @@ export const usersRelations = relations(users, ({ many }) => ({
   oauthClients: many(oauthClients),
   userConsents: many(userConsents),
   auditLogs: many(auditLogs),
+  oauthLinkRequests: many(oauthLinkRequests),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
   user: one(users, { fields: [accounts.userId], references: [users.id] }),
 }));
+
+export const oauthLinkRequestsRelations = relations(
+  oauthLinkRequests,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [oauthLinkRequests.userId],
+      references: [users.id],
+    }),
+  }),
+);
 
 export const sessionsRelations = relations(sessions, ({ one }) => ({
   user: one(users, { fields: [sessions.userId], references: [users.id] }),
@@ -324,3 +374,4 @@ export type UserConsent = typeof userConsents.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type Invoice = typeof invoices.$inferSelect;
+export type OAuthLinkRequest = typeof oauthLinkRequests.$inferSelect;

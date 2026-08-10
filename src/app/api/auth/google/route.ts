@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { createOAuthLinkState } from "@/lib/auth/oauth-state";
+import { getCurrentUser } from "@/lib/auth/session";
 
 export async function GET() {
   const clientId = process.env.GOOGLE_CLIENT_ID;
@@ -20,6 +22,13 @@ export async function GET() {
   googleAuthUrl.searchParams.set("response_type", "code");
   googleAuthUrl.searchParams.set("scope", scope);
   googleAuthUrl.searchParams.set("access_type", "online");
+
+  // If user is logged in, create a secure link state (CSRF-safe)
+  const user = await getCurrentUser();
+  if (user) {
+    const linkState = await createOAuthLinkState(user.id, "google");
+    googleAuthUrl.searchParams.set("state", linkState);
+  }
 
   return NextResponse.redirect(googleAuthUrl.toString());
 }

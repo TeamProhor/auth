@@ -1,7 +1,12 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { redirect } from "next/navigation";
-import { revokeAllSessionsAction, revokeSessionAction } from "@/actions/user";
+import {
+  getUserAccountsAction,
+  revokeAllSessionsAction,
+  revokeSessionAction,
+} from "@/actions/user";
 import { MaskedIpAddress } from "@/components/dashboard/masked-ip";
+import { ConnectedAccountsSection } from "@/components/security/connected-accounts-section";
 import { PasswordChangeSection } from "@/components/security/password-change-dialog";
 import { TwoFactorSection } from "@/components/security/two-factor-section";
 import { SubmitButton } from "@/components/submit-button";
@@ -59,14 +64,55 @@ function parseUserAgent(ua: string | null): string {
   return "Unknown Device";
 }
 
-export default async function SecurityPage() {
-  const user = await getCurrentUser();
+const LINK_MESSAGES: Record<
+  string,
+  { type: "success" | "error"; text: string }
+> = {
+  github_linked: { type: "success", text: "GitHub অ্যাকাউন্ট সফলভাবে সংযুক্ত হয়েছে।" },
+  google_linked: { type: "success", text: "Google অ্যাকাউন্ট সফলভাবে সংযুক্ত হয়েছে।" },
+  link_state_invalid: {
+    type: "error",
+    text: "লিংক অনুরোধের মেয়াদ শেষ হয়েছে বা ইতিমধ্যে ব্যবহার করা হয়েছে। আবার চেষ্টা করুন।",
+  },
+  provider_already_linked: {
+    type: "error",
+    text: "এই Google/GitHub অ্যাকাউন্টটি ইতিমধ্যে অন্য একটি Prohor অ্যাকাউন্টে সংযুক্ত আছে।",
+  },
+};
+
+interface SecurityPageProps {
+  searchParams: Promise<{ success?: string; error?: string }>;
+}
+
+export default async function SecurityPage({
+  searchParams,
+}: SecurityPageProps) {
+  const [params, user] = await Promise.all([searchParams, getCurrentUser()]);
   if (!user) redirect("/login");
 
-  const activeSessions = await getUserSessions(user.id);
+  const feedbackKey = params.success ?? params.error;
+  const feedback = feedbackKey ? LINK_MESSAGES[feedbackKey] : null;
+
+  const [activeSessions, userAccounts] = await Promise.all([
+    getUserSessions(user.id),
+    getUserAccountsAction(),
+  ]);
+
+  const linkedProviders = userAccounts.map((a) => a.provider);
 
   return (
     <div className="max-w-4xl space-y-8">
+      {feedback && (
+        <div
+          className={`px-4 py-3 rounded-xl text-sm leading-relaxed border ${
+            feedback.type === "success"
+              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
+              : "bg-destructive/10 border-destructive/20 text-destructive"
+          }`}
+        >
+          {feedback.text}
+        </div>
+      )}
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           নিরাপত্তা ও সেশন
@@ -80,6 +126,8 @@ export default async function SecurityPage() {
         <PasswordChangeSection />
         <TwoFactorSection twoFactorEnabled={user.twoFactorEnabled} />
       </div>
+
+      <ConnectedAccountsSection linkedProviders={linkedProviders} />
 
       <div className="space-y-4 pt-6 border-t border-border">
         <div className="flex items-center justify-between">

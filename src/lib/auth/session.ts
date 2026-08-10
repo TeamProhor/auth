@@ -1,6 +1,6 @@
 import "server-only";
 import { randomBytes } from "node:crypto";
-import { and, eq, gt } from "drizzle-orm";
+import { and, eq, gt, lt } from "drizzle-orm";
 import { cookies } from "next/headers";
 import { db } from "@/db";
 import type { User } from "@/db/schema";
@@ -25,6 +25,13 @@ export async function createSession(
 ): Promise<void> {
   const token = generateToken();
   const expiresAt = getExpiresAt();
+
+  // Delete expired sessions for this user
+  await db
+    .delete(sessions)
+    .where(
+      and(eq(sessions.userId, userId), lt(sessions.expiresAt, new Date())),
+    );
 
   await db.insert(sessions).values({
     userId,

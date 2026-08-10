@@ -54,7 +54,7 @@ export function PasswordChangeSection() {
                 {state.error}
               </p>
             )}
-            {state && state.success && "message" in state && (
+            {state?.success && "message" in state && (
               <p className="text-sm text-emerald-500 font-medium">
                 {state.message}
               </p>

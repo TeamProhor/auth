@@ -130,3 +130,62 @@ export async function revokeAllSessionsAction(): Promise<void> {
 
   revalidatePath("/dashboard/security");
 }
+
+// ─── Connected Accounts & Unlink ─────────────────────────────────────────────
+
+export async function getUserAccountsAction() {
+  const user = await getCurrentUser();
+  if (!user) return [];
+
+  return db.select().from(accounts).where(eq(accounts.userId, user.id));
+}
+
+export async function unlinkAccountAction(
+  provider: "google" | "github",
+): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const userAccounts = await db
+    .select()
+    .from(accounts)
+    .where(eq(accounts.userId, user.id));
+
+  const accountToRemove = userAccounts.find((a) => a.provider === provider);
+  if (!accountToRemove) {
+    return { success: false, error: "এই প্রভাইডার আপনার অ্যাকাউন্টে সংযুক্ত নেই।" };
+  }
+
+  // After removal, must have at least one usable login method:
+  // - email provider with a password, OR
+  // - any other OAuth provider
+  const remaining = userAccounts.filter((a) => a.provider !== provider);
+  const hasUsableLogin = remaining.some(
+    (a) =>
+      a.provider === "google" || a.provider === "github" || !!a.passwordHash,
+  );
+
+  if (!hasUsableLogin) {
+    return {
+      success: false,
+      error:
+        "বিচ্ছিন্ন করার পর আপনার কোনো লগইন মাধ্যম থাকবে না। প্রথমে পাসওয়ার্ড সেট করুন বা অন্য একটি অ্যাকাউন্ট সংযুক্ত করুন।",
+    };
+  }
+
+  await db
+    .delete(accounts)
+    .where(and(eq(accounts.userId, user.id), eq(accounts.provider, provider)));
+
+  await logEvent({
+    userId: user.id,
+    eventType: "oauth_account_unlinked",
+    details: `Unlinked provider: ${provider}`,
+  });
+
+  revalidatePath("/dashboard/security");
+  return {
+    success: true,
+    message: "সংযুক্ত অ্যাকাউন্ট সফলভাবে বিচ্ছিন্ন করা হয়েছে।",
+  };
+}
