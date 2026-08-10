@@ -54,6 +54,7 @@ export const accounts = sqliteTable(
     }).notNull(),
     // NULL for email provider, required for OAuth providers
     providerAccountId: text("provider_account_id"),
+    providerUsername: text("provider_username"), // Email or username returned by provider
     passwordHash: text("password_hash"), // Only for email provider
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()

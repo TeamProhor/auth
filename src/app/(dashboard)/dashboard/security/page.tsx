@@ -8,6 +8,7 @@ import {
 import { MaskedIpAddress } from "@/components/dashboard/masked-ip";
 import { ConnectedAccountsSection } from "@/components/security/connected-accounts-section";
 import { PasswordChangeSection } from "@/components/security/password-change-dialog";
+import { SecurityToastHandler } from "@/components/security/security-toast-handler";
 import { TwoFactorSection } from "@/components/security/two-factor-section";
 import { SubmitButton } from "@/components/submit-button";
 import { Badge } from "@/components/ui/badge";
@@ -91,28 +92,18 @@ export default async function SecurityPage({
   if (!user) redirect("/login");
 
   const feedbackKey = params.success ?? params.error;
-  const feedback = feedbackKey ? LINK_MESSAGES[feedbackKey] : null;
+  const _feedback = feedbackKey ? LINK_MESSAGES[feedbackKey] : null;
 
   const [activeSessions, userAccounts] = await Promise.all([
     getUserSessions(user.id),
     getUserAccountsAction(),
   ]);
 
-  const linkedProviders = userAccounts.map((a) => a.provider);
+  const _linkedProviders = userAccounts.map((a) => a.provider);
 
   return (
     <div className="max-w-4xl space-y-8">
-      {feedback && (
-        <div
-          className={`px-4 py-3 rounded-xl text-sm leading-relaxed border ${
-            feedback.type === "success"
-              ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-600 dark:text-emerald-400"
-              : "bg-destructive/10 border-destructive/20 text-destructive"
-          }`}
-        >
-          {feedback.text}
-        </div>
-      )}
+      <SecurityToastHandler />
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           নিরাপত্তা ও সেশন
@@ -127,7 +118,7 @@ export default async function SecurityPage({
         <TwoFactorSection twoFactorEnabled={user.twoFactorEnabled} />
       </div>
 
-      <ConnectedAccountsSection linkedProviders={linkedProviders} />
+      <ConnectedAccountsSection userAccounts={userAccounts} />
 
       <div className="space-y-4 pt-6 border-t border-border">
         <div className="flex items-center justify-between">

@@ -2,11 +2,12 @@
 
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { enableDeveloperAccessAction } from "@/actions/developer";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import type { User } from "@/db/schema";
+import { showToast } from "@/lib/toast";
 
 interface DeveloperApplyCardProps {
   user: User;
@@ -15,20 +16,26 @@ interface DeveloperApplyCardProps {
 export function DeveloperApplyCard({ user }: DeveloperApplyCardProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
 
   const firstName = user.name.split(" ")[0];
 
   const handleEnableDeveloper = () => {
-    setError(null);
     startTransition(async () => {
-      const res = await enableDeveloperAccessAction();
-      if (res.success) {
-        router.push("/developer");
-        router.refresh();
-      } else {
-        setError(res.error || "একটি সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।");
-      }
+      await showToast.promise(enableDeveloperAccessAction(), {
+        loading: "ডেভেলপার অ্যাক্সেস চালু করা হচ্ছে...",
+        success: (res) => {
+          if (!res.success) {
+            throw new Error(res.error || "একটি সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।");
+          }
+          router.push("/developer");
+          router.refresh();
+          return "ডেভেলপার পোর্টালে স্বাগতম!";
+        },
+        error: (err) =>
+          err instanceof Error
+            ? err.message
+            : "একটি সমস্যা হয়েছে। পুনরায় চেষ্টা করুন।",
+      });
     });
   };
 
@@ -89,12 +96,6 @@ export function DeveloperApplyCard({ user }: DeveloperApplyCardProps) {
           আপনার অ্যাপ্লিকেশনে প্রহর SSO, OAuth 2.0 এবং সেন্ট্রাল আইডেন্টিটি ইন্টিগ্রেট করতে
           ডেভেলপার অ্যাক্সেস চালু করুন।
         </p>
-
-        {error && (
-          <div className="mt-4 p-3 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium max-w-md mx-auto">
-            {error}
-          </div>
-        )}
 
         <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
           <Button

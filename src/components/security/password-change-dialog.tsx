@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState, useTransition } from "react";
 import { changePasswordAction } from "@/actions/user";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
@@ -15,10 +15,42 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { MESSAGES, showToast } from "@/lib/toast";
 
 export function PasswordChangeSection() {
   const [open, setOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const [state, formAction] = useActionState(changePasswordAction, null);
+
+  useEffect(() => {
+    if (!state) return;
+    if (state.success) {
+      showToast.success(
+        state.message ?? MESSAGES.SECURITY.PASSWORD_CHANGE_SUCCESS,
+      );
+      setOpen(false);
+    } else {
+      showToast.error(state.error ?? MESSAGES.SECURITY.PASSWORD_CHANGE_ERROR);
+    }
+  }, [state]);
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    startTransition(async () => {
+      await showToast.promise(
+        new Promise((resolve) => {
+          formAction(formData);
+          resolve(true);
+        }),
+        {
+          loading: MESSAGES.SECURITY.PASSWORD_CHANGE_LOADING,
+          success: MESSAGES.SECURITY.PASSWORD_CHANGE_SUCCESS,
+          error: MESSAGES.SECURITY.PASSWORD_CHANGE_ERROR,
+        },
+      );
+    });
+  };
 
   return (
     <Card className="p-6 flex flex-col justify-between space-y-4">
@@ -48,18 +80,7 @@ export function PasswordChangeSection() {
             </DialogDescription>
           </DialogHeader>
 
-          <form action={formAction} className="space-y-4 pt-2">
-            {state && !state.success && (
-              <p className="text-sm text-destructive font-medium">
-                {state.error}
-              </p>
-            )}
-            {state?.success && "message" in state && (
-              <p className="text-sm text-emerald-500 font-medium">
-                {state.message}
-              </p>
-            )}
-
+          <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <FieldGroup>
               <Field>
                 <FieldLabel htmlFor="currentPassword">বর্তমান পাসওয়ার্ড</FieldLabel>
@@ -100,7 +121,9 @@ export function PasswordChangeSection() {
               >
                 বাতিল
               </Button>
-              <SubmitButton className="rounded-lg px-4">আপডেট করুন</SubmitButton>
+              <SubmitButton isPending={isPending} className="rounded-lg px-4">
+                আপডেট করুন
+              </SubmitButton>
             </div>
           </form>
         </DialogContent>

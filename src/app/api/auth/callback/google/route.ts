@@ -133,13 +133,14 @@ export async function GET(request: NextRequest) {
           userId: linkingUserId,
           provider: "google",
           providerAccountId,
+          providerUsername: verifiedEmail,
         });
 
         await logEvent({
           userId: linkingUserId,
           eventType: "oauth_account_linked",
           ipAddress: ip,
-          details: `Linked Google account sub: ${providerAccountId}`,
+          details: `Linked Google account sub: ${providerAccountId} (${verifiedEmail})`,
         });
       }
 
@@ -203,6 +204,7 @@ export async function GET(request: NextRequest) {
       userId: newUser.id,
       provider: "google",
       providerAccountId,
+      providerUsername: verifiedEmail,
     });
 
     await logEvent({

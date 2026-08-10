@@ -159,13 +159,14 @@ export async function GET(request: NextRequest) {
           userId: linkingUserId,
           provider: "github",
           providerAccountId,
+          providerUsername: ghUser.login,
         });
 
         await logEvent({
           userId: linkingUserId,
           eventType: "oauth_account_linked",
           ipAddress: ip,
-          details: `Linked GitHub account ID: ${providerAccountId}`,
+          details: `Linked GitHub account ID: ${providerAccountId} (${ghUser.login})`,
         });
       }
 
@@ -235,6 +236,7 @@ export async function GET(request: NextRequest) {
       userId: newUser.id,
       provider: "github",
       providerAccountId,
+      providerUsername: ghUser.login,
     });
 
     await logEvent({

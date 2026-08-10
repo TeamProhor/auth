@@ -4,6 +4,7 @@ import { Icon } from "@iconify/react";
 import { useRef, useState, useTransition } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
+import { showToast } from "@/lib/toast";
 import { uploadAndCompressAvatarAction } from "@/lib/upload";
 
 interface AvatarUploaderProps {
@@ -19,24 +20,28 @@ export function AvatarUploader({
     currentAvatarUrl ?? null,
   );
   const [isPending, startTransition] = useTransition();
-  const [errorMsg, setErrorMsg] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    setErrorMsg("");
     const formData = new FormData();
     formData.append("file", file);
 
     startTransition(async () => {
-      const res = await uploadAndCompressAvatarAction(formData);
-      if (res.success && res.avatarUrl) {
-        setAvatarUrl(res.avatarUrl);
-      } else {
-        setErrorMsg(res.error || "আপলোড ব্যর্থ হয়েছে।");
-      }
+      await showToast.promise(uploadAndCompressAvatarAction(formData), {
+        loading: "ছবি আপলোড ও প্রসেস করা হচ্ছে...",
+        success: (res) => {
+          if (!res.success || !res.avatarUrl) {
+            throw new Error(res.error || "আপলোড ব্যর্থ হয়েছে।");
+          }
+          setAvatarUrl(res.avatarUrl);
+          return "প্রোফাইল ছবি সফলভাবে আপডেট করা হয়েছে";
+        },
+        error: (err) =>
+          err instanceof Error ? err.message : "আপলোড ব্যর্থ হয়েছে।",
+      });
     });
   };
 
@@ -79,10 +84,6 @@ export function AvatarUploader({
           className="hidden"
         />
       </button>
-
-      {errorMsg && (
-        <p className="text-xs text-destructive font-medium">{errorMsg}</p>
-      )}
     </div>
   );
 }

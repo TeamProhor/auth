@@ -1,0 +1,1 @@
+ALTER TABLE `accounts` ADD `provider_username` text;

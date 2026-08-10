@@ -1,32 +1,39 @@
 "use client";
 
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useState, useTransition } from "react";
+import { useTransition } from "react";
 import { unlinkAccountAction } from "@/actions/user";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import type { Account } from "@/db/schema";
+import { MESSAGES, showToast } from "@/lib/toast";
 
 interface ConnectedAccountsSectionProps {
-  linkedProviders: string[];
+  userAccounts: Account[];
 }
 
 export function ConnectedAccountsSection({
-  linkedProviders,
+  userAccounts,
 }: ConnectedAccountsSectionProps) {
   const [isPending, startTransition] = useTransition();
-  const [error, setError] = useState<string | null>(null);
 
-  const hasGoogle = linkedProviders.includes("google");
-  const hasGitHub = linkedProviders.includes("github");
+  const googleAccount = userAccounts.find((a) => a.provider === "google");
+  const githubAccount = userAccounts.find((a) => a.provider === "github");
 
   const handleUnlink = (provider: "google" | "github") => {
-    setError(null);
     startTransition(async () => {
-      const res = await unlinkAccountAction(provider);
-      if (!res.success) {
-        setError(res.error);
-      }
+      await showToast.promise(unlinkAccountAction(provider), {
+        loading: MESSAGES.SECURITY.UNLINK_LOADING,
+        success: (res) => {
+          if (!res.success) {
+            throw new Error(res.error);
+          }
+          return res.message ?? MESSAGES.SECURITY.UNLINK_SUCCESS;
+        },
+        error: (err) =>
+          err instanceof Error ? err.message : MESSAGES.SECURITY.UNLINK_ERROR,
+      });
     });
   };
 
@@ -41,27 +48,23 @@ export function ConnectedAccountsSection({
         </CardDescription>
       </div>
 
-      {error && (
-        <p className="text-xs text-destructive bg-destructive/10 px-3 py-2 rounded-lg font-medium">
-          {error}
-        </p>
-      )}
-
       <div className="space-y-4">
         {/* Google Provider */}
         <div className="flex items-center justify-between p-4 border border-border rounded-xl bg-muted/20">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center">
+            <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
               <Icon icon="logos:google-icon" width="20" height="20" />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">Google</p>
               <p className="text-xs text-muted-foreground">
-                {hasGoogle ? "সংযুক্ত আছে" : "সংযুক্ত নেই"}
+                {googleAccount
+                  ? googleAccount.providerUsername || "সংযুক্ত আছে"
+                  : "সংযুক্ত নেই"}
               </p>
             </div>
           </div>
-          {hasGoogle ? (
+          {googleAccount ? (
             <SubmitButton
               variant="outline"
               size="sm"
@@ -88,17 +91,19 @@ export function ConnectedAccountsSection({
         {/* GitHub Provider */}
         <div className="flex items-center justify-between p-4 border border-border rounded-xl bg-muted/20">
           <div className="flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center">
+            <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
               <Icon icon="logos:github-icon" width="20" height="20" />
             </div>
             <div>
               <p className="text-sm font-semibold text-foreground">GitHub</p>
               <p className="text-xs text-muted-foreground">
-                {hasGitHub ? "সংযুক্ত আছে" : "সংযুক্ত নেই"}
+                {githubAccount
+                  ? `@${githubAccount.providerUsername}` || "সংযুক্ত আছে"
+                  : "সংযুক্ত নেই"}
               </p>
             </div>
           </div>
-          {hasGitHub ? (
+          {githubAccount ? (
             <SubmitButton
               variant="outline"
               size="sm"
