@@ -1,7 +1,7 @@
 "use client";
 
-import { Icon } from "@iconify/react";
 import { useState } from "react";
+import { Eye, EyeClosed } from "@/components/icons";
 
 export function MaskedIpAddress({ ip }: { ip: string | null }) {
   const [show, setShow] = useState(false);
@@ -28,11 +28,7 @@ export function MaskedIpAddress({ ip }: { ip: string | null }) {
         className="p-1 hover:text-foreground transition-colors cursor-pointer rounded hover:bg-muted/60"
         title={show ? "আইপি লুকান" : "আইপি দেখুন"}
       >
-        <Icon
-          icon={show ? "solar:eye-closed-bold" : "solar:eye-bold"}
-          width="14"
-          height="14"
-        />
+        {show ? <EyeClosed size={14} /> : <Eye size={14} />}
       </button>
     </div>
   );

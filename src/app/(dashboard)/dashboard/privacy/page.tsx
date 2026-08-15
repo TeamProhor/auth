@@ -1,6 +1,6 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { redirect } from "next/navigation";
-import { revokeAppAccessAction } from "@/actions/developer";
+import { revokeAppAccessAction } from "@/actions/oauth";
+import { CloudDownload } from "@/components/icons";
 import { SubmitButton } from "@/components/submit-button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -23,7 +23,7 @@ export default async function PrivacyPage() {
   const connectedApps = await getConnectedApps(user.id);
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-5xl space-y-8">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           ডেটা ও গোপনীয়তা
@@ -36,12 +36,7 @@ export default async function PrivacyPage() {
       <Card className="p-6 md:p-8 space-y-6">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 border-b border-border pb-6">
           <div className="size-12 rounded-full bg-primary/10 flex items-center justify-center shrink-0 border border-primary/20">
-            <Icon
-              icon="solar:cloud-download-bold"
-              width="24"
-              height="24"
-              className="text-primary"
-            />
+            <CloudDownload size={24} className="text-primary" />
           </div>
           <div className="flex-1">
             <h3 className="text-lg font-bold text-foreground">
@@ -92,7 +87,7 @@ export default async function PrivacyPage() {
                         <span>{client.name}</span>
                       </TableCell>
                       <TableCell className="text-muted-foreground text-xs">
-                        {consent.grantedScopes ?? "বেসিক প্রোফাইল"}
+                        {consent.scopes?.join(", ") ?? "বেসিক প্রোফাইল"}
                       </TableCell>
                       <TableCell className="text-right">
                         <form

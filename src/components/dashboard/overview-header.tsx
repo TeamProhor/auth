@@ -1,4 +1,4 @@
-import { Icon } from "@iconify/react";
+import { Devices, PlugCircle, StarFall } from "@/components/icons";
 import type { User } from "@/db/schema";
 import type { Plan } from "@/lib/constants/billing";
 
@@ -31,19 +31,15 @@ export function OverviewHeader({ user, stats, plan }: OverviewHeaderProps) {
       </div>
       <div className="flex items-center gap-3 flex-wrap">
         <div className="bg-card border border-border px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 text-muted-foreground">
-          <Icon icon="solar:devices-bold" width="16" height="16" />
+          <Devices size={16} />
           {toBengaliNum(stats.activeSessions)}টি সক্রিয় সেশন
         </div>
         <div className="bg-card border border-border px-4 py-2 rounded-xl text-sm font-medium flex items-center gap-2 text-muted-foreground">
-          <Icon icon="solar:plug-circle-bold" width="16" height="16" />
+          <PlugCircle size={16} />
           {toBengaliNum(stats.connectedApps)}টি অ্যাপ সংযুক্ত
         </div>
         <div className="bg-primary/10 text-primary border border-primary/20 px-4 py-2 rounded-xl text-sm font-semibold flex items-center gap-2">
-          <Icon
-            icon="solar:star-fall-minimalistic-2-bold"
-            width="18"
-            height="18"
-          />
+          <StarFall size={18} />
           {planName} মেম্বার
         </div>
       </div>

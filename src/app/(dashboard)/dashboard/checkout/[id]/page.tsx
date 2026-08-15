@@ -1,7 +1,7 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { CheckoutForm } from "@/components/billing/checkout-form";
+import { ArrowLeft, CheckCircle } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -23,13 +23,13 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
   }
 
   return (
-    <div className="max-w-4xl space-y-8 pb-12">
+    <div className="max-w-5xl space-y-8 pb-12">
       <div className="flex items-center gap-3">
         <Link
           href="/dashboard/billing"
           className="size-9 rounded-xl border border-border bg-background hover:bg-accent/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
         >
-          <Icon icon="solar:arrow-left-bold" width="18" height="18" />
+          <ArrowLeft size={18} />
         </Link>
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-foreground">
@@ -78,9 +78,9 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
                   key={feat}
                   className="flex items-center gap-2 text-xs font-medium text-foreground"
                 >
-                  <Icon
-                    icon="solar:check-circle-bold"
-                    className="size-4 text-emerald-500 shrink-0"
+                  <CheckCircle
+                    size={16}
+                    className="text-emerald-500 shrink-0"
                   />
                   <span>{feat}</span>
                 </li>

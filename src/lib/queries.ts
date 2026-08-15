@@ -72,7 +72,7 @@ export async function getDeveloperStats(userId: string) {
     const myApps = await db
       .select({ clientId: oauthClients.clientId })
       .from(oauthClients)
-      .where(eq(oauthClients.createdByUserId, userId));
+      .where(eq(oauthClients.ownerId, userId));
     if (myApps.length === 0)
       return { totalApps: 0, totalUsers: 0, totalTokens: 0, activeTokens: 0 };
 
@@ -120,7 +120,7 @@ export async function getDeveloperUsers(
     const myApps = await db
       .select({ clientId: oauthClients.clientId, name: oauthClients.name })
       .from(oauthClients)
-      .where(eq(oauthClients.createdByUserId, developerUserId));
+      .where(eq(oauthClients.ownerId, developerUserId));
     if (myApps.length === 0) return { users: [], total: 0, apps: [] };
 
     const clientIds = myApps.map((a) => a.clientId);
@@ -152,7 +152,7 @@ export async function getDeveloperDailyUsage(developerUserId: string) {
     const myApps = await db
       .select({ clientId: oauthClients.clientId })
       .from(oauthClients)
-      .where(eq(oauthClients.createdByUserId, developerUserId));
+      .where(eq(oauthClients.ownerId, developerUserId));
     if (myApps.length === 0) return [];
 
     const clientIds = myApps.map((a) => a.clientId);

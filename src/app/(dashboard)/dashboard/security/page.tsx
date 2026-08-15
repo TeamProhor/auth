@@ -1,11 +1,13 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { redirect } from "next/navigation";
+import type { ComponentType } from "react";
+import { Suspense } from "react";
 import {
   getUserAccountsAction,
   revokeAllSessionsAction,
   revokeSessionAction,
 } from "@/actions/user";
 import { MaskedIpAddress } from "@/components/dashboard/masked-ip";
+import { Laptop, Mobile, Tablet } from "@/components/icons";
 import { ConnectedAccountsSection } from "@/components/security/connected-accounts-section";
 import { PasswordChangeSection } from "@/components/security/password-change-dialog";
 import { SecurityToastHandler } from "@/components/security/security-toast-handler";
@@ -38,13 +40,14 @@ function _formatDate(date: Date): string {
   );
 }
 
-function getDeviceIcon(userAgent: string | null): string {
-  if (!userAgent) return "solar:laptop-bold";
+function getDeviceIcon(
+  userAgent: string | null,
+): ComponentType<{ size?: number | string; className?: string }> {
+  if (!userAgent) return Laptop;
   const ua = userAgent.toLowerCase();
-  if (ua.includes("iphone") || ua.includes("android"))
-    return "solar:smartphone-bold";
-  if (ua.includes("ipad") || ua.includes("tablet")) return "solar:tablet-bold";
-  return "solar:laptop-bold";
+  if (ua.includes("iphone") || ua.includes("android")) return Mobile;
+  if (ua.includes("ipad") || ua.includes("tablet")) return Tablet;
+  return Laptop;
 }
 
 function _formatIp(ip: string | null): string {
@@ -102,8 +105,10 @@ export default async function SecurityPage({
   const _linkedProviders = userAccounts.map((a) => a.provider);
 
   return (
-    <div className="max-w-4xl space-y-8">
-      <SecurityToastHandler />
+    <div className="max-w-5xl space-y-8">
+      <Suspense fallback={null}>
+        <SecurityToastHandler />
+      </Suspense>
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           নিরাপত্তা ও সেশন
@@ -155,48 +160,51 @@ export default async function SecurityPage({
                   </TableCell>
                 </TableRow>
               ) : (
-                activeSessions.map((session) => (
-                  <TableRow key={session.id}>
-                    <TableCell className="font-bold flex items-center gap-3">
-                      <div className="size-9 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
-                        <Icon
-                          icon={getDeviceIcon(session.userAgent)}
-                          width="20"
-                          height="20"
-                          className={
-                            session.isCurrent
-                              ? "text-primary"
-                              : "text-muted-foreground"
-                          }
-                        />
-                      </div>
-                      <span>{parseUserAgent(session.userAgent)}</span>
-                    </TableCell>
-                    <TableCell>
-                      <MaskedIpAddress ip={session.ipAddress} />
-                    </TableCell>
-                    <TableCell className="text-muted-foreground text-xs">
-                      {bnDateTimeFormatter.format(new Date(session.createdAt))}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {session.isCurrent ? (
-                        <Badge variant="secondary">বর্তমান</Badge>
-                      ) : (
-                        <form
-                          action={revokeSessionAction.bind(null, session.id)}
-                        >
-                          <SubmitButton
-                            variant="ghost"
-                            size="sm"
-                            className="text-destructive hover:text-destructive hover:bg-destructive/10 text-xs cursor-pointer"
+                activeSessions.map((session) => {
+                  const DeviceIcon = getDeviceIcon(session.userAgent);
+                  return (
+                    <TableRow key={session.id}>
+                      <TableCell className="font-bold flex items-center gap-3">
+                        <div className="size-9 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
+                          <DeviceIcon
+                            size={20}
+                            className={
+                              session.isCurrent
+                                ? "text-primary"
+                                : "text-muted-foreground"
+                            }
+                          />
+                        </div>
+                        <span>{parseUserAgent(session.userAgent)}</span>
+                      </TableCell>
+                      <TableCell>
+                        <MaskedIpAddress ip={session.ipAddress} />
+                      </TableCell>
+                      <TableCell className="text-muted-foreground text-xs">
+                        {bnDateTimeFormatter.format(
+                          new Date(session.createdAt),
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        {session.isCurrent ? (
+                          <Badge variant="secondary">বর্তমান</Badge>
+                        ) : (
+                          <form
+                            action={revokeSessionAction.bind(null, session.id)}
                           >
-                            বাতিল করুন
-                          </SubmitButton>
-                        </form>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))
+                            <SubmitButton
+                              variant="ghost"
+                              size="sm"
+                              className="text-destructive hover:text-destructive hover:bg-destructive/10 text-xs cursor-pointer"
+                            >
+                              বাতিল করুন
+                            </SubmitButton>
+                          </form>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })
               )}
             </TableBody>
           </Table>

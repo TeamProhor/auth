@@ -1,8 +1,8 @@
 "use client";
 
-import { Icon } from "@iconify/react/dist/iconify.js";
 import { useState, useTransition } from "react";
 import { verify2FALoginAction } from "@/actions/two-factor";
+import { ShieldLock } from "@/components/icons";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import {
@@ -38,7 +38,7 @@ export function TwoFactorLoginCard({ userId }: TwoFactorLoginCardProps) {
   return (
     <div className="flex flex-col items-center gap-6 w-full">
       <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4 text-primary">
-        <Icon icon="solar:shield-keyhole-bold" width="36" height="36" />
+        <ShieldLock size={36} />
       </div>
 
       <div className="flex flex-col gap-1 text-center">

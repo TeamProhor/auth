@@ -28,7 +28,7 @@ export default async function ProfilePage() {
   if (!user) redirect("/login");
 
   return (
-    <div className="max-w-4xl space-y-8">
+    <div className="max-w-5xl space-y-8">
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
           ব্যক্তিগত তথ্য

@@ -9,6 +9,7 @@ import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { signIn } from "@/lib/auth-client";
 
 type Mode = "email" | "password" | "register";
 
@@ -151,13 +152,19 @@ export function LoginForm({ initial2FAUserId }: LoginFormProps) {
       <SocialLogins
         isGooglePending={isGooglePending}
         isGitHubPending={isGitHubPending}
-        onGoogleClick={() => {
+        onGoogleClick={async () => {
           setIsGooglePending(true);
-          window.location.href = "/api/auth/google";
+          await signIn.social({
+            provider: "google",
+            callbackURL: "/dashboard",
+          });
         }}
-        onGitHubClick={() => {
+        onGitHubClick={async () => {
           setIsGitHubPending(true);
-          window.location.href = "/api/auth/github";
+          await signIn.social({
+            provider: "github",
+            callbackURL: "/dashboard",
+          });
         }}
       />
 

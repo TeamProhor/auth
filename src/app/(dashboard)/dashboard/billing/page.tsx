@@ -1,7 +1,9 @@
-import { Icon } from "@iconify/react/dist/iconify.js";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 import { getUserInvoices, getUserSubscription } from "@/actions/billing";
+import { BillingToastHandler } from "@/components/billing/billing-toast-handler";
+import { CheckCircle, CrownStar } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -23,15 +25,8 @@ const bnDateFormatter = new Intl.DateTimeFormat("bn", {
   timeStyle: "short",
 });
 
-interface BillingPageProps {
-  searchParams: Promise<{ subscribed?: string }>;
-}
-
-export default async function BillingPage({ searchParams }: BillingPageProps) {
-  const [user, { subscribed }] = await Promise.all([
-    getCurrentUser(),
-    searchParams,
-  ]);
+export default async function BillingPage() {
+  const user = await getCurrentUser();
   if (!user) redirect("/login");
   const [subscription, userInvoices] = await Promise.all([
     getUserSubscription(user.id),
@@ -43,6 +38,10 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
 
   return (
     <div className="max-w-5xl space-y-10 pb-12">
+      <Suspense fallback={null}>
+        <BillingToastHandler />
+      </Suspense>
+
       {/* ─── Header ─── */}
       <div className="space-y-1">
         <h2 className="text-2xl font-bold tracking-tight text-foreground">
@@ -53,22 +52,12 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
         </p>
       </div>
 
-      {subscribed && (
-        <Card className="p-4 border-emerald-500/30 bg-emerald-500/10 text-emerald-500 flex items-center gap-3">
-          <Icon icon="solar:check-circle-bold" width="20" height="20" />
-          <p className="text-sm font-semibold">
-            অভিনন্দন! আপনার সাবস্ক্রিপশন সফলভাবে আপডেট করা হয়েছে।
-          </p>
-        </Card>
-      )}
-
       {/* ─── Active Subscription Overview ─── */}
       <Card className="p-6 md:p-8 border-primary/30 bg-primary/5 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="space-y-2">
           <div className="flex items-center gap-2">
             <span className="text-xs font-bold text-primary uppercase tracking-widest flex items-center gap-1.5">
-              <Icon icon="solar:crown-star-bold" width="16" height="16" /> বর্তমান
-              সক্রিয় প্ল্যান
+              <CrownStar size={16} /> বর্তমান সক্রিয় প্ল্যান
             </span>
             <Badge variant="default" className="text-xs">
               {subscription?.status === "active" ? "সক্রিয়" : "ফ্রি"}
@@ -143,9 +132,9 @@ export default async function BillingPage({ searchParams }: BillingPageProps) {
                         key={feat}
                         className="flex items-center gap-2 text-xs text-foreground"
                       >
-                        <Icon
-                          icon="solar:check-circle-bold"
-                          className="size-4 text-emerald-500 shrink-0"
+                        <CheckCircle
+                          size={16}
+                          className="text-emerald-500 shrink-0"
                         />
                         <span>{feat}</span>
                       </li>

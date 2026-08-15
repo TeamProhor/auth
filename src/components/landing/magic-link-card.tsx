@@ -1,19 +1,14 @@
 "use client";
 
-import { Icon } from "@iconify/react";
 import Link from "next/link";
+import { DirectInbox } from "@/components/icons";
 import { Button } from "@/components/ui/button";
 
 export function MagicLinkCard({ email }: { email?: string }) {
   return (
     <div className="flex flex-col items-center gap-6">
       <div className="size-16 rounded-full bg-accent flex items-center justify-center border border-border shadow-inner">
-        <Icon
-          icon="solar:letter-bold"
-          width="32"
-          height="32"
-          className="text-foreground"
-        />
+        <DirectInbox size={32} className="text-foreground" />
       </div>
 
       <div className="flex flex-col gap-3">

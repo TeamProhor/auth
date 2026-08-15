@@ -1,8 +1,7 @@
-import { Icon } from "@iconify/react";
 import Link from "next/link";
+import { CloudPlus } from "@/components/icons";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-
 import { STORAGE_BREAKDOWN } from "@/lib/constants/ui";
 
 export function StorageWidget() {
@@ -40,8 +39,7 @@ export function StorageWidget() {
         href="/dashboard/billing"
         className="w-full mt-4 flex items-center justify-center gap-2 text-sm font-semibold text-primary hover:underline"
       >
-        <Icon icon="solar:cloud-plus-bold" width="20" height="20" /> স্টোরেজ
-        আপগ্রেড করুন
+        <CloudPlus size={20} /> স্টোরেজ আপগ্রেড করুন
       </Link>
     </Card>
   );

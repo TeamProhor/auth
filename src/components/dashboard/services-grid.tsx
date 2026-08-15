@@ -1,7 +1,8 @@
-import { Icon } from "@iconify/react";
 import Link from "next/link";
+import { WidgetAdd } from "@/components/icons";
 import { Card } from "@/components/ui/card";
 import type { OAuthClient, UserConsent } from "@/db/schema";
+import { PROHOR_SERVICES } from "@/lib/constants/ui";
 
 interface ServicesGridProps {
   connectedApps: Array<{
@@ -10,36 +11,37 @@ interface ServicesGridProps {
   }>;
 }
 
-import { PROHOR_SERVICES } from "@/lib/constants/ui";
-
 export function ServicesGrid({ connectedApps }: ServicesGridProps) {
   return (
     <div className="space-y-4">
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        {PROHOR_SERVICES.map((item) => (
-          <Link key={item.title} href={item.href}>
-            <Card className="p-5 hover:border-primary/50 hover:shadow-md transition-[border-color,box-shadow] group flex flex-col items-center text-center gap-3">
-              <div
-                className={`size-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform ${item.color}`}
-              >
-                <Icon icon={item.icon} width="32" height="32" />
-              </div>
-              <div>
-                <p className="text-sm font-bold text-foreground">
-                  {item.title}
-                </p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  {item.desc}
-                </p>
-              </div>
-            </Card>
-          </Link>
-        ))}
+        {PROHOR_SERVICES.map((item) => {
+          const ServiceIcon = item.icon;
+          return (
+            <Link key={item.title} href={item.href}>
+              <Card className="p-5 hover:border-primary/50 hover:shadow-md transition-[border-color,box-shadow] group flex flex-col items-center text-center gap-3">
+                <div
+                  className={`size-14 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform ${item.color}`}
+                >
+                  <ServiceIcon size={32} />
+                </div>
+                <div>
+                  <p className="text-sm font-bold text-foreground">
+                    {item.title}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-0.5">
+                    {item.desc}
+                  </p>
+                </div>
+              </Card>
+            </Link>
+          );
+        })}
 
         <Link href="#">
           <Card className="p-5 hover:border-primary/50 hover:shadow-md transition-[border-color,box-shadow] group flex flex-col items-center text-center gap-3 bg-muted/50">
             <div className="size-14 rounded-2xl bg-background border border-border text-muted-foreground flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Icon icon="solar:widget-add-bold" width="32" height="32" />
+              <WidgetAdd size={32} />
             </div>
             <div>
               <p className="text-sm font-bold text-foreground">আরও এক্সপ্লোর</p>

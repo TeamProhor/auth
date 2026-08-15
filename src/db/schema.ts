@@ -26,9 +26,6 @@ export const users = sqliteTable("users", {
   twoFactorEnabled: integer("two_factor_enabled", { mode: "boolean" })
     .notNull()
     .default(false),
-  isDeveloper: integer("is_developer", { mode: "boolean" })
-    .notNull()
-    .default(false),
   isBanned: integer("is_banned", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
@@ -126,10 +123,14 @@ export const oauthClients = sqliteTable("oauth_clients", {
   id: text("id")
     .primaryKey()
     .$defaultFn(() => crypto.randomUUID()),
+  ownerId: text("owner_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
   clientId: text("client_id").notNull().unique(),
-  clientSecretHash: text("client_secret_hash").notNull(),
+  clientSecretHash: text("client_secret_hash"), // Nullable for public clients
   name: text("name").notNull(),
-  appType: text("app_type", { enum: ["web", "native", "service"] })
+  description: text("description"),
+  appType: text("app_type", { enum: ["web", "native", "spa", "service"] })
     .notNull()
     .default("web"),
   redirectUris: text("redirect_uris", { mode: "json" })
@@ -138,9 +139,6 @@ export const oauthClients = sqliteTable("oauth_clients", {
     .default([]),
   logoUrl: text("logo_url"),
   isActive: integer("is_active", { mode: "boolean" }).notNull().default(true),
-  createdByUserId: text("created_by_user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -152,10 +150,7 @@ export const oauthClients = sqliteTable("oauth_clients", {
 // ─── Authorization Codes ──────────────────────────────────────────────────────
 
 export const authorizationCodes = sqliteTable("authorization_codes", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  code: text("code").notNull().unique(),
+  codeHash: text("code_hash").primaryKey(),
   clientId: text("client_id").notNull(),
   userId: text("user_id")
     .notNull()
@@ -165,6 +160,7 @@ export const authorizationCodes = sqliteTable("authorization_codes", {
   codeChallenge: text("code_challenge"), // PKCE S256 challenge
   codeChallengeMethod: text("code_challenge_method"), // S256
   expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
+  usedAt: integer("used_at", { mode: "timestamp" }),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -222,11 +218,39 @@ export const userConsents = sqliteTable("user_consents", {
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
   clientId: text("client_id").notNull(),
-  grantedScopes: text("granted_scopes").notNull(),
+  scopes: text("scopes", { mode: "json" })
+    .$type<string[]>()
+    .notNull()
+    .default([]),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
   updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  revokedAt: integer("revoked_at", { mode: "timestamp" }),
+});
+
+// ─── Personal API Keys ────────────────────────────────────────────────────────
+
+export const personalApiKeys = sqliteTable("personal_api_keys", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  keyPrefix: text("key_prefix").notNull().unique(), // e.g. pk_live_7f3a
+  keyHash: text("key_hash").notNull(),
+  name: text("name").notNull(),
+  scopes: text("scopes", { mode: "json" })
+    .$type<string[]>()
+    .notNull()
+    .default([]),
+  lastUsedAt: integer("last_used_at", { mode: "timestamp" }),
+  expiresAt: integer("expires_at", { mode: "timestamp" }),
+  revokedAt: integer("revoked_at", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
 });
@@ -275,6 +299,7 @@ export const usersRelations = relations(users, ({ many }) => ({
   userConsents: many(userConsents),
   auditLogs: many(auditLogs),
   oauthLinkRequests: many(oauthLinkRequests),
+  personalApiKeys: many(personalApiKeys),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -296,11 +321,21 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 }));
 
 export const oauthClientsRelations = relations(oauthClients, ({ one }) => ({
-  creator: one(users, {
-    fields: [oauthClients.createdByUserId],
+  owner: one(users, {
+    fields: [oauthClients.ownerId],
     references: [users.id],
   }),
 }));
+
+export const personalApiKeysRelations = relations(
+  personalApiKeys,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [personalApiKeys.userId],
+      references: [users.id],
+    }),
+  }),
+);
 
 export const userConsentsRelations = relations(userConsents, ({ one }) => ({
   user: one(users, { fields: [userConsents.userId], references: [users.id] }),
@@ -376,3 +411,4 @@ export type AuditLog = typeof auditLogs.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
 export type Invoice = typeof invoices.$inferSelect;
 export type OAuthLinkRequest = typeof oauthLinkRequests.$inferSelect;
+export type PersonalApiKey = typeof personalApiKeys.$inferSelect;

@@ -3,9 +3,12 @@
 import { useState, useTransition } from "react";
 import { unlinkAccountAction } from "@/actions/user";
 import { GitHubIcon, GoogleIcon } from "@/components/icons";
+import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { SubmitButton } from "@/components/submit-button";
+import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import type { Account } from "@/db/schema";
+import { signIn } from "@/lib/auth-client";
 import { MESSAGES, showToast } from "@/lib/toast";
 
 interface ConnectedAccountsSectionProps {
@@ -19,29 +22,38 @@ export function ConnectedAccountsSection({
   const [activeProvider, setActiveProvider] = useState<
     "google" | "github" | null
   >(null);
+  const [unlinkTarget, setUnlinkTarget] = useState<"google" | "github" | null>(
+    null,
+  );
 
   const googleAccount = userAccounts.find((a) => a.provider === "google");
   const githubAccount = userAccounts.find((a) => a.provider === "github");
 
-  const handleUnlink = (provider: "google" | "github") => {
-    setActiveProvider(provider);
+  const handleUnlink = () => {
+    if (!unlinkTarget) return;
+    setActiveProvider(unlinkTarget);
     startTransition(async () => {
       try {
-        const res = await unlinkAccountAction(provider);
+        const res = await unlinkAccountAction(unlinkTarget);
         if (res.success) {
           showToast.success(res.message ?? MESSAGES.SECURITY.UNLINK_SUCCESS);
+          setUnlinkTarget(null);
         } else {
           showToast.error(res.error ?? MESSAGES.SECURITY.UNLINK_ERROR);
         }
-      } finally {
-        setActiveProvider(null);
+      } catch {
+        showToast.error(MESSAGES.SECURITY.UNLINK_ERROR);
       }
+      setActiveProvider(null);
     });
   };
 
-  const handleConnect = (provider: "google" | "github") => {
+  const handleConnect = async (provider: "google" | "github") => {
     setActiveProvider(provider);
-    window.location.href = `/api/auth/${provider}`;
+    await signIn.social({
+      provider,
+      callbackURL: "/dashboard/security",
+    });
   };
 
   return (
@@ -72,16 +84,15 @@ export function ConnectedAccountsSection({
             </div>
           </div>
           {googleAccount ? (
-            <SubmitButton
+            <Button
               type="button"
               variant="outline"
               size="sm"
-              isPending={isPending && activeProvider === "google"}
-              onClick={() => handleUnlink("google")}
+              onClick={() => setUnlinkTarget("google")}
               className="text-xs text-destructive hover:bg-destructive/10 cursor-pointer"
             >
               ডিসকানেক্ট
-            </SubmitButton>
+            </Button>
           ) : (
             <SubmitButton
               type="button"
@@ -112,16 +123,15 @@ export function ConnectedAccountsSection({
             </div>
           </div>
           {githubAccount ? (
-            <SubmitButton
+            <Button
               type="button"
               variant="outline"
               size="sm"
-              isPending={isPending && activeProvider === "github"}
-              onClick={() => handleUnlink("github")}
+              onClick={() => setUnlinkTarget("github")}
               className="text-xs text-destructive hover:bg-destructive/10 cursor-pointer"
             >
               ডিসকানেক্ট
-            </SubmitButton>
+            </Button>
           ) : (
             <SubmitButton
               type="button"
@@ -136,6 +146,33 @@ export function ConnectedAccountsSection({
           )}
         </div>
       </div>
+      <ResponsiveDialog
+        open={!!unlinkTarget}
+        onOpenChange={(open) => {
+          if (!open) setUnlinkTarget(null);
+        }}
+        title="অ্যাকাউন্ট ডিসকানেক্ট করবেন?"
+        description={`আপনি কি নিশ্চিত যে আপনি ${unlinkTarget === "google" ? "Google" : "GitHub"} অ্যাকাউন্টটি ডিসকানেক্ট করতে চান?`}
+        trigger={null}
+        className="sm:max-w-xl"
+      >
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-border mt-4">
+          <Button
+            variant="ghost"
+            onClick={() => setUnlinkTarget(null)}
+            disabled={isPending}
+          >
+            বাতিল
+          </Button>
+          <SubmitButton
+            variant="destructive"
+            onClick={handleUnlink}
+            isPending={isPending}
+          >
+            হ্যাঁ, ডিসকানেক্ট করুন
+          </SubmitButton>
+        </div>
+      </ResponsiveDialog>
     </Card>
   );
 }

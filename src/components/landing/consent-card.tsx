@@ -1,8 +1,16 @@
 "use client";
 
-import { Icon } from "@iconify/react";
+import type { ComponentType } from "react";
 import { useTransition } from "react";
 import { approveConsentAction, denyConsentAction } from "@/actions/oauth";
+import {
+  ArrowRight,
+  Danger,
+  DirectInbox,
+  Fingerprint,
+  Refresh,
+  UserId,
+} from "@/components/icons";
 import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
 
@@ -22,27 +30,31 @@ interface ConsentCardProps {
 
 const SCOPE_LABELS: Record<
   string,
-  { label: string; description: string; icon: string }
+  {
+    label: string;
+    description: string;
+    icon: ComponentType<{ size?: number | string; className?: string }>;
+  }
 > = {
   openid: {
     label: "প্রাথমিক পরিচয়",
     description: "আপনার প্রহর ব্যবহারকারী আইডি",
-    icon: "solar:fingerprint-bold",
+    icon: Fingerprint,
   },
   profile: {
     label: "প্রাথমিক প্রোফাইল",
     description: "আপনার নাম ও প্রোফাইল ছবি",
-    icon: "solar:user-id-bold",
+    icon: UserId,
   },
   email: {
     label: "ইমেইল ঠিকানা",
     description: "আপনার অ্যাকাউন্টের ইমেইল",
-    icon: "solar:letter-bold",
+    icon: DirectInbox,
   },
   offline_access: {
     label: "অফলাইন অ্যাক্সেস",
     description: "আপনার অনুপস্থিতিতে অ্যাপ অ্যাক্সেস করতে পারবে",
-    icon: "solar:refresh-bold",
+    icon: Refresh,
   },
 };
 
@@ -82,12 +94,7 @@ export function ConsentCard({
     <div className="flex flex-col items-center gap-6">
       <div className="flex items-center gap-4">
         <ProhorLogo className="size-14 rounded-2xl shadow-sm" />
-        <Icon
-          icon="solar:arrow-right-bold"
-          width="24"
-          height="24"
-          className="text-muted-foreground"
-        />
+        <ArrowRight size={24} className="text-muted-foreground" />
         <div className="bg-primary text-primary-foreground border border-border rounded-2xl w-14 h-14 flex items-center justify-center shadow-sm font-bold text-xl">
           {client.name.charAt(0).toUpperCase()}
         </div>
@@ -110,17 +117,13 @@ export function ConsentCard({
         {requestedScopes.map((scope, idx) => {
           const meta = SCOPE_LABELS[scope];
           if (!meta) return null;
+          const ScopeIcon = meta.icon;
           return (
             <div
               key={scope}
               className={`flex items-start gap-4 p-4 ${idx < requestedScopes.length - 1 ? "border-b border-border" : ""}`}
             >
-              <Icon
-                icon={meta.icon}
-                width="24"
-                height="24"
-                className="text-foreground mt-0.5"
-              />
+              <ScopeIcon size={24} className="text-foreground mt-0.5" />
               <div className="flex flex-col">
                 <p className="text-sm font-semibold text-foreground">
                   {meta.label}
@@ -133,12 +136,7 @@ export function ConsentCard({
           );
         })}
         <div className="flex items-start gap-4 p-4 bg-muted/50">
-          <Icon
-            icon="solar:danger-circle-bold"
-            width="24"
-            height="24"
-            className="text-destructive mt-0.5"
-          />
+          <Danger size={24} className="text-destructive mt-0.5" />
           <div className="flex flex-col">
             <p className="text-sm font-semibold text-foreground">
               পাসওয়ার্ড অ্যাক্সেস

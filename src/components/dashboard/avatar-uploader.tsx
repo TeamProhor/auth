@@ -1,7 +1,7 @@
 "use client";
 
-import { Icon } from "@iconify/react";
 import { useRef, useState, useTransition } from "react";
+import { Camera } from "@/components/icons";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Spinner } from "@/components/ui/spinner";
 import { showToast } from "@/lib/toast";
@@ -67,12 +67,7 @@ export function AvatarUploader({
           </div>
         ) : (
           <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <Icon
-              icon="solar:camera-bold"
-              width="28"
-              height="28"
-              className="text-white"
-            />
+            <Camera size={28} className="text-white" />
           </div>
         )}
 
