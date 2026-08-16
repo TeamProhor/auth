@@ -2,7 +2,7 @@
 
 import { motion } from "motion/react";
 import { useEffect, useState, useTransition } from "react";
-import { changePasswordAction } from "@/actions/user";
+import { changePasswordAction, setPasswordAction } from "@/actions/user";
 import { Key } from "@/components/icons";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { SubmitButton } from "@/components/submit-button";
@@ -10,9 +10,16 @@ import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { MESSAGES, showToast } from "@/lib/toast";
 
-export function PasswordChangeSection() {
+interface PasswordChangeSectionProps {
+  hasPassword?: boolean;
+}
+
+export function PasswordChangeSection({
+  hasPassword = true,
+}: PasswordChangeSectionProps) {
   const [open, setOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
 
@@ -22,15 +29,26 @@ export function PasswordChangeSection() {
     const formData = new FormData(form);
 
     startTransition(async () => {
-      const res = await changePasswordAction(null, formData);
+      const res = hasPassword
+        ? await changePasswordAction(null, formData)
+        : await setPasswordAction(null, formData);
+
       if (res.success) {
         showToast.success(
-          res.message ?? MESSAGES.SECURITY.PASSWORD_CHANGE_SUCCESS,
+          res.message ??
+            (hasPassword
+              ? MESSAGES.SECURITY.PASSWORD_CHANGE_SUCCESS
+              : MESSAGES.SECURITY.PASSWORD_SET_SUCCESS),
         );
         setOpen(false);
         form.reset();
       } else {
-        showToast.error(res.error ?? MESSAGES.SECURITY.PASSWORD_CHANGE_ERROR);
+        showToast.error(
+          res.error ??
+            (hasPassword
+              ? MESSAGES.SECURITY.PASSWORD_CHANGE_ERROR
+              : MESSAGES.SECURITY.PASSWORD_SET_ERROR),
+        );
       }
     });
   };
@@ -43,12 +61,13 @@ export function PasswordChangeSection() {
           <div className="flex items-center justify-between">
             <CardTitle className="text-lg font-bold flex items-center gap-2">
               <Key size={24} className="text-primary" />
-              পাসওয়ার্ড পরিবর্তন
+              {hasPassword ? "পাসওয়ার্ড পরিবর্তন" : "পাসওয়ার্ড সেট করুন"}
             </CardTitle>
           </div>
           <CardDescription className="text-sm mt-2 leading-relaxed">
-            অ্যাকাউন্টের সর্বোচ্চ নিরাপত্তা নিশ্চিত করতে নিয়মিত পাসওয়ার্ড পরিবর্তন করা অত্যন্ত
-            জরুরি। একটি শক্তিশালী পাসওয়ার্ড ব্যবহার করুন, যা আপনার তথ্য সুরক্ষিত রাখবে।
+            {hasPassword
+              ? "অ্যাকাউন্টের সর্বোচ্চ নিরাপত্তা নিশ্চিত করতে নিয়মিত পাসওয়ার্ড পরিবর্তন করা অত্যন্ত জরুরি। একটি শক্তিশালী পাসওয়ার্ড ব্যবহার করুন, যা আপনার তথ্য সুরক্ষিত রাখবে।"
+              : "আপনার অ্যাকাউন্টে একটি পাসওয়ার্ড যোগ করুন যাতে আপনি পরবর্তীতে ইমেইল ও পাসওয়ার্ড দিয়েও সরাসরি লগইন করতে পারেন।"}
           </CardDescription>
         </div>
 
@@ -61,29 +80,37 @@ export function PasswordChangeSection() {
               variant="outline"
               className="w-full rounded-xl py-6 text-sm font-semibold cursor-pointer"
             >
-              পাসওয়ার্ড আপডেট করুন
+              {hasPassword ? "পাসওয়ার্ড পরিবর্তন করুন" : "পাসওয়ার্ড সেট করুন"}
             </Button>
           }
-          title="পাসওয়ার্ড পরিবর্তন করুন"
-          description="আপনার বর্তমান পাসওয়ার্ড এবং নতুন পাসওয়ার্ড দিন।"
+          title={
+            hasPassword ? "পাসওয়ার্ড পরিবর্তন করুন" : "পাসওয়ার্ড সেট করুন"
+          }
+          description={
+            hasPassword
+              ? "আপনার বর্তমান পাসওয়ার্ড এবং নতুন পাসওয়ার্ড দিন।"
+              : "আপনার অ্যাকাউন্টের জন্য একটি শক্তিশালী নতুন পাসওয়ার্ড তৈরি করুন।"
+          }
         >
           <form onSubmit={handleSubmit} className="space-y-4 pt-2">
             <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="currentPassword">বর্তমান পাসওয়ার্ড</FieldLabel>
-                <Input
-                  id="currentPassword"
-                  name="currentPassword"
-                  type="password"
-                  required
-                />
-              </Field>
+              {hasPassword && (
+                <Field>
+                  <FieldLabel htmlFor="currentPassword">
+                    বর্তমান পাসওয়ার্ড
+                  </FieldLabel>
+                  <PasswordInput
+                    id="currentPassword"
+                    name="currentPassword"
+                    required
+                  />
+                </Field>
+              )}
               <Field>
                 <FieldLabel htmlFor="newPassword">নতুন পাসওয়ার্ড</FieldLabel>
-                <Input
+                <PasswordInput
                   id="newPassword"
                   name="newPassword"
-                  type="password"
                   required
                 />
               </Field>
@@ -91,10 +118,9 @@ export function PasswordChangeSection() {
                 <FieldLabel htmlFor="confirmPassword">
                   পাসওয়ার্ড নিশ্চিত করুন
                 </FieldLabel>
-                <Input
+                <PasswordInput
                   id="confirmPassword"
                   name="confirmPassword"
-                  type="password"
                   required
                 />
               </Field>
@@ -109,7 +135,7 @@ export function PasswordChangeSection() {
                 বাতিল
               </Button>
               <SubmitButton isPending={isPending} className="rounded-lg px-4">
-                আপডেট করুন
+                {hasPassword ? "আপডেট করুন" : "পাসওয়ার্ড সেট করুন"}
               </SubmitButton>
             </div>
           </form>

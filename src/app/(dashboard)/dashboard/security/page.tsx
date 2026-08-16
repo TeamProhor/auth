@@ -103,6 +103,9 @@ export default async function SecurityPage({
   ]);
 
   const _linkedProviders = userAccounts.map((a) => a.provider);
+  const hasPassword = userAccounts.some(
+    (a) => a.provider === "email" && Boolean(a.passwordHash),
+  );
 
   return (
     <div className="max-w-5xl space-y-8">
@@ -119,7 +122,7 @@ export default async function SecurityPage({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <PasswordChangeSection />
+        <PasswordChangeSection hasPassword={hasPassword} />
         <TwoFactorSection twoFactorEnabled={user.twoFactorEnabled} />
       </div>
 

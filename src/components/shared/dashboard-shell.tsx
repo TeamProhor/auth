@@ -13,9 +13,11 @@ import type { User } from "@/db/schema";
 export function DashboardShell({
   children,
   user,
+  defaultCollapsed = false,
 }: {
   children: React.ReactNode;
   user?: User | null;
+  defaultCollapsed?: boolean;
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
@@ -109,7 +111,7 @@ export function DashboardShell({
           isSidebarOpen ? "translate-x-0" : "-translate-x-[110%]"
         }`}
       >
-        <AppSidebar user={user} onClose={() => setIsSidebarOpen(false)} />
+        <AppSidebar user={user} onClose={() => setIsSidebarOpen(false)} defaultCollapsed={defaultCollapsed} />
       </div>
 
       {/* Main Content Area */}

@@ -22,11 +22,13 @@ import { PERSONAL_NAV_ITEMS } from "@/lib/constants/ui";
 export function AppSidebar({
   user,
   onClose,
+  defaultCollapsed = false,
 }: {
   user?: User | null;
   onClose?: () => void;
+  defaultCollapsed?: boolean;
 }) {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(defaultCollapsed);
   const pathname = usePathname();
   const { setTheme, theme } = useTheme();
   const [isPending, startTransition] = useTransition();
@@ -125,7 +127,11 @@ export function AppSidebar({
             render={
               <button
                 type="button"
-                onClick={() => setIsCollapsed(!isCollapsed)}
+                onClick={() => {
+                  const nextVal = !isCollapsed;
+                  setIsCollapsed(nextVal);
+                  document.cookie = `sidebar_collapsed=${nextVal}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+                }}
                 className="hidden lg:flex items-center h-7 px-2 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground overflow-hidden shrink-0 cursor-pointer w-full"
               />
             }

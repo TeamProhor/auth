@@ -4,6 +4,7 @@ import { useActionState } from "react";
 import { registerAction } from "@/actions/auth";
 import { SubmitButton } from "@/components/submit-button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 
 export function RegisterFormSection() {
   const [registerState, registerFormAction] = useActionState(
@@ -44,10 +45,9 @@ export function RegisterFormSection() {
       {getErr("email") && (
         <p className="text-xs text-destructive">{getErr("email")}</p>
       )}
-      <Input
+      <PasswordInput
         id="reg-password"
         name="password"
-        type="password"
         className="w-full rounded-xl px-4 py-6 text-sm"
         placeholder="পাসওয়ার্ড (অন্তত ৮ অক্ষর)"
         required

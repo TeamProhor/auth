@@ -43,7 +43,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <TooltipProvider>
+          <TooltipProvider delay={300}>
             {children}
             <Toaster />
           </TooltipProvider>

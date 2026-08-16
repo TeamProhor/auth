@@ -12,7 +12,11 @@ import {
   revokeAllSessions,
   revokeSession,
 } from "@/lib/auth/session";
-import { ChangePasswordSchema, UpdateProfileSchema } from "@/lib/validations";
+import {
+  ChangePasswordSchema,
+  SetPasswordSchema,
+  UpdateProfileSchema,
+} from "@/lib/validations";
 
 type ActionResult =
   | { success: true; message?: string }
@@ -101,6 +105,67 @@ export async function changePasswordAction(
 
   revalidatePath("/dashboard/security");
   return { success: true, message: "পাসওয়ার্ড পরিবর্তন সফল হয়েছে।" };
+}
+
+// ─── Set Password (for OAuth / Passwordless accounts) ─────────────────────────
+
+export async function setPasswordAction(
+  _prevState: ActionResult | null,
+  formData: FormData,
+): Promise<ActionResult> {
+  const user = await getCurrentUser();
+  if (!user) redirect("/login");
+
+  const raw = {
+    newPassword: formData.get("newPassword") as string,
+    confirmPassword: formData.get("confirmPassword") as string,
+  };
+
+  const parsed = SetPasswordSchema.safeParse(raw);
+  if (!parsed.success) {
+    return {
+      success: false,
+      error: "তথ্য যাচাই ব্যর্থ হয়েছে।",
+      fieldErrors: parsed.error.flatten().fieldErrors,
+    };
+  }
+
+  const existingEmailAccount = await db.query.accounts.findFirst({
+    where: and(eq(accounts.userId, user.id), eq(accounts.provider, "email")),
+  });
+
+  if (existingEmailAccount?.passwordHash) {
+    return {
+      success: false,
+      error:
+        "আপনার অ্যাকাউন্টে ইতিমধ্যে পাসওয়ার্ড সেট করা আছে। পাসওয়ার্ড পরিবর্তন অপশনটি ব্যবহার করুন।",
+    };
+  }
+
+  const newHash = await hashPassword(parsed.data.newPassword);
+
+  if (existingEmailAccount) {
+    await db
+      .update(accounts)
+      .set({ passwordHash: newHash })
+      .where(and(eq(accounts.userId, user.id), eq(accounts.provider, "email")));
+  } else {
+    await db.insert(accounts).values({
+      userId: user.id,
+      provider: "email",
+      providerUsername: user.email,
+      passwordHash: newHash,
+    });
+  }
+
+  await logEvent({
+    userId: user.id,
+    eventType: "password_change",
+    details: "password_set",
+  });
+
+  revalidatePath("/dashboard/security");
+  return { success: true, message: "পাসওয়ার্ড সফলভাবে সেট করা হয়েছে।" };
 }
 
 // ─── Revoke Specific Session ──────────────────────────────────────────────────

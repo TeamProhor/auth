@@ -9,7 +9,9 @@ import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { signIn } from "@/lib/auth-client";
+import { PasswordInput } from "@/components/ui/password-input";
+import { authClient } from "@/lib/auth-client";
+import { showToast } from "@/lib/toast";
 
 type Mode = "email" | "password" | "register";
 
@@ -124,10 +126,9 @@ export function LoginForm({ initial2FAUserId }: LoginFormProps) {
             placeholder="ইমেইল ঠিকানা"
             required
           />
-          <Input
+          <PasswordInput
             id="pw-password"
             name="password"
-            type="password"
             className="w-full rounded-xl px-4 py-6 text-sm"
             placeholder="পাসওয়ার্ড"
             required
@@ -153,18 +154,36 @@ export function LoginForm({ initial2FAUserId }: LoginFormProps) {
         isGooglePending={isGooglePending}
         isGitHubPending={isGitHubPending}
         onGoogleClick={async () => {
-          setIsGooglePending(true);
-          await signIn.social({
-            provider: "google",
-            callbackURL: "/dashboard",
-          });
+          try {
+            setIsGooglePending(true);
+            await authClient.signIn.social({
+              provider: "google",
+              callbackURL: "/dashboard",
+            });
+          } catch (err) {
+            console.error("Google sign-in error:", err);
+            showToast.error(
+              "Google লগইন শুরু করা যায়নি। দয়া করে পুনরায় চেষ্টা করুন।",
+            );
+          } finally {
+            setIsGooglePending(false);
+          }
         }}
         onGitHubClick={async () => {
-          setIsGitHubPending(true);
-          await signIn.social({
-            provider: "github",
-            callbackURL: "/dashboard",
-          });
+          try {
+            setIsGitHubPending(true);
+            await authClient.signIn.social({
+              provider: "github",
+              callbackURL: "/dashboard",
+            });
+          } catch (err) {
+            console.error("GitHub sign-in error:", err);
+            showToast.error(
+              "GitHub লগইন শুরু করা যায়নি। দয়া করে পুনরায় চেষ্টা করুন।",
+            );
+          } finally {
+            setIsGitHubPending(false);
+          }
         }}
       />
 

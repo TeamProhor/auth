@@ -34,6 +34,18 @@ export const ChangePasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const SetPasswordSchema = z
+  .object({
+    newPassword: z
+      .string()
+      .min(8, { message: "নতুন পাসওয়ার্ড অন্তত ৮ অক্ষরের হতে হবে।" }),
+    confirmPassword: z.string(),
+  })
+  .refine((d) => d.newPassword === d.confirmPassword, {
+    message: "পাসওয়ার্ড মিলছে না।",
+    path: ["confirmPassword"],
+  });
+
 // ─── Profile Schema ───────────────────────────────────────────────────────────
 
 export const UpdateProfileSchema = z.object({
@@ -94,6 +106,7 @@ export type LoginInput = z.infer<typeof LoginSchema>;
 export type RegisterInput = z.infer<typeof RegisterSchema>;
 export type MagicLinkInput = z.infer<typeof MagicLinkSchema>;
 export type ChangePasswordInput = z.infer<typeof ChangePasswordSchema>;
+export type SetPasswordInput = z.infer<typeof SetPasswordSchema>;
 export type UpdateProfileInput = z.infer<typeof UpdateProfileSchema>;
 export type CreateAppInput = z.infer<typeof CreateAppSchema>;
 export type AddRedirectUriInput = z.infer<typeof AddRedirectUriSchema>;

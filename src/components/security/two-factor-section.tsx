@@ -366,7 +366,7 @@ function OTPAnimationHeader() {
               transition={{ duration: 0.15, ease: "easeInOut" }}
               className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
             >
-              {digit}
+              {digits[idx]}
             </motion.span>
           </div>
         ))}
