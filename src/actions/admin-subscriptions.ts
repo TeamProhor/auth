@@ -73,12 +73,12 @@ export async function rejectSubscriptionAction(
 
   const now = new Date();
 
-  // 1. Revert subscription to free or mark as rejected
+  // 1. Mark subscription as rejected and save reason
   await db
     .update(subscriptions)
     .set({
-      planId: "prohor-free",
-      status: "canceled",
+      status: "rejected",
+      rejectionReason: reason || "পেমেন্ট তথ্য যাচাই করা সম্ভব হয়নি।",
       updatedAt: now,
     })
     .where(eq(subscriptions.userId, userId));
