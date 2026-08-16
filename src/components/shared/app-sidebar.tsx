@@ -130,6 +130,7 @@ export function AppSidebar({
                 onClick={() => {
                   const nextVal = !isCollapsed;
                   setIsCollapsed(nextVal);
+                  // biome-ignore lint/suspicious/noDocumentCookie: cookieStore is not available in all browsers
                   document.cookie = `sidebar_collapsed=${nextVal}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
                 }}
                 className="hidden lg:flex items-center h-7 px-2 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground overflow-hidden shrink-0 cursor-pointer w-full"

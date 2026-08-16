@@ -56,7 +56,11 @@ export async function POST(request: NextRequest) {
   }
 
   // Verify client_secret if provided (confidential clients)
-  if (data.client_secret && client.appType !== "web") {
+  if (
+    data.client_secret &&
+    client.clientSecretHash &&
+    client.appType !== "web"
+  ) {
     const valid = await verifyPassword(
       client.clientSecretHash,
       data.client_secret,
@@ -73,8 +77,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "invalid_request" }, { status: 400 });
     }
 
+    const codeHash = createHash("sha256").update(data.code).digest("hex");
+
     const authCode = await db.query.authorizationCodes.findFirst({
-      where: eq(authorizationCodes.code, data.code),
+      where: eq(authorizationCodes.codeHash, codeHash),
     });
 
     if (
@@ -89,7 +95,7 @@ export async function POST(request: NextRequest) {
     // Delete auth code immediately (single use)
     await db
       .delete(authorizationCodes)
-      .where(eq(authorizationCodes.code, data.code));
+      .where(eq(authorizationCodes.codeHash, codeHash));
 
     // PKCE verification
     if (authCode.codeChallenge) {

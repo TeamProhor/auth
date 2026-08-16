@@ -111,7 +111,11 @@ export function DashboardShell({
           isSidebarOpen ? "translate-x-0" : "-translate-x-[110%]"
         }`}
       >
-        <AppSidebar user={user} onClose={() => setIsSidebarOpen(false)} defaultCollapsed={defaultCollapsed} />
+        <AppSidebar
+          user={user}
+          onClose={() => setIsSidebarOpen(false)}
+          defaultCollapsed={defaultCollapsed}
+        />
       </div>
 
       {/* Main Content Area */}

@@ -26,7 +26,7 @@ export interface ResponsiveDialogProps {
   /** Triggered when the dialog open state changes */
   onOpenChange?: (open: boolean) => void;
   /** The element that triggers the dialog/drawer (optional if controlled) */
-  trigger?: React.ReactNode;
+  trigger?: React.ReactElement | null;
   /** The title of the dialog/drawer */
   title?: React.ReactNode;
   /** The description of the dialog/drawer */

@@ -9,7 +9,6 @@ import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
 import { MESSAGES, showToast } from "@/lib/toast";
 
@@ -83,9 +82,7 @@ export function PasswordChangeSection({
               {hasPassword ? "পাসওয়ার্ড পরিবর্তন করুন" : "পাসওয়ার্ড সেট করুন"}
             </Button>
           }
-          title={
-            hasPassword ? "পাসওয়ার্ড পরিবর্তন করুন" : "পাসওয়ার্ড সেট করুন"
-          }
+          title={hasPassword ? "পাসওয়ার্ড পরিবর্তন করুন" : "পাসওয়ার্ড সেট করুন"}
           description={
             hasPassword
               ? "আপনার বর্তমান পাসওয়ার্ড এবং নতুন পাসওয়ার্ড দিন।"
@@ -108,11 +105,7 @@ export function PasswordChangeSection({
               )}
               <Field>
                 <FieldLabel htmlFor="newPassword">নতুন পাসওয়ার্ড</FieldLabel>
-                <PasswordInput
-                  id="newPassword"
-                  name="newPassword"
-                  required
-                />
+                <PasswordInput id="newPassword" name="newPassword" required />
               </Field>
               <Field>
                 <FieldLabel htmlFor="confirmPassword">

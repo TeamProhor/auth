@@ -10,8 +10,6 @@ import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { authClient } from "@/lib/auth-client";
-import { showToast } from "@/lib/toast";
 
 type Mode = "email" | "password" | "register";
 
@@ -24,30 +22,35 @@ export function LoginForm({ initial2FAUserId }: LoginFormProps) {
   const [isGitHubPending, setIsGitHubPending] = useState(false);
   const [isGooglePending, setIsGooglePending] = useState(false);
 
-  const [loginState, loginFormAction] = useActionState(loginAction, null);
   const [magicState, magicFormAction] = useActionState(
     requestMagicLinkAction,
     null,
   );
+  const [loginState, loginFormAction] = useActionState(loginAction, null);
 
-  const target2FAUserId =
-    loginState?.success && loginState.requires2FA && loginState.data?.userId
-      ? loginState.data.userId
-      : initial2FAUserId;
+  const twoFactorUserId =
+    initial2FAUserId ??
+    (loginState?.success && loginState.requires2FA
+      ? loginState.data?.userId
+      : undefined);
 
-  if (target2FAUserId) {
-    return <TwoFactorLoginCard userId={target2FAUserId} />;
+  if (twoFactorUserId) {
+    return <TwoFactorLoginCard userId={twoFactorUserId} />;
   }
 
   return (
-    <div className="flex flex-col items-center gap-8">
-      <ProhorLogo className="size-14 rounded-2xl shadow-sm" />
-
-      <div className="flex flex-col gap-2 text-center">
-        <h1 className="text-balance font-semibold text-2xl text-foreground tracking-tight">
-          {mode === "register" ? "নতুন অ্যাকাউন্ট তৈরি করুন" : "অ্যাকাউন্টে স্বাগতম"}
+    <div className="w-full max-w-sm flex flex-col items-center gap-6">
+      {/* ─── Header ─── */}
+      <div className="flex flex-col items-center gap-2">
+        <ProhorLogo className="size-14 rounded-2xl shadow-sm" />
+        <h1 className="text-xl font-bold tracking-tight text-foreground">
+          {mode === "register"
+            ? "নতুন অ্যাকাউন্ট তৈরি করুন"
+            : mode === "password"
+              ? "পাসওয়ার্ড দিয়ে লগইন"
+              : "আপনার অ্যাকাউন্টে লগইন করুন"}
         </h1>
-        <p className="text-pretty text-muted-foreground text-sm">
+        <p className="text-sm text-muted-foreground text-center">
           {mode === "register" ? (
             <>
               ইতিমধ্যে অ্যাকাউন্ট আছে?{" "}
@@ -153,37 +156,15 @@ export function LoginForm({ initial2FAUserId }: LoginFormProps) {
       <SocialLogins
         isGooglePending={isGooglePending}
         isGitHubPending={isGitHubPending}
-        onGoogleClick={async () => {
-          try {
-            setIsGooglePending(true);
-            await authClient.signIn.social({
-              provider: "google",
-              callbackURL: "/dashboard",
-            });
-          } catch (err) {
-            console.error("Google sign-in error:", err);
-            showToast.error(
-              "Google লগইন শুরু করা যায়নি। দয়া করে পুনরায় চেষ্টা করুন।",
-            );
-          } finally {
-            setIsGooglePending(false);
-          }
+        onGoogleClick={() => {
+          setIsGooglePending(true);
+          window.location.href =
+            "/api/auth/oauth/google?callbackUrl=/dashboard";
         }}
-        onGitHubClick={async () => {
-          try {
-            setIsGitHubPending(true);
-            await authClient.signIn.social({
-              provider: "github",
-              callbackURL: "/dashboard",
-            });
-          } catch (err) {
-            console.error("GitHub sign-in error:", err);
-            showToast.error(
-              "GitHub লগইন শুরু করা যায়নি। দয়া করে পুনরায় চেষ্টা করুন।",
-            );
-          } finally {
-            setIsGitHubPending(false);
-          }
+        onGitHubClick={() => {
+          setIsGitHubPending(true);
+          window.location.href =
+            "/api/auth/oauth/github?callbackUrl=/dashboard";
         }}
       />
 

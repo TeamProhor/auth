@@ -59,18 +59,6 @@ export async function createSession(
 // ─── Get Current Session & User ───────────────────────────────────────────────
 
 export async function getCurrentUser(): Promise<User | null> {
-  try {
-    const { headers } = await import("next/headers");
-    const { auth } = await import("@/lib/auth");
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (session?.user) {
-      if (session.user.isBanned) return null;
-      return session.user as unknown as User;
-    }
-  } catch {
-    // Fallback to legacy cookie if Better Auth session check fails
-  }
-
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
@@ -94,17 +82,6 @@ export async function getCurrentUser(): Promise<User | null> {
 export async function getCurrentSession(): Promise<
   typeof sessions.$inferSelect | null
 > {
-  try {
-    const { headers } = await import("next/headers");
-    const { auth } = await import("@/lib/auth");
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (session?.session) {
-      return session.session as unknown as typeof sessions.$inferSelect;
-    }
-  } catch {
-    // Fallback to legacy cookie
-  }
-
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 
@@ -122,14 +99,6 @@ export async function getCurrentSession(): Promise<
 // ─── Delete Session (Logout) ──────────────────────────────────────────────────
 
 export async function deleteSession(): Promise<void> {
-  try {
-    const { headers } = await import("next/headers");
-    const { auth } = await import("@/lib/auth");
-    await auth.api.signOut({ headers: await headers() });
-  } catch {
-    // Continue to legacy cleanup
-  }
-
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
 

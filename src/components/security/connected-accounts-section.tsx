@@ -8,7 +8,6 @@ import { SubmitButton } from "@/components/submit-button";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import type { Account } from "@/db/schema";
-import { signIn } from "@/lib/auth-client";
 import { MESSAGES, showToast } from "@/lib/toast";
 
 interface ConnectedAccountsSectionProps {
@@ -48,12 +47,9 @@ export function ConnectedAccountsSection({
     });
   };
 
-  const handleConnect = async (provider: "google" | "github") => {
+  const handleConnect = (provider: "google" | "github") => {
     setActiveProvider(provider);
-    await signIn.social({
-      provider,
-      callbackURL: "/dashboard/security",
-    });
+    window.location.href = `/api/auth/oauth/${provider}?callbackUrl=/dashboard/security&link=true`;
   };
 
   return (

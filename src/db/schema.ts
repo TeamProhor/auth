@@ -117,39 +117,6 @@ export const magicLinkTokens = sqliteTable("magic_link_tokens", {
     .default(sql`(unixepoch())`),
 });
 
-// ─── Better Auth Verification & Two-Factor Tables ─────────────────────────────
-
-export const verification = sqliteTable("verification", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  identifier: text("identifier").notNull(),
-  value: text("value").notNull(),
-  expiresAt: integer("expires_at", { mode: "timestamp" }).notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
-
-export const twoFactor = sqliteTable("two_factor", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  secret: text("secret").notNull(),
-  backupCodes: text("backup_codes").notNull(),
-});
-
-// Model aliases for Better-Auth
-export const user = users;
-export const account = accounts;
-export const session = sessions;
-
 // ─── OAuth Clients (Developer Apps) ──────────────────────────────────────────
 
 export const oauthClients = sqliteTable("oauth_clients", {
