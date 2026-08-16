@@ -5,16 +5,17 @@ import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { useState, useTransition } from "react";
 import { logoutAction } from "@/actions/auth";
-import { ChevronLeft, CrownStar, Logout, Moon, Sun } from "@/components/icons";
+import { ArrowLeft, ChevronLeft, Logout, Moon, Sun } from "@/components/icons";
 import { ProhorLogo } from "@/components/shared/prohor-logo";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { SubmitButton } from "@/components/submit-button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { User } from "@/db/schema";
-import { PERSONAL_NAV_ITEMS } from "@/lib/constants/ui";
+import { ADMIN_NAV_ITEMS } from "@/lib/constants/admin-ui";
 
-export function AppSidebar({
+export function AdminSidebar({
   user,
   onClose,
   defaultCollapsed = false,
@@ -29,10 +30,10 @@ export function AppSidebar({
   const [isPending, startTransition] = useTransition();
   const [showConfirm, setShowConfirm] = useState(false);
 
-  const name = user?.name || "ব্যবহারকারী";
+  const name = user?.name || "অ্যাডমিন";
   const email = user?.email || "";
   const avatarUrl = user?.avatarUrl || undefined;
-  const initial = (name[0] || email[0] || "U").toUpperCase();
+  const initial = (name[0] || email[0] || "A").toUpperCase();
 
   const handleLogout = () => {
     startTransition(async () => {
@@ -40,19 +41,17 @@ export function AppSidebar({
     });
   };
 
-  const navItems = PERSONAL_NAV_ITEMS;
-
   return (
     <aside
       className={`w-full h-full lg:h-[calc(100vh-40px)] lg:m-[20px] shrink-0 z-10 flex flex-col pt-0 lg:pt-[16px] justify-between overflow-x-hidden overflow-y-auto no-scrollbar transition-[width] duration-300 ease-in-out ${
-        isCollapsed ? "lg:w-[40px]" : "lg:w-[192px]"
+        isCollapsed ? "lg:w-[40px]" : "lg:w-[210px]"
       }`}
     >
       <div className="flex flex-col gap-1.5 w-full">
-        {/* Logo and Mobile Close */}
+        {/* Logo, Admin Tag, and Mobile Close */}
         <div className="flex items-center justify-between w-full h-8">
           <Link
-            href="/dashboard"
+            href="/admin"
             onClick={onClose}
             className="flex items-center h-8 px-2 rounded-lg hover:bg-accent transition-colors overflow-hidden shrink-0 w-full"
           >
@@ -60,15 +59,21 @@ export function AppSidebar({
               <ProhorLogo className="size-5 rounded" />
             </div>
             <div
-              className={`overflow-hidden transition-all duration-300 ease-in-out flex items-center ${
+              className={`overflow-hidden transition-all duration-300 ease-in-out flex items-center gap-1.5 ${
                 isCollapsed
                   ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none"
-                  : "max-w-[140px] opacity-100 translate-x-0 ml-2"
+                  : "max-w-[160px] opacity-100 translate-x-0 ml-2"
               }`}
             >
               <h3 className="font-bold text-sm whitespace-nowrap text-foreground">
-                অ্যাকাউন্ট
+                প্রহর অ্যাডমিন
               </h3>
+              <Badge
+                variant="secondary"
+                className="text-[9px] px-1.5 py-0 h-4 font-semibold uppercase tracking-wider"
+              >
+                Admin
+              </Badge>
             </div>
           </Link>
 
@@ -114,7 +119,7 @@ export function AppSidebar({
             const nextVal = !isCollapsed;
             setIsCollapsed(nextVal);
             // biome-ignore lint/suspicious/noDocumentCookie: cookieStore is not available in all browsers
-            document.cookie = `sidebar_collapsed=${nextVal}; path=/; max-age=${60 * 60 * 24 * 30}`; // 30 days
+            document.cookie = `admin_sidebar_collapsed=${nextVal}; path=/; max-age=${60 * 60 * 24 * 30}`;
           }}
           className="hidden lg:flex items-center h-7 px-2 rounded-lg hover:bg-accent transition-colors text-muted-foreground hover:text-foreground overflow-hidden shrink-0 cursor-pointer w-full"
         >
@@ -139,12 +144,34 @@ export function AppSidebar({
           </div>
         </button>
 
+        {/* Return to Main Dashboard link */}
+        <Link
+          href="/dashboard"
+          onClick={onClose}
+          className="group flex items-center h-8 px-2 rounded-lg text-muted-foreground hover:bg-accent hover:text-foreground transition-colors overflow-hidden shrink-0 w-full mt-1 border border-border/40"
+        >
+          <div className="size-6 shrink-0 flex items-center justify-center text-muted-foreground group-hover:text-primary transition-colors">
+            <ArrowLeft size={15} />
+          </div>
+          <div
+            className={`overflow-hidden transition-all duration-300 ease-in-out flex items-center ${
+              isCollapsed
+                ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none"
+                : "max-w-[140px] opacity-100 translate-x-0 ml-2"
+            }`}
+          >
+            <span className="text-[11.5px] font-medium whitespace-nowrap">
+              ইউজার ড্যাশবোর্ড
+            </span>
+          </div>
+        </Link>
+
         {/* Navigation Items */}
-        <nav className="flex flex-col gap-0.5 w-full mt-1">
-          {navItems.map((item) => {
+        <nav className="flex flex-col gap-0.5 w-full mt-2">
+          {ADMIN_NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.url ||
-              (item.url !== "/dashboard" && pathname.startsWith(item.url));
+              (item.url !== "/admin" && pathname.startsWith(item.url));
             const ItemIcon = item.icon;
 
             return (
@@ -165,7 +192,7 @@ export function AppSidebar({
                   className={`overflow-hidden transition-all duration-300 ease-in-out flex items-center ${
                     isCollapsed
                       ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none"
-                      : "max-w-[140px] opacity-100 translate-x-0 ml-2"
+                      : "max-w-[150px] opacity-100 translate-x-0 ml-2"
                   }`}
                 >
                   <span className="text-[12.5px] whitespace-nowrap">
@@ -175,35 +202,12 @@ export function AppSidebar({
               </Link>
             );
           })}
-
-          {user?.isAdmin && (
-            <Link
-              href="/admin"
-              onClick={onClose}
-              className="group relative flex items-center h-8 px-2 rounded-lg transition-colors overflow-hidden shrink-0 w-full text-primary hover:bg-primary/10 mt-1 border border-primary/20"
-            >
-              <div className="size-6 shrink-0 flex items-center justify-center">
-                <CrownStar size={16} />
-              </div>
-              <div
-                className={`overflow-hidden transition-all duration-300 ease-in-out flex items-center ${
-                  isCollapsed
-                    ? "max-w-0 opacity-0 -translate-x-2 pointer-events-none"
-                    : "max-w-[140px] opacity-100 translate-x-0 ml-2"
-                }`}
-              >
-                <span className="text-[12.5px] font-bold whitespace-nowrap">
-                  অ্যাডমিন প্যানেল
-                </span>
-              </div>
-            </Link>
-          )}
         </nav>
       </div>
 
       {/* Footer Area */}
       <div className="flex flex-col gap-2 mt-6 lg:mt-8 px-0 border-t border-border/50 pt-2 w-full">
-        <div className="flex items-center w-full h-8 px-2">
+        <div className="flex items-center justify-between w-full h-8 px-2">
           <button
             type="button"
             aria-label="থিম পরিবর্তন করুন (Toggle Theme)"
@@ -263,7 +267,7 @@ export function AppSidebar({
         open={showConfirm}
         onOpenChange={setShowConfirm}
         title="লগআউট করবেন?"
-        description="আপনি কি নিশ্চিত যে আপনি আপনার অ্যাকাউন্ট থেকে লগআউট করতে চান?"
+        description="আপনি কি নিশ্চিত যে আপনি অ্যাডমিন প্যানেল থেকে লগআউট করতে চান?"
         trigger={null}
         className="sm:max-w-xl"
       >
@@ -290,19 +294,17 @@ export function AppSidebar({
   );
 }
 
-export function MobileBottomNav() {
+export function AdminMobileBottomNav() {
   const pathname = usePathname();
-  const navItems = PERSONAL_NAV_ITEMS;
 
   return (
     <div className="lg:hidden fixed bottom-[12px] left-[12px] right-[12px] z-30 flex justify-center pointer-events-none">
       <div className="flex items-center gap-1.5 bg-background/90 backdrop-blur-2xl border border-border/80 rounded-[28px] p-2 shadow-2xl pointer-events-auto w-full max-w-[460px] overflow-hidden">
-        {/* Scrollable Navigation Items */}
         <div className="flex items-center gap-1 overflow-x-auto no-scrollbar flex-1 py-0.5">
-          {navItems.map((item) => {
+          {ADMIN_NAV_ITEMS.map((item) => {
             const isActive =
               pathname === item.url ||
-              (item.url !== "/dashboard" && pathname.startsWith(item.url));
+              (item.url !== "/admin" && pathname.startsWith(item.url));
             const ItemIcon = item.icon;
 
             return (

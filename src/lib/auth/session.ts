@@ -25,14 +25,34 @@ export async function createSession(
 ): Promise<void> {
   const token = generateToken();
   const expiresAt = getExpiresAt();
+  const cookieStore = await cookies();
+  const oldToken = cookieStore.get(SESSION_COOKIE)?.value;
 
-  // Delete expired sessions for this user
+  // 1. Delete expired sessions for this user
   await db
     .delete(sessions)
     .where(
       and(eq(sessions.userId, userId), lt(sessions.expiresAt, new Date())),
     );
 
+  // 2. If this browser already had a previous session token, clean it up
+  if (oldToken) {
+    await db.delete(sessions).where(eq(sessions.token, oldToken));
+  }
+
+  // 3. Remove existing sessions from the same device / browser (same userAgent) to prevent ghost duplicates
+  if (request?.userAgent) {
+    await db
+      .delete(sessions)
+      .where(
+        and(
+          eq(sessions.userId, userId),
+          eq(sessions.userAgent, request.userAgent),
+        ),
+      );
+  }
+
+  // 4. Insert new active session
   await db.insert(sessions).values({
     userId,
     token,
@@ -45,7 +65,6 @@ export async function createSession(
   const isHttps =
     process.env.NEXT_PUBLIC_APP_URL?.startsWith("https://") ?? false;
 
-  const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production" && isHttps,
@@ -166,4 +185,24 @@ export async function getUserSessions(userId: string) {
     ...session,
     isCurrent: session.token === currentToken,
   }));
+}
+
+// ─── Admin Check & Guard ─────────────────────────────────────────────────────
+
+export async function getAdminUser(): Promise<User | null> {
+  const user = await getCurrentUser();
+  if (!user) return null;
+
+  const adminEmails = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .filter(Boolean);
+
+  const isWhitelisted = adminEmails.includes(user.email.toLowerCase());
+
+  if (user.isAdmin || isWhitelisted) {
+    return user;
+  }
+
+  return null;
 }

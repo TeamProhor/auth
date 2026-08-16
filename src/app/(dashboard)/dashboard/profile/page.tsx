@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import { updateProfileAction } from "@/actions/user";
 import { AvatarUploader } from "@/components/dashboard/avatar-uploader";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { PreferencesSection } from "@/components/dashboard/preferences-section";
 import { SubmitButton } from "@/components/submit-button";
 import {
   Card,
@@ -28,16 +30,11 @@ export default async function ProfilePage() {
   if (!user) redirect("/login");
 
   return (
-    <div className="max-w-5xl space-y-8">
-      <div className="space-y-1">
-        <h2 className="text-2xl font-bold tracking-tight text-foreground">
-          ব্যক্তিগত তথ্য
-        </h2>
-        <p className="text-muted-foreground text-sm">
-          প্রহর পরিষেবাগুলোতে আপনার প্রাথমিক পরিচিতি এবং প্রোফাইল পরিচালনা করুন।
-        </p>
-      </div>
+    <div className="max-w-5xl space-y-8 pb-12">
+      {/* ─── Page Header ─── */}
+      <DashboardHeader />
 
+      {/* ─── Personal Profile Info Form ─── */}
       <form
         key={user.updatedAt?.toString()}
         action={updateProfileAction.bind(null, null)}
@@ -139,6 +136,9 @@ export default async function ProfilePage() {
           </CardFooter>
         </Card>
       </form>
+
+      {/* ─── Preferences (Theme, Language, Notifications) ─── */}
+      <PreferencesSection />
     </div>
   );
 }

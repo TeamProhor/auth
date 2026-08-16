@@ -279,6 +279,7 @@ export {
   CheckCircle,
   ChevronDown,
   ChevronLeft,
+  ChevronRight,
   CloudDownload,
   CloudPlus,
   Code,

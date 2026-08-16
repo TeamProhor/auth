@@ -1,12 +1,10 @@
 import type { ComponentType } from "react";
 import {
-  Bell,
   Box,
   Calendar,
   DirectInbox,
   FolderFiles,
   Home,
-  LockKeyhole,
   Note,
   ShieldCheck,
   User,
@@ -32,19 +30,14 @@ export const PERSONAL_NAV_ITEMS: NavItem[] = [
     icon: Home,
   },
   {
-    title: "প্রোফাইল ও তথ্য",
+    title: "প্রোফাইল ও সেটিংস",
     url: "/dashboard/profile",
     icon: User,
   },
   {
-    title: "নিরাপত্তা ও সেশন",
+    title: "নিরাপত্তা ও গোপনীয়তা",
     url: "/dashboard/security",
     icon: ShieldCheck,
-  },
-  {
-    title: "ডেটা ও গোপনীয়তা",
-    url: "/dashboard/privacy",
-    icon: LockKeyhole,
   },
   {
     title: "পেমেন্ট ও ফ্যামিলি",
@@ -55,11 +48,6 @@ export const PERSONAL_NAV_ITEMS: NavItem[] = [
     title: "ওঅথ ও এপিআই কী",
     url: "/dashboard/oauth-keys",
     icon: Box,
-  },
-  {
-    title: "সেটিংস ও নোটিফিকেশন",
-    url: "/dashboard/settings",
-    icon: Bell,
   },
 ];
 

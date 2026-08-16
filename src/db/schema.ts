@@ -27,6 +27,7 @@ export const users = sqliteTable("users", {
     .notNull()
     .default(false),
   isBanned: integer("is_banned", { mode: "boolean" }).notNull().default(false),
+  isAdmin: integer("is_admin", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -290,9 +291,61 @@ export const auditLogs = sqliteTable("audit_logs", {
     .default(sql`(unixepoch())`),
 });
 
+// ─── Subscriptions ────────────────────────────────────────────────────────────
+
+export const subscriptions = sqliteTable("subscriptions", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .unique()
+    .references(() => users.id, { onDelete: "cascade" }),
+  planId: text("plan_id").notNull().default("prohor-free"), // prohor-free, prohor-pro, prohor-plus, prohor-elite
+  status: text("status", {
+    enum: ["active", "pending", "canceled", "rejected", "past_due"],
+  })
+    .notNull()
+    .default("active"),
+  paymentMethod: text("payment_method").default("N/A"), // bKash, Nagad, Mastercard ••• 4242
+  rejectionReason: text("rejection_reason"),
+  currentPeriodStart: integer("current_period_start", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  currentPeriodEnd: integer("current_period_end", { mode: "timestamp" }),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+  updatedAt: integer("updated_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
+// ─── Invoices (Payment Receipts) ──────────────────────────────────────────────
+
+export const invoices = sqliteTable("invoices", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  userId: text("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  amount: integer("amount").notNull(), // amount in BDT (e.g. 299, 599, 999)
+  planName: text("plan_name").notNull(), // Prohor Pro, Prohor Plus, Prohor Elite
+  paymentMethod: text("payment_method").notNull(), // bKash, Nagad, Card
+  status: text("status", {
+    enum: ["pending", "paid", "failed", "refunded"],
+  })
+    .notNull()
+    .default("pending"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .notNull()
+    .default(sql`(unixepoch())`),
+});
+
 // ─── Relations ────────────────────────────────────────────────────────────────
 
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ many, one }) => ({
   accounts: many(accounts),
   sessions: many(sessions),
   oauthClients: many(oauthClients),
@@ -300,6 +353,11 @@ export const usersRelations = relations(users, ({ many }) => ({
   auditLogs: many(auditLogs),
   oauthLinkRequests: many(oauthLinkRequests),
   personalApiKeys: many(personalApiKeys),
+  subscription: one(subscriptions),
+  invoices: many(invoices),
+  authorizationCodes: many(authorizationCodes),
+  accessTokens: many(accessTokens),
+  refreshTokens: many(refreshTokens),
 }));
 
 export const accountsRelations = relations(accounts, ({ one }) => ({
@@ -345,55 +403,36 @@ export const auditLogsRelations = relations(auditLogs, ({ one }) => ({
   user: one(users, { fields: [auditLogs.userId], references: [users.id] }),
 }));
 
-// ─── Subscriptions ────────────────────────────────────────────────────────────
-
-export const subscriptions = sqliteTable("subscriptions", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id")
-    .notNull()
-    .unique()
-    .references(() => users.id, { onDelete: "cascade" }),
-  planId: text("plan_id").notNull().default("prohor-free"), // prohor-free, prohor-pro, prohor-plus, prohor-elite
-  status: text("status").notNull().default("active"), // active, canceled, past_due
-  paymentMethod: text("payment_method").default("N/A"), // bKash, Nagad, Mastercard ••• 4242
-  currentPeriodStart: integer("current_period_start", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  currentPeriodEnd: integer("current_period_end", { mode: "timestamp" }),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-  updatedAt: integer("updated_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
-
-// ─── Invoices (Payment Receipts) ──────────────────────────────────────────────
-
-export const invoices = sqliteTable("invoices", {
-  id: text("id")
-    .primaryKey()
-    .$defaultFn(() => crypto.randomUUID()),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  amount: integer("amount").notNull(), // amount in BDT (e.g. 299, 599, 999)
-  planName: text("plan_name").notNull(), // Prohor Pro, Prohor Plus, Prohor Elite
-  paymentMethod: text("payment_method").notNull(), // bKash, Nagad, Card
-  status: text("status").notNull().default("paid"), // paid, failed
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
-
 export const subscriptionsRelations = relations(subscriptions, ({ one }) => ({
   user: one(users, { fields: [subscriptions.userId], references: [users.id] }),
 }));
 
 export const invoicesRelations = relations(invoices, ({ one }) => ({
   user: one(users, { fields: [invoices.userId], references: [users.id] }),
+}));
+
+export const authorizationCodesRelations = relations(
+  authorizationCodes,
+  ({ one }) => ({
+    user: one(users, {
+      fields: [authorizationCodes.userId],
+      references: [users.id],
+    }),
+  }),
+);
+
+export const accessTokensRelations = relations(accessTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [accessTokens.userId],
+    references: [users.id],
+  }),
+}));
+
+export const refreshTokensRelations = relations(refreshTokens, ({ one }) => ({
+  user: one(users, {
+    fields: [refreshTokens.userId],
+    references: [users.id],
+  }),
 }));
 
 // ─── Type Exports ─────────────────────────────────────────────────────────────
@@ -406,9 +445,12 @@ export type OAuthClient = typeof oauthClients.$inferSelect;
 export type NewOAuthClient = typeof oauthClients.$inferInsert;
 export type AuthorizationCode = typeof authorizationCodes.$inferSelect;
 export type AccessToken = typeof accessTokens.$inferSelect;
+export type RefreshToken = typeof refreshTokens.$inferSelect;
 export type UserConsent = typeof userConsents.$inferSelect;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type Subscription = typeof subscriptions.$inferSelect;
+export type NewSubscription = typeof subscriptions.$inferInsert;
 export type Invoice = typeof invoices.$inferSelect;
+export type NewInvoice = typeof invoices.$inferInsert;
 export type OAuthLinkRequest = typeof oauthLinkRequests.$inferSelect;
 export type PersonalApiKey = typeof personalApiKeys.$inferSelect;

@@ -265,10 +265,10 @@ export function OAuthKeysManager({
         {/* ─── API Keys Section ─── */}
         <Card className="flex flex-col justify-between">
           <div>
-            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4 border-b border-border">
-              <div className="space-y-1">
+            <CardHeader className="flex flex-row items-start justify-between space-y-0 pb-4 border-b border-border gap-3">
+              <div className="space-y-1 min-w-0 flex-1">
                 <CardTitle className="text-lg font-bold flex items-center gap-2 text-foreground">
-                  <Key className="text-primary size-5" />
+                  <Key className="text-primary size-5 shrink-0" />
                   ব্যক্তিগত API কী ({keys.length}টি)
                 </CardTitle>
                 <CardDescription className="text-xs text-muted-foreground">

@@ -3,10 +3,11 @@
 import { useState, useTransition } from "react";
 import { unlinkAccountAction } from "@/actions/user";
 import { GitHubIcon, GoogleIcon } from "@/components/icons";
+import { QuickList, QuickListItem } from "@/components/shared/quick-list";
 import { ResponsiveDialog } from "@/components/shared/responsive-dialog";
 import { SubmitButton } from "@/components/submit-button";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import type { Account } from "@/db/schema";
 import { MESSAGES, showToast } from "@/lib/toast";
 
@@ -53,95 +54,123 @@ export function ConnectedAccountsSection({
   };
 
   return (
-    <Card className="p-6 space-y-6">
-      <div>
-        <CardTitle className="text-lg font-bold">
-          সংযুক্ত সামাজিক অ্যাকাউন্টসমূহ
-        </CardTitle>
-        <CardDescription className="text-sm mt-1">
-          এখানে আপনার সোশ্যাল মিডিয়া অ্যাকাউন্ট কানেক্ট বা ডিসকানেক্ট করতে পারেন।
-        </CardDescription>
-      </div>
-
-      <div className="space-y-4">
+    <div className="space-y-4">
+      <QuickList
+        title="সংযুক্ত সামাজিক অ্যাকাউন্টসমূহ"
+        description="এখানে আপনার সোশ্যাল মিডিয়া অ্যাকাউন্ট কানেক্ট বা ডিসকানেক্ট করতে পারেন।"
+        variant="list"
+      >
         {/* Google Provider */}
-        <div className="flex items-center justify-between p-4 border border-border rounded-xl bg-muted/20">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
-              <GoogleIcon className="w-5 h-5" />
+        <QuickListItem
+          icon={<GoogleIcon className="w-5 h-5" />}
+          color={googleAccount ? "blue" : "muted"}
+          title={
+            <div className="flex items-center gap-2">
+              <span>Google</span>
+              {googleAccount ? (
+                <Badge
+                  variant="secondary"
+                  className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] font-bold px-2 py-0.5"
+                >
+                  সংযুক্ত
+                </Badge>
+              ) : (
+                <Badge
+                  variant="outline"
+                  className="text-muted-foreground text-[10px] px-2 py-0.5 font-medium"
+                >
+                  সংযুক্ত নেই
+                </Badge>
+              )}
             </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">Google</p>
-              <p className="text-xs text-muted-foreground">
-                {googleAccount
-                  ? googleAccount.providerUsername || "সংযুক্ত আছে"
-                  : "সংযুক্ত নেই"}
-              </p>
-            </div>
-          </div>
-          {googleAccount ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setUnlinkTarget("google")}
-              className="text-xs text-destructive hover:bg-destructive/10 cursor-pointer"
-            >
-              ডিসকানেক্ট
-            </Button>
-          ) : (
-            <SubmitButton
-              type="button"
-              variant="outline"
-              size="sm"
-              isPending={activeProvider === "google"}
-              onClick={() => handleConnect("google")}
-              className="text-xs cursor-pointer"
-            >
-              কানেক্ট করুন
-            </SubmitButton>
-          )}
-        </div>
+          }
+          description={
+            googleAccount
+              ? googleAccount.providerUsername || "Google অ্যাকাউন্ট সক্রিয় আছে"
+              : "Google দিয়ে সহজে লগইন করতে অ্যাকাউন্ট লিঙ্ক করুন।"
+          }
+          action={
+            googleAccount ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setUnlinkTarget("google")}
+                className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer border-destructive/20 h-8 px-3"
+              >
+                ডিসকানেক্ট
+              </Button>
+            ) : (
+              <SubmitButton
+                type="button"
+                variant="outline"
+                size="sm"
+                isPending={activeProvider === "google"}
+                onClick={() => handleConnect("google")}
+                className="text-xs cursor-pointer h-8 px-3"
+              >
+                কানেক্ট করুন
+              </SubmitButton>
+            )
+          }
+        />
 
         {/* GitHub Provider */}
-        <div className="flex items-center justify-between p-4 border border-border rounded-xl bg-muted/20">
-          <div className="flex items-center gap-3">
-            <div className="size-10 rounded-lg bg-background border border-border flex items-center justify-center shrink-0">
-              <GitHubIcon className="w-5 h-5 text-foreground fill-current" />
+        <QuickListItem
+          icon={<GitHubIcon className="w-5 h-5 text-foreground fill-current" />}
+          color={githubAccount ? "purple" : "muted"}
+          title={
+            <div className="flex items-center gap-2">
+              <span>GitHub</span>
+              {githubAccount ? (
+                <Badge
+                  variant="secondary"
+                  className="bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20 text-[10px] font-bold px-2 py-0.5"
+                >
+                  সংযুক্ত
+                </Badge>
+              ) : (
+                <Badge
+                  variant="outline"
+                  className="text-muted-foreground text-[10px] px-2 py-0.5 font-medium"
+                >
+                  সংযুক্ত নেই
+                </Badge>
+              )}
             </div>
-            <div>
-              <p className="text-sm font-semibold text-foreground">GitHub</p>
-              <p className="text-xs text-muted-foreground">
-                {githubAccount
-                  ? `@${githubAccount.providerUsername}` || "সংযুক্ত আছে"
-                  : "সংযুক্ত নেই"}
-              </p>
-            </div>
-          </div>
-          {githubAccount ? (
-            <Button
-              type="button"
-              variant="outline"
-              size="sm"
-              onClick={() => setUnlinkTarget("github")}
-              className="text-xs text-destructive hover:bg-destructive/10 cursor-pointer"
-            >
-              ডিসকানেক্ট
-            </Button>
-          ) : (
-            <SubmitButton
-              type="button"
-              variant="outline"
-              size="sm"
-              isPending={activeProvider === "github"}
-              onClick={() => handleConnect("github")}
-              className="text-xs cursor-pointer"
-            >
-              কানেক্ট করুন
-            </SubmitButton>
-          )}
-        </div>
-      </div>
+          }
+          description={
+            githubAccount
+              ? `@${githubAccount.providerUsername}`
+              : "GitHub দিয়ে ডেভেলপার অ্যাকাউন্ট লিঙ্ক করুন।"
+          }
+          action={
+            githubAccount ? (
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => setUnlinkTarget("github")}
+                className="text-xs text-destructive hover:text-destructive hover:bg-destructive/10 cursor-pointer border-destructive/20 h-8 px-3"
+              >
+                ডিসকানেক্ট
+              </Button>
+            ) : (
+              <SubmitButton
+                type="button"
+                variant="outline"
+                size="sm"
+                isPending={activeProvider === "github"}
+                onClick={() => handleConnect("github")}
+                className="text-xs cursor-pointer h-8 px-3"
+              >
+                কানেক্ট করুন
+              </SubmitButton>
+            )
+          }
+        />
+      </QuickList>
+
       <ResponsiveDialog
         open={!!unlinkTarget}
         onOpenChange={(open) => {
@@ -169,6 +198,6 @@ export function ConnectedAccountsSection({
           </SubmitButton>
         </div>
       </ResponsiveDialog>
-    </Card>
+    </div>
   );
 }

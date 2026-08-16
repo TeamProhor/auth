@@ -1,7 +1,7 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { CheckoutForm } from "@/components/billing/checkout-form";
-import { ArrowLeft, CheckCircle } from "@/components/icons";
+import { DashboardHeader } from "@/components/dashboard/dashboard-header";
+import { CheckCircle } from "@/components/icons";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import { getCurrentUser } from "@/lib/auth/session";
@@ -24,22 +24,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
 
   return (
     <div className="max-w-5xl space-y-8 pb-12">
-      <div className="flex items-center gap-3">
-        <Link
-          href="/dashboard/billing"
-          className="size-9 rounded-xl border border-border bg-background hover:bg-accent/50 flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <ArrowLeft size={18} />
-        </Link>
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight text-foreground">
-            সাবস্ক্রিপশন চেকআউট
-          </h2>
-          <p className="text-muted-foreground text-sm">
-            আপনার সাবস্ক্রিপশন নিশ্চিত করুন এবং পেমেন্ট সম্পন্ন করুন।
-          </p>
-        </div>
-      </div>
+      <DashboardHeader />
 
       <div className="grid gap-8 md:grid-cols-5 items-start">
         {/* ─── Plan Summary Card ─── */}

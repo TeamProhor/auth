@@ -41,6 +41,9 @@ export async function subscribeToPlanAction(
   const plan = PLANS[planId];
   if (!plan) throw new Error("অবৈধ সাবস্ক্রিপশন প্ল্যান।");
 
+  const isFreePlan = plan.price === 0;
+  const initialStatus = isFreePlan ? "active" : "pending";
+
   // Calculate 1 month period
   const now = new Date();
   const periodEnd = new Date(now);
@@ -56,7 +59,7 @@ export async function subscribeToPlanAction(
       .update(subscriptions)
       .set({
         planId: plan.id,
-        status: "active",
+        status: initialStatus,
         paymentMethod,
         currentPeriodStart: now,
         currentPeriodEnd: periodEnd,
@@ -67,7 +70,7 @@ export async function subscribeToPlanAction(
     await db.insert(subscriptions).values({
       userId: user.id,
       planId: plan.id,
-      status: "active",
+      status: initialStatus,
       paymentMethod,
       currentPeriodStart: now,
       currentPeriodEnd: periodEnd,
@@ -81,16 +84,22 @@ export async function subscribeToPlanAction(
       amount: plan.price,
       planName: plan.name,
       paymentMethod,
-      status: "paid",
+      status: "pending",
     });
   }
 
   await logEvent({
     userId: user.id,
     eventType: "profile_updated",
-    details: `Subscription: ${plan.name} via ${paymentMethod}`,
+    details: `Subscription request: ${plan.name} (${initialStatus}) via ${paymentMethod}`,
   });
 
   revalidatePath("/dashboard/billing");
-  redirect("/dashboard/billing?subscribed=true");
+  revalidatePath("/admin/subscriptions");
+
+  if (isFreePlan) {
+    redirect("/dashboard/billing?subscribed=true");
+  } else {
+    redirect("/dashboard/billing?pending=true");
+  }
 }
