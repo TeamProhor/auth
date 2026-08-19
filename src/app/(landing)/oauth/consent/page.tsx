@@ -37,13 +37,14 @@ export default async function ConsentPage({ searchParams }: ConsentPageProps) {
   }
 
   const client = await db.query.oauthClients.findFirst({
-    where: and(
-      eq(oauthClients.clientId, client_id),
-      eq(oauthClients.isActive, true),
-    ),
+    where: eq(oauthClients.clientId, client_id),
   });
 
-  if (!client?.redirectUris.includes(redirect_uri)) {
+  if (!client || !client.isActive) {
+    redirect("/login?error=invalid_client");
+  }
+
+  if (!client || !client.redirectUris.includes(redirect_uri)) {
     redirect("/login?error=invalid_client");
   }
 
